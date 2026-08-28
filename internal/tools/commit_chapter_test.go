@@ -93,7 +93,7 @@ func TestCommitChapterRejectsSkippedNormalChapter(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, err := newTestCommitChapterTool(s).Execute(context.Background(), args); err == nil || !strings.Contains(err.Error(), "只能提交下一章 1") {
+	if _, err := newTestCommitChapterTool(s).Execute(context.Background(), args); err == nil || !strings.Contains(err.Error(), "chỉ được nộp chương kế tiếp 1") {
 		t.Fatalf("expected skipped chapter rejection, got %v", err)
 	}
 	if pending, err := s.Signals.LoadPendingCommit(); err != nil || pending != nil {
@@ -425,7 +425,7 @@ func TestCommitChapterRewriteValidatesRecordSetBeforeWriting(t *testing.T) {
 		t.Fatal(err)
 	}
 	_, err = newTestCommitChapterTool(s).Execute(context.Background(), args)
-	if err == nil || !strings.Contains(err.Error(), "已解除冻结且未写入返工结果") {
+	if err == nil || !strings.Contains(err.Error(), "đã gỡ đóng băng và chưa ghi kết quả làm lại") {
 		t.Fatalf("expected preflight projection error, got %v", err)
 	}
 	if strings.Contains(err.Error(), errs.ErrStoreWrite.Error()) {
@@ -493,7 +493,7 @@ func TestCommitChapterRewriteRejectsForwardForeshadowReference(t *testing.T) {
 	if err == nil {
 		t.Fatal("引用后续章节才种下的伏笔必须被拒")
 	}
-	if !strings.Contains(err.Error(), "种植于第 7 章") {
+	if !strings.Contains(err.Error(), "gieo tại chương 7") {
 		t.Fatalf("报错须指明种植章，模型才能自行修正，实际: %v", err)
 	}
 	// 关键：拦在落盘之前——章节记录和返工队列都不得被这次失败污染。
@@ -563,7 +563,7 @@ func TestCommitChapterClearsInvalidLegacyRewritePending(t *testing.T) {
 	}
 
 	_, err = newTestCommitChapterTool(s).Execute(context.Background(), payload)
-	if err == nil || !strings.Contains(err.Error(), "已解除冻结") || !strings.Contains(err.Error(), "种植于第 7 章") {
+	if err == nil || !strings.Contains(err.Error(), "đã gỡ đóng băng") || !strings.Contains(err.Error(), "gieo tại chương 7") {
 		t.Fatalf("expected actionable legacy pending error, got %v", err)
 	}
 	if pending, err := s.Signals.LoadPendingCommit(); err != nil || pending != nil {

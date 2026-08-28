@@ -40,7 +40,7 @@ func (t *CommitChapterTool) validateCommitArgs(a commitArgs) error {
 					return fmt.Errorf("foreshadow_updates[%d] references unknown id %q: %w", i, update.ID, errs.ErrToolPrecondition)
 				}
 				if at > a.Chapter {
-					return fmt.Errorf("foreshadow_updates[%d] 伏笔 %q 种植于第 %d 章，不能在第 %d 章推进或回收: %w",
+					return fmt.Errorf("foreshadow_updates[%d] chi tiết gieo mầm %q gieo tại chương %d, không thể đẩy hoặc thu tại chương %d: %w",
 						i, update.ID, at, a.Chapter, errs.ErrToolPrecondition)
 				}
 			}

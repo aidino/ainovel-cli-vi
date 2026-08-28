@@ -59,10 +59,10 @@ type commitArgs struct {
 
 func (t *CommitChapterTool) Name() string { return "commit_chapter" }
 func (t *CommitChapterTool) Description() string {
-	return "提交章节终稿。加载草稿正文保存为终稿，更新时间线、伏笔、关系、角色状态和进度。" +
-		"返回结构化事实：next_chapter / review_required / arc_end / volume_end / needs_expansion / book_complete / flow 等"
+	return "Nộp bản cuối chương. Tải phần thân bản thảo lưu thành bản cuối, cập nhật dòng thời gian, chi tiết gieo mầm, quan hệ, trạng thái nhân vật và tiến độ." +
+		"Trả về dữ kiện có cấu trúc: next_chapter / review_required / arc_end / volume_end / needs_expansion / book_complete / flow..."
 }
-func (t *CommitChapterTool) Label() string { return "提交章节" }
+func (t *CommitChapterTool) Label() string { return "nộp chương" }
 
 // 写工具（跨域可恢复 Saga：完整载荷→终稿/状态→进度→checkpoint），禁止并发。
 func (t *CommitChapterTool) ReadOnly(_ json.RawMessage) bool        { return false }
@@ -70,7 +70,7 @@ func (t *CommitChapterTool) ConcurrencySafe(_ json.RawMessage) bool { return fal
 func (t *CommitChapterTool) StrictSchema() bool                     { return true }
 
 func (t *CommitChapterTool) Schema() map[string]any {
-	props := []schema.Prop{schema.Property("chapter", schema.Int("章节号")).Required()}
+	props := []schema.Prop{schema.Property("chapter", schema.Int("số chương")).Required()}
 	props = append(props, chapterfacts.Properties(true)...)
 	return schema.Object(props...)
 }
@@ -88,27 +88,27 @@ func (t *CommitChapterTool) Execute(_ context.Context, args json.RawMessage) (js
 		return nil, fmt.Errorf("load pending commit: %w: %w", errs.ErrStoreRead, err)
 	}
 	if existingPending != nil && existingPending.Chapter != requested.Chapter {
-		return nil, fmt.Errorf("存在未恢复的章节提交：第 %d 章（阶段 %s），请先恢复或重新提交该章: %w", existingPending.Chapter, existingPending.Stage, errs.ErrToolConflict)
+		return nil, fmt.Errorf("tồn tại lần nộp chương chưa khôi phục: chương %d (giai đoạn %s), hãy khôi phục hoặc nộp lại chương đó trước: %w", existingPending.Chapter, existingPending.Stage, errs.ErrToolConflict)
 	}
 	if existingPending != nil {
 		switch existingPending.Stage {
 		case domain.CommitStageStarted, domain.CommitStageStateApplied, domain.CommitStageProgressMarked, domain.CommitStageSignalSaved:
 		default:
-			return nil, fmt.Errorf("pending commit 阶段非法: %q: %w", existingPending.Stage, errs.ErrToolConflict)
+			return nil, fmt.Errorf("giai đoạn pending commit không hợp lệ: %q: %w", existingPending.Stage, errs.ErrToolConflict)
 		}
 	}
 
 	a := requested
 	if existingPending != nil && existingPending.Stage != domain.CommitStageProgressMarked && existingPending.Stage != domain.CommitStageSignalSaved {
 		if len(existingPending.Payload) == 0 {
-			return nil, fmt.Errorf("第 %d 章存在旧版未完成提交，但缺少可重放 payload；拒绝使用新生成参数覆盖，请从最近 checkpoint 恢复或人工核对 meta/pending_commit.json: %w",
+			return nil, fmt.Errorf("chương %d có lần nộp chưa hoàn thành bản cũ nhưng thiếu payload tái phát được; từ chối ghi đè bằng tham số mới sinh, hãy khôi phục từ checkpoint gần nhất hoặc đối chiếu thủ công meta/pending_commit.json: %w",
 				existingPending.Chapter, errs.ErrToolConflict)
 		}
 		if err := json.Unmarshal(existingPending.Payload, &a); err != nil {
 			return nil, fmt.Errorf("decode pending commit payload: %w: %w", errs.ErrStoreRead, err)
 		}
 		if a.Chapter != existingPending.Chapter {
-			return nil, fmt.Errorf("pending commit payload 章节不一致：记录=%d payload=%d: %w", existingPending.Chapter, a.Chapter, errs.ErrToolConflict)
+			return nil, fmt.Errorf("số chương payload pending commit không khớp: bản ghi=%d payload=%d: %w", existingPending.Chapter, a.Chapter, errs.ErrToolConflict)
 		}
 	}
 
@@ -122,7 +122,7 @@ func (t *CommitChapterTool) Execute(_ context.Context, args json.RawMessage) (js
 	completed := slices.Contains(progress.CompletedChapters, a.Chapter)
 	if existingPending != nil && (existingPending.Stage == domain.CommitStageProgressMarked || existingPending.Stage == domain.CommitStageSignalSaved) {
 		if !completed {
-			return nil, fmt.Errorf("pending commit 已到 %s，但 progress 未标记第 %d 章完成: %w", existingPending.Stage, a.Chapter, errs.ErrToolConflict)
+			return nil, fmt.Errorf("pending commit đã tới %s, nhưng progress chưa đánh dấu chương %d hoàn thành: %w", existingPending.Stage, a.Chapter, errs.ErrToolConflict)
 		}
 		return t.finishPendingCommit(*existingPending, progress)
 	}
@@ -134,9 +134,9 @@ func (t *CommitChapterTool) Execute(_ context.Context, args json.RawMessage) (js
 			if existingPending != nil && existingPending.Rewrite &&
 				(errors.Is(err, errs.ErrToolArgs) || errors.Is(err, errs.ErrToolPrecondition)) {
 				if clearErr := t.store.Signals.ClearPendingCommit(); clearErr != nil {
-					return nil, fmt.Errorf("返工提交校验失败（%v），且清理冻结提交失败: %w: %w", err, errs.ErrStoreWrite, clearErr)
+					return nil, fmt.Errorf("kiểm tra nộp làm lại thất bại (%v), và dọn nộp đóng băng thất bại: %w: %w", err, errs.ErrStoreWrite, clearErr)
 				}
-				return nil, fmt.Errorf("旧版遗留的返工提交未通过校验，已解除冻结；请修正后重新提交: %w", err)
+				return nil, fmt.Errorf("nộp làm lại còn sót của bản cũ chưa qua kiểm tra, đã gỡ đóng băng; hãy sửa rồi nộp lại: %w", err)
 			}
 			return nil, err
 		}
@@ -144,7 +144,7 @@ func (t *CommitChapterTool) Execute(_ context.Context, args json.RawMessage) (js
 
 	if existingPending != nil && existingPending.Rewrite {
 		if !completed {
-			return nil, fmt.Errorf("返工提交要求第 %d 章已存在终稿: %w", a.Chapter, errs.ErrToolConflict)
+			return nil, fmt.Errorf("nộp làm lại yêu cầu chương %d đã tồn tại bản cuối: %w", a.Chapter, errs.ErrToolConflict)
 		}
 		return t.executeRewriteCommit(a, progress, *existingPending, true)
 	}
@@ -183,12 +183,12 @@ func (t *CommitChapterTool) Execute(_ context.Context, args json.RawMessage) (js
 			if errors.Is(err, errs.ErrToolConflict) {
 				return nil, err
 			}
-			return nil, fmt.Errorf("章节当前不允许提交: %w: %w", errs.ErrToolPrecondition, err)
+			return nil, fmt.Errorf("chương hiện tại không cho phép nộp: %w: %w", errs.ErrToolPrecondition, err)
 		}
 		if progress.Flow != domain.FlowRewriting && progress.Flow != domain.FlowPolishing {
 			expected := progress.NextChapter()
 			if a.Chapter != expected {
-				return nil, fmt.Errorf("正常续写只能提交下一章 %d，收到第 %d 章: %w", expected, a.Chapter, errs.ErrToolConflict)
+				return nil, fmt.Errorf("viết tiếp bình thường chỉ được nộp chương kế tiếp %d, nhận được chương %d: %w", expected, a.Chapter, errs.ErrToolConflict)
 			}
 		}
 	}
@@ -199,11 +199,11 @@ func (t *CommitChapterTool) Execute(_ context.Context, args json.RawMessage) (js
 	if progress.Layered {
 		b, bErr := t.store.Outline.CheckArcBoundary(a.Chapter)
 		if bErr != nil {
-			return nil, fmt.Errorf("弧边界检测失败 chapter=%d: %w: %w", a.Chapter, errs.ErrStoreRead, bErr)
+			return nil, fmt.Errorf("phát hiện ranh giới arc thất bại chapter=%d: %w: %w", a.Chapter, errs.ErrStoreRead, bErr)
 		}
 		if b == nil {
 			return nil, fmt.Errorf(
-				"第 %d 章不在分层大纲范围内：写作必须先 expand_arc 扩展弧或 append_volume 追加卷；若全书已完结请调 save_foundation type=complete_book: %w",
+				"chương %d không nằm trong phạm vi đại cương phân tầng: khi viết phải expand_arc triển khai arc hoặc append_volume thêm tập trước; nếu toàn sách đã hoàn thành hãy gọi save_foundation type=complete_book: %w",
 				a.Chapter, errs.ErrToolPrecondition)
 		}
 		boundary = b
@@ -215,7 +215,7 @@ func (t *CommitChapterTool) Execute(_ context.Context, args json.RawMessage) (js
 	if existingPending != nil {
 		content = existingPending.DraftContent
 		if content == "" {
-			return nil, fmt.Errorf("第 %d 章未完成提交缺少 draft_content，无法证明恢复正文与原提交一致: %w",
+			return nil, fmt.Errorf("lần nộp chưa hoàn thành chương %d thiếu draft_content, không thể chứng minh phần thân khôi phục khớp với lần nộp gốc: %w",
 				a.Chapter, errs.ErrToolConflict)
 		}
 	} else {
@@ -311,7 +311,7 @@ func (t *CommitChapterTool) Execute(_ context.Context, args json.RawMessage) (js
 				return nil, fmt.Errorf("load core characters for cast ledger: %w: %w", errs.ErrStoreRead, err)
 			}
 			if err := t.store.Cast.MergeAppearances(a.Chapter, a.Characters, a.CastIntros, coreNames); err != nil {
-				slog.Warn("配角名册累加失败，跳过", "module", "commit", "chapter", a.Chapter, "err", err)
+				slog.Warn("cộng dồn danh bạ nhân vật phụ thất bại, bỏ qua", "module", "commit", "chapter", a.Chapter, "err", err)
 			}
 		}
 
@@ -449,7 +449,7 @@ func (t *CommitChapterTool) Execute(_ context.Context, args json.RawMessage) (js
 	// 持久化违规事实:editor 评审经 novel_context 消费(返回值只是镜像——
 	// writer 在 commit 后立即硬停,返回值无人可读)。best-effort。
 	if err := t.store.World.SaveRuleViolations(a.Chapter, violations); err != nil {
-		slog.Warn("机械违规落盘失败", "module", "tools", "chapter", a.Chapter, "err", err)
+		slog.Warn("ghi vi phạm cơ khí xuống đĩa thất bại", "module", "tools", "chapter", a.Chapter, "err", err)
 	}
 	t.refreshStyleStats(a.Chapter, content)
 	return output, nil
@@ -499,11 +499,11 @@ func (t *CommitChapterTool) validateRewriteDraft(chapter int, title string, prog
 	if changed {
 		return content, nil
 	}
-	mode := "重写"
+	mode := "viết lại"
 	if progress != nil && progress.Flow == domain.FlowPolishing {
-		mode = "打磨"
+		mode = "đánh bóng"
 	}
-	return "", fmt.Errorf("第 %d 章正文和标题均未发生变化，未检测到%s改动: %w",
+	return "", fmt.Errorf("phần thân và tiêu đề chương %d đều không thay đổi, không phát hiện sửa đổi %s: %w",
 		chapter, mode, errs.ErrToolPrecondition)
 }
 
@@ -551,7 +551,7 @@ func (t *CommitChapterTool) executeRewriteCommit(a commitArgs, progress *domain.
 	// 1. 只使用首次提交时冻结的返工正文，崩溃恢复不得采用随后被覆盖的 draft。
 	content := pending.DraftContent
 	if content == "" {
-		return nil, fmt.Errorf("第 %d 章返工提交缺少 draft_content，无法安全恢复: %w", chapter, errs.ErrToolConflict)
+		return nil, fmt.Errorf("nộp làm lại chương %d thiếu draft_content, không thể khôi phục an toàn: %w", chapter, errs.ErrToolConflict)
 	}
 	wordCount := utils.CountWords(content)
 
@@ -562,9 +562,9 @@ func (t *CommitChapterTool) executeRewriteCommit(a commitArgs, progress *domain.
 			return nil, err
 		}
 		if !changed {
-			mode := "重写"
+			mode := "viết lại"
 			if progress != nil && progress.Flow == domain.FlowPolishing {
-				mode = "打磨"
+				mode = "đánh bóng"
 			}
 			return nil, fmt.Errorf("第 %d 章正文和标题均未发生变化，未检测到%s改动: %w",
 				chapter, mode, errs.ErrToolPrecondition)
@@ -607,15 +607,15 @@ func (t *CommitChapterTool) executeRewriteCommit(a commitArgs, progress *domain.
 				return nil, fmt.Errorf("rewrite: load chapter record %d: %w: %w", completedChapter, errs.ErrStoreRead, err)
 			}
 			if record == nil {
-				return nil, fmt.Errorf("rewrite: 第 %d 章缺少接纳记录: %w", completedChapter, errs.ErrToolConflict)
+				return nil, fmt.Errorf("rewrite: chương %d thiếu bản ghi chấp nhận: %w", completedChapter, errs.ErrToolConflict)
 			}
 			records = append(records, *record)
 		}
 		if err := revision.ValidateRecords(records); err != nil {
 			if clearErr := t.store.Signals.ClearPendingCommit(); clearErr != nil {
-				return nil, fmt.Errorf("rewrite: 章节事实链校验失败（%v），且清理冻结提交失败: %w: %w", err, errs.ErrStoreWrite, clearErr)
+				return nil, fmt.Errorf("rewrite: kiểm tra chuỗi dữ kiện chương thất bại (%v), và dọn nộp đóng băng thất bại: %w: %w", err, errs.ErrStoreWrite, clearErr)
 			}
-			return nil, fmt.Errorf("rewrite: 章节事实链校验失败，已解除冻结且未写入返工结果: %w: %w", errs.ErrToolPrecondition, err)
+			return nil, fmt.Errorf("rewrite: kiểm tra chuỗi dữ kiện chương thất bại, đã gỡ đóng băng và chưa ghi kết quả làm lại: %w: %w", errs.ErrToolPrecondition, err)
 		}
 
 		// 4. 校验通过后再覆盖权威记录与终稿；同一冻结载荷可安全重放。
@@ -626,7 +626,7 @@ func (t *CommitChapterTool) executeRewriteCommit(a commitArgs, progress *domain.
 			return nil, fmt.Errorf("rewrite: save chapter record: %w: %w", errs.ErrStoreWrite, err)
 		}
 		if len(recovered) > 0 {
-			slog.Warn("已从伏笔账本恢复旧版本丢失的种植事实", "module", "commit", "chapter", chapter, "foreshadows", recovered)
+			slog.Warn("đã khôi phục dữ kiện gieo bị mất bản cũ từ sổ chi tiết gieo mầm", "module", "commit", "chapter", chapter, "foreshadows", recovered)
 		}
 		if err := revision.NewProjector(t.store).Apply(records); err != nil {
 			return nil, fmt.Errorf("rewrite: rebuild chapter projections: %w: %w", errs.ErrStoreWrite, err)
@@ -778,7 +778,7 @@ func (t *CommitChapterTool) restoreRewritePlants(chapter int, existing []domain.
 			continue
 		}
 		if strings.TrimSpace(entry.ID) == "" || strings.TrimSpace(entry.Description) == "" {
-			return nil, fmt.Errorf("rewrite: 第 %d 章伏笔账本缺少可恢复的 id 或 description: %w", chapter, errs.ErrToolConflict)
+			return nil, fmt.Errorf("rewrite: sổ chi tiết gieo mầm chương %d thiếu id hoặc description khôi phục được: %w", chapter, errs.ErrToolConflict)
 		}
 		planted[entry.ID] = struct{}{}
 		restored = append(restored, domain.ForeshadowUpdate{
@@ -797,11 +797,11 @@ func (t *CommitChapterTool) refreshStyleStats(chapter int, content string) {
 		var err error
 		content, err = t.store.Drafts.LoadChapterText(chapter)
 		if err != nil {
-			slog.Error("风格统计索引更新失败", "module", "tools", "chapter", chapter, "err", err)
+			slog.Error("cập nhật chỉ mục thống kê văn phong thất bại", "module", "tools", "chapter", chapter, "err", err)
 			return
 		}
 		if content == "" {
-			slog.Error("风格统计索引更新失败", "module", "tools", "chapter", chapter, "err", errors.New("终稿不存在"))
+			slog.Error("cập nhật chỉ mục thống kê văn phong thất bại", "module", "tools", "chapter", chapter, "err", errors.New("bản cuối không tồn tại"))
 			return
 		}
 	}
