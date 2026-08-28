@@ -27,9 +27,9 @@ func NewSaveArcSummaryTool(store *store.Store) *SaveArcSummaryTool {
 
 func (t *SaveArcSummaryTool) Name() string { return "save_arc_summary" }
 func (t *SaveArcSummaryTool) Description() string {
-	return "保存弧级摘要、角色状态快照和写作规则（长篇模式，弧结束时调用）"
+	return "Lưu tóm tắt cấp arc, ảnh chụp trạng thái nhân vật và quy tắc viết (chế độ trường thiên, gọi khi kết thúc arc)"
 }
-func (t *SaveArcSummaryTool) Label() string { return "保存弧摘要" }
+func (t *SaveArcSummaryTool) Label() string { return "lưu tóm tắt arc" }
 
 // 写工具，禁止并发。
 func (t *SaveArcSummaryTool) ReadOnly(_ json.RawMessage) bool        { return false }
@@ -37,14 +37,14 @@ func (t *SaveArcSummaryTool) ConcurrencySafe(_ json.RawMessage) bool { return fa
 
 func (t *SaveArcSummaryTool) Schema() map[string]any {
 	snapshotSchema := schema.Object(
-		schema.Property("name", schema.String("角色名")).Required(),
-		schema.Property("status", schema.String("当前状态（存活/受伤/失踪等）")).Required(),
-		schema.Property("power", schema.String("能力变化")),
-		schema.Property("motivation", schema.String("当前动机")).Required(),
+		schema.Property("name", schema.String("tên nhân vật")).Required(),
+		schema.Property("status", schema.String("trạng thái hiện tại (còn sống/bị thương/mất tích...)")).Required(),
+		schema.Property("power", schema.String("thay đổi năng lực")),
+		schema.Property("motivation", schema.String("động cơ hiện tại")).Required(),
 		schema.Property("relations", schema.String("关键关系变化")),
 	)
 	voiceSchema := schema.Object(
-		schema.Property("name", schema.String("角色名")).Required(),
+		schema.Property("name", schema.String("tên nhân vật")).Required(),
 		schema.Property("rules", schema.Array("2-3 条语言特征规则（每条 ≤30 字）", schema.String(""))).Required(),
 	)
 	styleRulesSchema := schema.Object(
