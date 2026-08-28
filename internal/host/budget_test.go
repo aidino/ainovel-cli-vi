@@ -134,11 +134,11 @@ func TestBudgetSentinelZeroCostBlindWarning(t *testing.T) {
 	r := &budgetRecorder{}
 	s := r.sentinel(bootstrap.BudgetConfig{BookUSD: 10, WarnRatio: 0.8})
 
-	// liên tục 零成本记账：到 blindZeroStreak 笔时恰好一次盲区告警，之后静默
+	// liên tục 零成本记账：到 blindZeroStreak 笔时恰好一次Vùng mù告警，之后静默
 	for range blindZeroStreak + 3 {
 		s.OnCost(0)
 	}
-	if len(r.reports) != 1 || !strings.Contains(r.reports[0], "ngân sách 盲区") {
+	if len(r.reports) != 1 || !strings.Contains(r.reports[0], "Vùng mù ngân sách") {
 		t.Fatalf("expected exactly one blind warning, got %v", r.reports)
 	}
 	if len(r.aborts) != 0 {
@@ -152,7 +152,7 @@ func TestBudgetSentinelZeroCostBlindWarning(t *testing.T) {
 		s2.OnCost(0.1 * float64(i+1))
 	}
 	for _, rep := range r2.reports {
-		if strings.Contains(rep, "盲区") {
+		if strings.Contains(rep, "Vùng mù") {
 			t.Fatalf("priced model should not trigger blind warning: %v", r2.reports)
 		}
 	}
@@ -169,7 +169,7 @@ func TestBudgetSentinelBlindWarningAfterModelSwitch(t *testing.T) {
 	for range blindZeroStreak {
 		s.OnCost(5.0) // 切到无价model ：tổng số 钉死
 	}
-	if len(r.reports) != 1 || !strings.Contains(r.reports[0], "盲区") {
+	if len(r.reports) != 1 || !strings.Contains(r.reports[0], "Vùng mù") {
 		t.Fatalf("expected blind warning after switch to unpriced model, got %v", r.reports)
 	}
 }

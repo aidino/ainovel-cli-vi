@@ -115,10 +115,10 @@ func TestLoad_ThreeTierAppendAndReplace(t *testing.T) {
 	if !strings.HasPrefix(b.Voice, builtinVoice) {
 		t.Fatal("thêm vào 语义phải giữ lại 内置原文为tiền tố ")
 	}
-	giIdx := strings.Index(b.Voice, "## người dùng toàn cục 文风ghi đè")
-	bkIdx := strings.Index(b.Voice, "## 本书文风ghi đè")
+	giIdx := strings.Index(b.Voice, "## Ghi đè văn phong toàn cục người dùng")
+	bkIdx := strings.Index(b.Voice, "## Ghi đè văn phong sách này")
 	if giIdx < 0 || bkIdx < 0 || giIdx > bkIdx {
-		t.Fatalf("thêm vào 段顺序lỗi :global=%d book=%d", giIdx, bkIdx)
+		t.Fatalf("Lỗi thứ tự thêm vào: global=%d book=%d", giIdx, bkIdx)
 	}
 	if !strings.Contains(b.Voice, "toàn cục :少用成语") || !strings.Contains(b.Voice, "本书:多写对话") {
 		t.Fatal("ghi đènội dung thiếu ")

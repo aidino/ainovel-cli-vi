@@ -183,7 +183,7 @@ func TestResolveSegmentationReordersAndDedups(t *testing.T) {
 	if seg.Chapters[2].Title != "第二章 云涌" {
 		t.Fatalf("同字节重复应保留先出现者：%+v", seg.Chapters[2])
 	}
-	if len(seg.Notes) != 1 || !strings.Contains(seg.Notes[0], "重合") {
+	if len(seg.Notes) != 1 || !strings.Contains(seg.Notes[0], "trùng nhau") {
 		t.Fatalf("重复边界应记入 Notes：%v", seg.Notes)
 	}
 }
@@ -207,7 +207,7 @@ func TestResolveSegmentationAbsorbsLeadingText(t *testing.T) {
 	if len(seg.Chapters) != 2 || seg.Chapters[0].Start == 0 {
 		t.Fatalf("章节不应吞掉头部文本：%+v", seg.Chapters)
 	}
-	if len(seg.Notes) != 1 || !strings.Contains(seg.Notes[0], "未被模型归属") {
+	if len(seg.Notes) != 1 || !strings.Contains(seg.Notes[0], "chưa được model phân bổ") {
 		t.Fatalf("应记录人工核对说明：%v", seg.Notes)
 	}
 }
@@ -228,14 +228,14 @@ func TestResolveSegmentationNotesDuplicateTitles(t *testing.T) {
 	if len(seg.Chapters) != 2 {
 		t.Fatalf("应得 2 章，得 %d", len(seg.Chapters))
 	}
-	if len(seg.Notes) != 1 || !strings.Contains(seg.Notes[0], "标题相同") {
+	if len(seg.Notes) != 1 || !strings.Contains(seg.Notes[0], "cùng tiêu đề") {
 		t.Fatalf("应记一条同名核对说明：%v", seg.Notes)
 	}
 }
 
 // TestChunkValidatorOwnedDiscipline 守护调用期校验的覆盖面：owned 区内的非法 kind、
 // 坏 anchor、同位语义冲突、首块起始未归属必须在调用期带反馈重问——放行会随块进缓存，
-// 终局 resolve 才发现时重跑零调用复读同一份坏数据；上下文区边界注定被裁掉，不为其重问；
+// 终局 resolve 才发现时重跑零调用复读同一份坏数据；上下文区边界注定被cắt bỏ，不为其重问；
 // 同位完全相同的重复是机械冗余，放行后由 resolve 静默去重。
 func TestChunkValidatorOwnedDiscipline(t *testing.T) {
 	norm, units := segFixture()
@@ -423,7 +423,7 @@ func TestResolveSegmentationAbsorbsEmptyChapter(t *testing.T) {
 }
 
 // TestSegmentClipsContextBoundaries 守护坐标纪律的 Go 侧执行：模型在上下文区返回的边界
-// 不触发语义重问（弱模型常 3 次耗尽拖垮整块），由代码直接裁掉——该边界归相邻块管辖，
+// 不触发语义重问（弱模型常 3 次耗尽拖垮整块），由代码直接cắt bỏ——该边界归相邻块管辖，
 // 相邻块会在自己的 owned 区间报告它，保留会造成跨块重复/乱序。
 func TestSegmentClipsContextBoundaries(t *testing.T) {
 	norm, units := segFixture()
@@ -444,13 +444,13 @@ func TestSegmentClipsContextBoundaries(t *testing.T) {
 	// 裁剪说明走普通进度回显（例行坐标纪律，非警示——warn 色会让用户误以为出错）。
 	var clipNotes int
 	prof := callProfile{progress: func(_, _ int, s string) {
-		if strings.Contains(s, "裁掉") {
+		if strings.Contains(s, "cắt bỏ") {
 			clipNotes++
 		}
 	}}
 	seg, err := Segment(context.Background(), &mockModel{responses: responses}, "sys", norm, units, "", 40, 2, 4096, prof, nil, "")
 	if err != nil {
-		t.Fatalf("上下文区边界应被裁掉而非失败：%v", err)
+		t.Fatalf("上下文区边界应被cắt bỏ而非失败：%v", err)
 	}
 	if len(seg.Chapters) != len(chunks) {
 		t.Fatalf("应得 %d 章（越界边界不重复计入），得 %d", len(chunks), len(seg.Chapters))
@@ -539,7 +539,7 @@ func TestPlanningBudget(t *testing.T) {
 func TestBuildProjectionContextByteCap(t *testing.T) {
 	_, units := segFixture()
 	if _, ids := buildProjection(units, [2]int{2, 3}, 2, 1, ""); len(ids) != 1 || !ids["L3"] {
-		t.Fatalf("字节上限应裁掉上下文单元，只剩 owned：%v", ids)
+		t.Fatalf("字节上限应cắt bỏ上下文单元，只剩 owned：%v", ids)
 	}
 	if _, ids := buildProjection(units, [2]int{2, 3}, 2, 0, ""); len(ids) != 5 {
 		t.Fatalf("无字节上限时应含前后各 2 个上下文单元（共 5），得 %v", ids)

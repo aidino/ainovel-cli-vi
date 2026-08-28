@@ -164,37 +164,37 @@ func TestContextToolChapterModeIncludesWorkingAndReferenceFields(t *testing.T) {
 	if err := s.Init(); err != nil {
 		t.Fatalf("Init: %v", err)
 	}
-	if err := s.Outline.SavePremise(`## 题材和基调
+	if err := s.Outline.SavePremise(`## Thể loại và tông giọng
 少年成长，偏紧张压迫。
 
-## 题材定位
+## Định vị thể loại
 少年升级流
 
-## 核心冲突
+## Xung đột cốt lõi
 主角必须在宗门竞争中活下来。
 
-## 主角目标
+## Mục tiêu nhân vật chính
 进入内门。
 
-## 终局方向
+## Hướng kết thúc
 成为真正的执棋者。
 
-## 写作禁区
+## Vùng cấm khi viết
 不提前揭露师尊真相。
 
-## 差异化卖点
+## Điểm mạnh khác biệt
 弱者逆袭。
 
-## 差异化钩子
+## Móc khác biệt
 每阶段都要用更高代价换成长。
 
-## 核心兑现承诺
+## Lời hứa cốt lõi
 持续兑现危机与突破。
 
-## 故事引擎
+## Động cơ truyện
 试炼、资源争夺与身份升级共同推进。
 
-## 中段转折
+## Bước ngoặt giữa truyện
 主角被迫转向另一条修行路线。
 `); err != nil {
 		t.Fatalf("SavePremise: %v", err)
@@ -328,46 +328,46 @@ func TestContextToolArchitectModeIncludesPlanningAndFoundation(t *testing.T) {
 	if err := s.Progress.UpdateVolumeArc(1, 1); err != nil {
 		t.Fatalf("UpdateVolumeArc: %v", err)
 	}
-	if err := s.Outline.SavePremise(`## 题材和基调
+	if err := s.Outline.SavePremise(`## Thể loại và tông giọng
 群像冒险，偏冷峻史诗。
 
-## 题材定位
+## Định vị thể loại
 群像长篇冒险
 
-## 核心冲突
+## Xung đột cốt lõi
 众人必须在不断失控的旧秩序中寻找新秩序。
 
-## 主角目标
+## Mục tiêu nhân vật chính
 抵达真相核心。
 
-## 终局方向
+## Hướng kết thúc
 揭开古老真相并重建秩序。
 
-## 写作禁区
+## Vùng cấm khi viết
 不靠天降设定收尾。
 
-## 差异化卖点
+## Điểm mạnh khác biệt
 群像关系推进。
 
-## 差异化钩子
+## Móc khác biệt
 每卷都改变队伍关系结构。
 
-## 核心兑现承诺
+## Lời hứa cốt lõi
 持续提供发现、牺牲与选择。
 
-## 故事引擎
+## Động cơ truyện
 旅途推进、真相调查与队伍关系共同驱动。
 
-## 关系/成长主线
+## Trục chính quan hệ / trưởng thành
 队伍从互不信任走向分裂再重组。
 
-## 升级路径
+## Lộ trình thăng cấp
 从地方事件走向世界级危机。
 
-## 中期转向
+## Bước ngoặt giữa truyện
 真相并非敌人，而是秩序本身有问题。
 
-## 终局命题
+## Luận đề kết truyện
 秩序应由谁定义。
 `); err != nil {
 		t.Fatalf("SavePremise: %v", err)

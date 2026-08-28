@@ -26,7 +26,7 @@ func newFlagTestHost(lc lifecycle, cocreating bool) *Host {
 func TestPauseForCoCreate_NonRunningSetsFlag(t *testing.T) {
 	h := newFlagTestHost(lifecycleIdle, false)
 	if !h.PauseForCoCreate() {
-		t.Fatal("idle 态应cho phép 进入giai đoạn共创")
+		t.Fatal("idle 态应cho phép 进入đồng sáng tác giai đoạn")
 	}
 	if !h.cocreating {
 		t.Error("进入后 cocreating nên là true")
@@ -39,7 +39,7 @@ func TestPauseForCoCreate_NonRunningSetsFlag(t *testing.T) {
 func TestPauseForCoCreate_RejectsCompleted(t *testing.T) {
 	h := newFlagTestHost(lifecycleCompleted, false)
 	if h.PauseForCoCreate() {
-		t.Error("全书完成后不应cho phép 进入giai đoạn共创")
+		t.Error("全书完成后不应cho phép 进入đồng sáng tác giai đoạn")
 	}
 	if h.cocreating {
 		t.Error("từ chối后不应置位 cocreating")
@@ -99,8 +99,8 @@ func TestAcquireExclusive(t *testing.T) {
 		wantErr    string // trống=kỳ vọng放dòng 
 	}{
 		{"running", lifecycleRunning, false, "", "đang chạy "},
-		{"cocreating", lifecyclePaused, true, "", "giai đoạn共创"},
-		{"busy", lifecycleIdle, false, "nhập ", "进dòng 中"},
+		{"cocreating", lifecyclePaused, true, "", "đồng sáng tác giai đoạn"},
+		{"busy", lifecycleIdle, false, "nhập ", "đang diễn ra"},
 		{"idle free", lifecycleIdle, false, "", ""},
 		{"paused free", lifecyclePaused, false, "", ""},
 	}
@@ -139,7 +139,7 @@ func TestAcquireExclusive(t *testing.T) {
 	}
 }
 
-// TestExclusiveBlocksCreationEntries 守护 #2：后台独占作业（nhập /仿写）进dòng 中时，
+// TestExclusiveBlocksCreationEntries 守护 #2：后台独占作业（nhập /仿写）đang diễn ra时，
 // 不仅第二个后台作业被堵，创作ghi 口（Continue/Resume）与新后台作业也phải 被堵，
 // 否则 Continue 会在引擎被门禁拦下前就让 Arbiter 改trạng thái、Resume/next 期间引擎可抢跑。
 func TestExclusiveBlocksCreationEntries(t *testing.T) {
@@ -161,7 +161,7 @@ func TestExclusiveBlocksCreationEntries(t *testing.T) {
 func TestStageCoCreate_OccupancyBlocksConcurrentEntries(t *testing.T) {
 	h := newFlagTestHost(lifecycleIdle, false)
 	if !h.PauseForCoCreate() {
-		t.Fatal("进入giai đoạn共创thất bại")
+		t.Fatal("进入đồng sáng tác giai đoạnthất bại")
 	}
 
 	if _, err := h.ImportFrom(context.Background(), imp.Options{}); err == nil {
@@ -217,7 +217,7 @@ func TestBuildStoryStateSummary_Populated(t *testing.T) {
 	}
 
 	got := buildStoryStateSummary(st)
-	for _, want := range []string{"影之诗", "已完成 3 chương ", "下一chương 为第 4 chương ", "主角登临绝巅", "师门血仇未报", "预计 4-6 tập"} {
+	for _, want := range []string{"影之诗", "đã hoàn thành 3 chương", "chương tiếp theo là chương 4", "主角登临绝巅", "师门血仇未报", "预计 4-6 tập"} {
 		if !strings.Contains(got, want) {
 			t.Errorf("摘要应含 %q，thực tế :\n%s", want, got)
 		}
@@ -250,7 +250,7 @@ func TestBuildStoryStateSummaryUsesDynamicPlanningWording(t *testing.T) {
 	}
 
 	got := buildStoryStateSummary(st)
-	if !strings.Contains(got, "当前已细化 2 chương （后续按arc động quy hoạch ）") {
+	if !strings.Contains(got, "hiện đã chi tiết hóa 2 chương (sau này quy hoạch động theo arc)") {
 		t.Fatalf("động quy hoạch 摘要口径lỗi :\n%s", got)
 	}
 	if strings.Contains(got, "66") || strings.Contains(got, "quy hoạch  2 chương ") {

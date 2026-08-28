@@ -9,16 +9,16 @@ import (
 func TestParsePremiseSections(t *testing.T) {
 	premise := `# Premise
 
-## 题材和基调
+## Thể loại và tông giọng
 东方玄幻，冷硬成长。
 
-## 题材定位
+## Định vị thể loại
 东方玄幻升级流，面向追求爽点和关系推进的读者。
 
-## 核心冲突
+## Xung đột cốt lõi
 主角必须在宗门规则与个人良知之间做选择。
 
-## 中期转向
+## Bước ngoặt giữa truyện
 旧有修炼路线失效，必须转向禁术体系。
 `
 
@@ -38,37 +38,37 @@ func TestParsePremiseSections(t *testing.T) {
 }
 
 func TestPremiseStructure(t *testing.T) {
-	premise := `## 题材和基调
+	premise := `## Thể loại và tông giọng
 升级流，偏冷硬。
 
-## 题材定位
+## Định vị thể loại
 升级流
 
-## 核心冲突
+## Xung đột cốt lõi
 冲突
 
-## 主角目标
+## Mục tiêu nhân vật chính
 目标
 
-## 终局方向
+## Hướng kết thúc
 终局
 
-## 写作禁区
+## Vùng cấm khi viết
 禁区
 
-## 差异化卖点
+## Điểm mạnh khác biệt
 卖点
 
-## 差异化钩子
+## Móc khác biệt
 钩子
 
-## 核心兑现承诺
+## Lời hứa cốt lõi
 兑现
 
-## 故事引擎
+## Động cơ truyện
 引擎
 
-## 中段转折
+## Bước ngoặt giữa truyện
 转折
 `
 
@@ -83,34 +83,34 @@ func TestPremiseStructure(t *testing.T) {
 }
 
 func TestPremiseStructureShortAcceptsLegacyHeadingAlias(t *testing.T) {
-	premise := `## 题材和基调
+	premise := `## Thể loại và tông giọng
 单卷高压营救。
 
-## 题材定位
+## Định vị thể loại
 短篇高密度冒险。
 
-## 核心冲突
+## Xung đột cốt lõi
 主角必须在一夜内救出人质。
 
-## 主角目标
+## Mục tiêu nhân vật chính
 救出人质并活着离开。
 
-## 结局方向
+## Hướng kết thúc
 完成任务但付出代价。
 
-## 写作禁区
+## Vùng cấm khi viết
 不扩展成长期连载。
 
-## 差异化卖点
+## Điểm mạnh khác biệt
 时限压力与连续反转。
 
-## 差异化钩子
+## Móc khác biệt
 每次选择都缩短救援时间。
 
-## 核心兑现承诺
+## Lời hứa cốt lõi
 紧迫感、抉择与反转。
 
-## 本作为什么适合短篇/单卷收束
+## Độ phù hợp dạng ngắn
 核心矛盾和人物弧线都能在单次任务中完成。
 `
 

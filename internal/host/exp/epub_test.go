@@ -17,7 +17,7 @@ func TestRenderEPUB_StructuralInvariants(t *testing.T) {
 		chapterTitleIndex{1: "雨夜归人", 2: "破晓"},
 		nil,
 		map[int]string{
-			1: "# 第 1 章 雨夜归人\n\n他望着窗外。\n\n第二段。",
+			1: "# Chương 1 雨夜归人\n\n他望着窗外。\n\n第二段。",
 			2: "她推开门。",
 		},
 	)
@@ -105,7 +105,7 @@ func TestRenderEPUB_StructuralInvariants(t *testing.T) {
 
 	// 章节 XHTML 含标题 + 段落 + 转义；首行 markdown 标题已剥
 	ch1 := files["OEBPS/chapter001.xhtml"]
-	if !strings.Contains(ch1, "第 1 章 雨夜归人") {
+	if !strings.Contains(ch1, "Chương 1 雨夜归人") {
 		t.Errorf("chapter1 missing display title")
 	}
 	if !strings.Contains(ch1, "<p>他望着窗外。</p>") {
@@ -114,7 +114,7 @@ func TestRenderEPUB_StructuralInvariants(t *testing.T) {
 	if !strings.Contains(ch1, "<p>第二段。</p>") {
 		t.Errorf("chapter1 missing paragraph 2: %s", ch1)
 	}
-	if strings.Contains(ch1, "# 第 1 章") {
+	if strings.Contains(ch1, "# Chương 1") {
 		t.Errorf("chapter1 should have stripped markdown header: %s", ch1)
 	}
 
@@ -188,7 +188,7 @@ func TestRenderEPUB_LayeredVolume(t *testing.T) {
 	}
 
 	ch1 := files["OEBPS/chapter001.xhtml"]
-	if !strings.Contains(ch1, `class="volume-divider"`) || !strings.Contains(ch1, "第 1 卷 起源") {
+	if !strings.Contains(ch1, `class="volume-divider"`) || !strings.Contains(ch1, "Tập 1 起源") {
 		t.Errorf("ch1 should have volume divider: %s", ch1)
 	}
 	if strings.Contains(ch1, `class="arc-divider"`) {

@@ -104,7 +104,7 @@ func TestInterventionDispatchTaskPreservesOriginalAuthority(t *testing.T) {
 	if !strings.Contains(got, original) {
 		t.Fatalf("用户原始干预未被逐字保留: %q", got)
 	}
-	if !strings.Contains(got, "修改授权的唯一来源") {
+	if !strings.Contains(got, "nguồn ủy quyền duy nhất") {
 		t.Fatalf("缺少授权边界说明: %q", got)
 	}
 }
@@ -554,12 +554,12 @@ func TestEngine_DeadlockAbortDropsStuckRewrite(t *testing.T) {
 	}
 	var notified bool
 	for _, ev := range *events {
-		if strings.Contains(ev.Summary, "移出返工队列") {
+		if strings.Contains(ev.Summary, "đưa ra khỏi hàng đợi làm lại") {
 			notified = true
 		}
 	}
 	if !notified {
-		t.Fatalf("跳过返工必须显式告知用户: %+v", *events)
+		t.Fatalf("đưa ra khỏi hàng đợi làm lại必须显式告知用户: %+v", *events)
 	}
 }
 
@@ -671,7 +671,7 @@ func failNTimesGuard() agentcore.StopGuard {
 	}
 }
 
-// TestEngine_RetriesUnfinishedPlanStart 启动裁定失败后的自愈路径:StartPrompt 已落盘、
+// TestEngine_RetriesUnfinishedPlanStart Phán quyết khởi động thất bại后的自愈路径:StartPrompt 已落盘、
 // PlanStart 缺位(启动时模型故障)→ 引擎起动时现场补裁 → 固化 PlanStartRecord → 派发规划师。
 // 规划师不落盘 → 走既有僵局路径停机,证明补裁后引擎回到正常轨道。
 func TestEngine_RetriesUnfinishedPlanStart(t *testing.T) {
@@ -735,7 +735,7 @@ func TestEngine_RetriesUnfinishedPlanStart(t *testing.T) {
 		if ev.Category == "DISPATCH" {
 			dispatched = true
 		}
-		if strings.Contains(ev.Summary, "启动裁定已补齐") {
+		if strings.Contains(ev.Summary, "Phán quyết khởi động đã được bổ sung") {
 			healed = true
 		}
 	}
@@ -777,7 +777,7 @@ func TestEngine_PlanStartRetryFailurePauses(t *testing.T) {
 	}
 	var paused bool
 	for _, ev := range *events {
-		if strings.Contains(ev.Summary, "启动裁定失败") {
+		if strings.Contains(ev.Summary, "Phán quyết khởi động thất bại") {
 			paused = true
 		}
 	}

@@ -89,7 +89,7 @@ func TestLoadStateReportsCorruptArtifact(t *testing.T) {
 	if err := ws.writeAtomic(fileSegmentation, []byte("{")); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := LoadState(ws); err == nil || !strings.Contains(err.Error(), "切分工件") {
+	if _, err := LoadState(ws); err == nil || !strings.Contains(err.Error(), "công kiện cắt") {
 		t.Fatalf("损坏工件不得伪装成尚未切分: %v", err)
 	}
 }
@@ -171,7 +171,7 @@ func TestResumeSummary(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Ingest: %v", err)
 	}
-	if got := ResumeSummary(st); !strings.Contains(got, "尚未完成切分") {
+	if got := ResumeSummary(st); !strings.Contains(got, "Chưa hoàn thành cắt") {
 		t.Fatalf("刚建区应nhắc nhở 未完成切分，得 %q", got)
 	}
 	// 切分+确认就绪、分析 0/1 → nhắc nhở 分析进度。
@@ -184,13 +184,13 @@ func TestResumeSummary(t *testing.T) {
 	if err := writeArtifact(ws, fileConfirmation, Digest(raw), Confirmation{Method: confirmMethodAuto, Chapters: 1}); err != nil {
 		t.Fatal(err)
 	}
-	if got := ResumeSummary(st); !strings.Contains(got, "已分析 0/1 chương ") {
+	if got := ResumeSummary(st); !strings.Contains(got, "Đã phân tích 0/1") {
 		t.Fatalf("应nhắc nhở 分析进度，得 %q", got)
 	}
 }
 
 // TestResumeStatusPublishedIsTerminal 守护发布终态（实测事故）：书已全量发布后，
-// segmentPromptVersion nâng cấp 使工作区切分工件失鲜，ResumeStatus 不得据此把书判回
+// segmentPromptVersion nâng cấp 使工作区công kiện cắt失鲜，ResumeStatus 不得据此把书判回
 // "nhập 半路"——否则 startEngine 跨重启门禁会永久拒启已发布书的续写。
 func TestResumeStatusPublishedIsTerminal(t *testing.T) {
 	dir := t.TempDir()

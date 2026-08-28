@@ -103,7 +103,7 @@ func TestChapterAdvanceGateDoesNotGateRewriteOrRecovery(t *testing.T) {
 	if err := st.Signals.SavePendingCommit(domain.PendingCommit{Chapter: 2, Stage: domain.CommitStageStarted}); err != nil {
 		t.Fatal(err)
 	}
-	allowed, err = gate.Allow(&flow.Instruction{Agent: "writer", Chapter: 2, Task: "恢复第 2 章提交"})
+	allowed, err = gate.Allow(&flow.Instruction{Agent: "writer", Chapter: 2, Task: "恢复chương 2提交"})
 	if err != nil || !allowed {
 		t.Fatalf("提交恢复不得被当成新章: allowed=%v err=%v", allowed, err)
 	}
@@ -215,7 +215,7 @@ func TestChapterAdvanceGateStopsAfterTargetChapterCommit(t *testing.T) {
 	if !gate.HandleBoundary() || recorder.paused != 1 {
 		t.Fatal("目标章节稳定提交后必须暂停")
 	}
-	if len(recorder.reasons) == 0 || !strings.Contains(recorder.reasons[len(recorder.reasons)-1], "第 2 章") {
+	if len(recorder.reasons) == 0 || !strings.Contains(recorder.reasons[len(recorder.reasons)-1], "chương 2") {
 		t.Fatalf("暂停事件缺少目标章节: %v", recorder.reasons)
 	}
 	meta, _ := st.RunMeta.Load()

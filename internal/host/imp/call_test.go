@@ -45,7 +45,7 @@ func TestCallStructuredNotifiesRetries(t *testing.T) {
 		if !retryAt.IsZero() {
 			retries++
 		}
-		if strings.Contains(s, "重问") {
+		if strings.Contains(s, "hỏi lại") {
 			reasks++
 		}
 	}}
@@ -66,15 +66,15 @@ func TestBriefErrIncludesAdapterFacts(t *testing.T) {
 		Provider: "openai", Model: "gpt-x", Message: "Provider returned error",
 	}
 	got := briefErr(fmt.Errorf("外层包装：%w", le))
-	for _, want := range []string{"上游服务lỗi ", "HTTP 502", "openai", "gpt-x", "Provider returned error"} {
+	for _, want := range []string{"Lỗi dịch vụ thượng nguồn", "HTTP 502", "openai", "gpt-x", "Provider returned error"} {
 		if !strings.Contains(got, want) {
 			t.Fatalf("回显nên chứa %q，得 %q", want, got)
 		}
 	}
-	if !strings.HasPrefix(got, "上游服务lỗi ") {
+	if !strings.HasPrefix(got, "Lỗi dịch vụ thượng nguồn") {
 		t.Fatalf("结构化事实应在前，得 %q", got)
 	}
-	if got := briefErr(errors.New("普通lỗi ")); got != "普通lỗi " {
+	if got := briefErr(errors.New("普通lỗi")); got != "普通lỗi" {
 		t.Fatalf("非适配器lỗi 应保持原样，得 %q", got)
 	}
 }
@@ -104,7 +104,7 @@ func TestCallStructuredCarriesRawOnSemanticFailure(t *testing.T) {
 	if !errors.As(err, &se) {
 		t.Fatalf("nên trả về errSemantic，得 %T：%v", err, err)
 	}
-	if se.Raw != "垃圾输出 not json" || !strings.Contains(se.Error(), "契约违约") {
+	if se.Raw != "垃圾输出 not json" || !strings.Contains(se.Error(), "vi phạm hợp đồng") {
 		t.Fatalf("Raw 应携带最后一次原始响应，得 %q", se.Raw)
 	}
 }

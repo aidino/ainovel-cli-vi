@@ -221,13 +221,13 @@ func inProgressDisplay(snap host.UISnapshot) (label string, chapter int) {
 
 func snapshotHeadline(snap host.UISnapshot) string {
 	if snap.PendingSteer != "" {
-		if snap.StateLabel == "wait_resuming" {
+		if snap.StatusLabel == "wait_resuming" {
 			return "Chờ khôi phục: Xử lý can thiệp người dùng"
 		}
-		return "Trạng thái khôi phục bất thường: " + snap.StateLabel
+		return "Trạng thái khôi phục bất thường: " + snap.StatusLabel
 	}
 	if len(snap.PendingRewrites) > 0 {
-		if snap.StateLabel == "wait_resuming" {
+		if snap.StatusLabel == "wait_resuming" {
 			return "Chờ khôi phục: Xử lý làm lại"
 		}
 		return "Đang đợi xử lý làm lại"
@@ -442,10 +442,6 @@ func renderCacheSidebar(snap host.UISnapshot, width int) string {
 		b.WriteString(renderField("Đứt gãy chuỗi", v))
 	}
 
-		v := lipgloss.NewStyle().Foreground(colorReview).Render(fmt.Sprintf("%d times", snap.TotalCacheBreaks))
-		b.WriteString(renderField("Cache Breaks", v))
-	}
-
 	var roles []host.AgentCacheStat
 	for _, a := range snap.CachePerAgent {
 		if a.Role != "arbiter" {
@@ -508,7 +504,7 @@ func renderCacheAgentLine(a host.AgentCacheStat, width int) string {
 	tokens := lipgloss.NewStyle().Foreground(colorDim).Render(
 		" · " + formatTokensCompact(a.CacheRead) + " / " + formatTokensCompact(a.Input))
 	_ = width
-	return role + pctCell + tokens
+	return roleCell + pctCell + tokens
 }
 
 // cacheHitRate Tính phần trăm trực tiếp vì input đã bao gồm cacheRead.

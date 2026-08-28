@@ -1,0 +1,320 @@
+=== RUN   TestBuildWriterPrompt_ByteIdenticalToPreSplit
+--- PASS: TestBuildWriterPrompt_ByteIdenticalToPreSplit (0.00s)
+=== RUN   TestLoad_NoOverrides
+--- PASS: TestLoad_NoOverrides (0.00s)
+=== RUN   TestInterventionPromptsKeepScopeContract
+--- PASS: TestInterventionPromptsKeepScopeContract (0.00s)
+=== RUN   TestStructuredArbiterPromptsContainOnlySemantics
+--- PASS: TestStructuredArbiterPromptsContainOnlySemantics (0.00s)
+=== RUN   TestLoad_ThreeTierAppendAndReplace
+2026/08/28 15:25:54 WARN Bỏ qua tên file phong cách không hợp lệ module=assets dir=/tmp/TestLoad_ThreeTierAppendAndReplace1444529718/002 file="Bad Name!.md"
+    load_test.go:121: thêm vào 段顺序lỗi :global=-1 book=-1
+--- FAIL: TestLoad_ThreeTierAppendAndReplace (0.00s)
+=== RUN   TestLoad_BookOverridesHomeOnStyles
+--- PASS: TestLoad_BookOverridesHomeOnStyles (0.00s)
+=== RUN   TestOverrideVoice_SharesAssemblyPath
+--- PASS: TestOverrideVoice_SharesAssemblyPath (0.00s)
+FAIL
+FAIL	github.com/voocel/ainovel-cli/assets	0.007s
+=== RUN   TestDecidePlanStartDoesNotSendThinkingToChatModel
+--- PASS: TestDecidePlanStartDoesNotSendThinkingToChatModel (0.00s)
+=== RUN   TestDecidePromptContractAppendsSchema
+--- PASS: TestDecidePromptContractAppendsSchema (0.00s)
+=== RUN   TestDecidePlanStart_ValidAndFeedbackRetry
+2026/08/28 15:25:54 WARN tự sửa đầu ra phán quyết module=arbiter attempt=1 layer=schema structured_mode=prompt_contract err="$.planner phải là một trong [architect_long architect_short], thực tế là writer"
+--- PASS: TestDecidePlanStart_ValidAndFeedbackRetry (0.00s)
+=== RUN   TestDecide_InvalidOutputContinuesUntilContextCanceled
+2026/08/28 15:25:54 WARN tự sửa đầu ra phán quyết module=arbiter attempt=1 layer=decode structured_mode=prompt_contract err="không tìm thấy đối tượng JSON trong đầu ra"
+2026/08/28 15:25:54 WARN tự sửa đầu ra phán quyết module=arbiter attempt=2 layer=decode structured_mode=prompt_contract err="không tìm thấy đối tượng JSON trong đầu ra"
+2026/08/28 15:25:54 WARN tự sửa đầu ra phán quyết module=arbiter attempt=3 layer=decode structured_mode=prompt_contract err="không tìm thấy đối tượng JSON trong đầu ra"
+2026/08/28 15:25:54 WARN tự sửa đầu ra phán quyết module=arbiter attempt=4 layer=decode structured_mode=prompt_contract err="không tìm thấy đối tượng JSON trong đầu ra"
+--- PASS: TestDecide_InvalidOutputContinuesUntilContextCanceled (0.00s)
+=== RUN   TestDecide_RetryableModelErrorReportsSharedProgress
+--- PASS: TestDecide_RetryableModelErrorReportsSharedProgress (0.01s)
+=== RUN   TestDecide_NonRetryableModelErrorFailsImmediately
+--- PASS: TestDecide_NonRetryableModelErrorFailsImmediately (0.00s)
+=== RUN   TestInterventionDecision_ValidateAgainst
+=== RUN   TestInterventionDecision_ValidateAgainst/空决策
+=== RUN   TestInterventionDecision_ValidateAgainst/缺_reason
+=== RUN   TestInterventionDecision_ValidateAgainst/查询类
+=== RUN   TestInterventionDecision_ValidateAgainst/返工组合
+=== RUN   TestInterventionDecision_ValidateAgainst/非法派单目标
+=== RUN   TestInterventionDecision_ValidateAgainst/写作期_reopen
+=== RUN   TestInterventionDecision_ValidateAgainst/完本期_reopen
+=== RUN   TestInterventionDecision_ValidateAgainst/完本期_reopen_越界
+=== RUN   TestInterventionDecision_ValidateAgainst/完本期直接派单
+=== RUN   TestInterventionDecision_ValidateAgainst/规划期禁止_writer
+=== RUN   TestInterventionDecision_ValidateAgainst/规划期允许_architect
+=== RUN   TestInterventionDecision_ValidateAgainst/一次性暂停缺条件
+=== RUN   TestInterventionDecision_ValidateAgainst/一次性暂停缺摘要
+=== RUN   TestInterventionDecision_ValidateAgainst/目标章节暂停
+=== RUN   TestInterventionDecision_ValidateAgainst/目标章节未填写
+=== RUN   TestInterventionDecision_ValidateAgainst/目标章节已经完成
+=== RUN   TestInterventionDecision_ValidateAgainst/非目标暂停携带章节
+=== RUN   TestInterventionDecision_ValidateAgainst/取消一次性暂停
+=== RUN   TestInterventionDecision_ValidateAgainst/完本期设置一次性暂停
+--- PASS: TestInterventionDecision_ValidateAgainst (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/空决策 (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/缺_reason (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/查询类 (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/返工组合 (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/非法派单目标 (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/写作期_reopen (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/完本期_reopen (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/完本期_reopen_越界 (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/完本期直接派单 (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/规划期禁止_writer (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/规划期允许_architect (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/一次性暂停缺条件 (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/一次性暂停缺摘要 (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/目标章节暂停 (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/目标章节未填写 (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/目标章节已经完成 (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/非目标暂停携带章节 (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/取消一次性暂停 (0.00s)
+    --- PASS: TestInterventionDecision_ValidateAgainst/完本期设置一次性暂停 (0.00s)
+=== RUN   TestDecideInterventionAcceptsTargetChapterHold
+--- PASS: TestDecideInterventionAcceptsTargetChapterHold (0.00s)
+=== RUN   TestFailureDecision_Validate
+--- PASS: TestFailureDecision_Validate (0.00s)
+=== RUN   TestCollectInterventionFacts
+--- PASS: TestCollectInterventionFacts (0.01s)
+=== RUN   TestCollectInterventionFactsDoesNotExposeLayeredEstimateAsTotal
+--- PASS: TestCollectInterventionFactsDoesNotExposeLayeredEstimateAsTotal (0.00s)
+=== RUN   TestExtractJSON
+--- PASS: TestExtractJSON (0.00s)
+=== RUN   TestContractSchemasAreStrictReady
+--- PASS: TestContractSchemasAreStrictReady (0.00s)
+=== RUN   TestDecideNativeSendsSchemaAndDecodesFullOutput
+--- PASS: TestDecideNativeSendsSchemaAndDecodesFullOutput (0.00s)
+=== RUN   TestDecideNativeFencedOutputIsContractViolation
+    arbiter_test.go:477: 期望契约违约错误, got arbiter: arbiter_plan_start: schema gốc vi phạm hợp đồng: phân tích JSON thất bại: invalid character '`' looking for beginning of value
+--- FAIL: TestDecideNativeFencedOutputIsContractViolation (0.00s)
+=== RUN   TestDecideNativeValidateFailureFeedbackKeepsSchema
+2026/08/28 15:25:54 WARN tự sửa đầu ra phán quyết module=arbiter attempt=1 layer=semantic structured_mode=native_json_schema err="reroute bắt buộc kèm dispatch"
+--- PASS: TestDecideNativeValidateFailureFeedbackKeepsSchema (0.00s)
+=== RUN   TestDecideNativeStopReasonClassification
+=== RUN   TestDecideNativeStopReasonClassification/length_截断
+    arbiter_test.go:519: 期望 "截断" 错误, got arbiter: arbiter_plan_start: đầu ra của model bị cắt do vượt quá độ dài (stop_reason=length)
+=== RUN   TestDecideNativeStopReasonClassification/safety_拒答
+    arbiter_test.go:519: 期望 "拒答" 错误, got arbiter: arbiter_plan_start: model từ chối trả lời hoặc kích hoạt bộ lọc nội dung (stop_reason=safety)
+=== RUN   TestDecideNativeStopReasonClassification/空响应
+    arbiter_test.go:519: 期望 "空内容" 错误, got arbiter: arbiter_plan_start: schema gốc trả về nội dung rỗng
+--- FAIL: TestDecideNativeStopReasonClassification (0.00s)
+    --- FAIL: TestDecideNativeStopReasonClassification/length_截断 (0.00s)
+    --- FAIL: TestDecideNativeStopReasonClassification/safety_拒答 (0.00s)
+    --- FAIL: TestDecideNativeStopReasonClassification/空响应 (0.00s)
+=== RUN   TestMarshalPayloadErrors
+--- PASS: TestMarshalPayloadErrors (0.00s)
+FAIL
+FAIL	github.com/voocel/ainovel-cli/internal/arbiter	0.027s
+=== RUN   TestConfigResolveReasoningEffort
+--- PASS: TestConfigResolveReasoningEffort (0.00s)
+=== RUN   TestValidateBaseRejectsNonConfigurableRoles
+=== RUN   TestValidateBaseRejectsNonConfigurableRoles/coordinator
+=== RUN   TestValidateBaseRejectsNonConfigurableRoles/arbiter
+--- PASS: TestValidateBaseRejectsNonConfigurableRoles (0.00s)
+    --- PASS: TestValidateBaseRejectsNonConfigurableRoles/coordinator (0.00s)
+    --- PASS: TestValidateBaseRejectsNonConfigurableRoles/arbiter (0.00s)
+=== RUN   TestValidateBaseNotifyEventsMatchRuntimeContract
+--- PASS: TestValidateBaseNotifyEventsMatchRuntimeContract (0.00s)
+=== RUN   TestProviderStreamIdleTimeoutValue
+--- PASS: TestProviderStreamIdleTimeoutValue (0.00s)
+=== RUN   TestValidateBaseRejectsBadStreamIdleTimeout
+--- PASS: TestValidateBaseRejectsBadStreamIdleTimeout (0.00s)
+=== RUN   TestLoadConfig_CorruptProjectFailsLoud
+--- PASS: TestLoadConfig_CorruptProjectFailsLoud (0.00s)
+=== RUN   TestLoadConfig_CorruptGlobalDoesNotBlockProjectOverride
+2026/08/28 15:25:54 WARN phân tích cấu hình toàn cục thất bại, đã bỏ qua (có thể bị cấp dự án ghi đè) module=config path=/tmp/TestLoadConfig_CorruptGlobalDoesNotBlockProjectOverride2327890424/001/.ainovel/config.json err="parse /tmp/TestLoadConfig_CorruptGlobalDoesNotBlockProjectOverride2327890424/001/.ainovel/config.json: invalid character 'n' looking for beginning of object key string"
+--- PASS: TestLoadConfig_CorruptGlobalDoesNotBlockProjectOverride (0.00s)
+=== RUN   TestEffectiveConfigPathPrefersProject
+--- PASS: TestEffectiveConfigPathPrefersProject (0.00s)
+=== RUN   TestLoadConfig_MissingFilesNoError
+--- PASS: TestLoadConfig_MissingFilesNoError (0.00s)
+=== RUN   TestLoadConfig_ValidMergeWorks
+--- PASS: TestLoadConfig_ValidMergeWorks (0.00s)
+=== RUN   TestMergeConfig_ProviderExtraFields
+--- PASS: TestMergeConfig_ProviderExtraFields (0.00s)
+=== RUN   TestValidateBase_ProviderOverrideWithoutCredentials
+--- PASS: TestValidateBase_ProviderOverrideWithoutCredentials (0.00s)
+=== RUN   TestValidateBaseRejectsInvalidProviderAPI
+--- PASS: TestValidateBaseRejectsInvalidProviderAPI (0.00s)
+=== RUN   TestValidateBaseRejectsProviderAPIOnNonOpenAIProvider
+--- PASS: TestValidateBaseRejectsProviderAPIOnNonOpenAIProvider (0.00s)
+=== RUN   TestExampleConfigIsValidAndSelfConsistent
+    configfile_test.go:280: 根thư mục config.example.jsonc 与 internal/bootstrap/config.example.jsonc không nhất quán
+--- FAIL: TestExampleConfigIsValidAndSelfConsistent (0.00s)
+=== RUN   TestWriteStartupError
+--- PASS: TestWriteStartupError (0.00s)
+=== RUN   TestModelConfigAcceptsLegacyAndObjectEntries
+--- PASS: TestModelConfigAcceptsLegacyAndObjectEntries (0.00s)
+=== RUN   TestModelConfigJSONSchemaTriState
+--- PASS: TestModelConfigJSONSchemaTriState (0.00s)
+=== RUN   TestSwappableModelJSONSchemaOverrideFollowsSwap
+--- PASS: TestSwappableModelJSONSchemaOverrideFollowsSwap (0.00s)
+=== RUN   TestResolveContextWindowIsProviderAware
+--- PASS: TestResolveContextWindowIsProviderAware (0.00s)
+=== RUN   TestSaveProviderConfigPreservesSelectionAndUsesPrivateMode
+--- PASS: TestSaveProviderConfigPreservesSelectionAndUsesPrivateMode (0.00s)
+FAIL
+FAIL	github.com/voocel/ainovel-cli/internal/bootstrap	0.007s
+=== RUN   TestBootstrapExistingBookFailureStaysInWorkbench
+    bootstrap_test.go:21: bảng làm việc 应展示原始lỗi ，得 di chuyển thất bại
+--- FAIL: TestBootstrapExistingBookFailureStaysInWorkbench (0.00s)
+=== RUN   TestBootstrapCompletedBookLandsOnDoneWorkbench
+--- PASS: TestBootstrapCompletedBookLandsOnDoneWorkbench (0.00s)
+=== RUN   TestSelectingProviderOpensHub
+--- PASS: TestSelectingProviderOpensHub (0.00s)
+=== RUN   TestCustomProviderHubShowsProtocolAndEndpoint
+--- PASS: TestCustomProviderHubShowsProtocolAndEndpoint (0.00s)
+=== RUN   TestEscapeBackHierarchy
+--- PASS: TestEscapeBackHierarchy (0.00s)
+=== RUN   TestModelListAddsAndEditsInPlace
+--- PASS: TestModelListAddsAndEditsInPlace (0.00s)
+=== RUN   TestModelListEditsSelectedCellAndCancels
+--- PASS: TestModelListEditsSelectedCellAndCancels (0.00s)
+=== RUN   TestModelRenameProducesExplicitDraftAndReferenceNotice
+    command_config_test.go:140: 引用模型改名应明确提示保存行为，message="Khi lưu sẽ cập nhật tham chiếu đồng bộ:default、writer fallback[0]"
+--- FAIL: TestModelRenameProducesExplicitDraftAndReferenceNotice (0.00s)
+=== RUN   TestModelListRendersEditableColumnsAndReferences
+    command_config_test.go:154: 单页模型表缺少 "模型 ID":
+        ┌─ /config Cấu hình mô hình ───────────────────────────────────────────┐
+        │ Quản lý danh sách mô hình                                            │
+        │   ID mô hình                      Cửa sổ ngữ cản  Tham chiếu         │
+        │ › deepseek-chat                   128K            default            │
+        │   + Thêm mô hình...                                                  │
+        └↑↓ Dòng · ←→ Trường · Enter Sửa · Delete Xóa · Esc Quay lại───────────┘
+--- FAIL: TestModelListRendersEditableColumnsAndReferences (0.00s)
+=== RUN   TestModelNameInlineEditorKeepsModalRowsIntact
+--- PASS: TestModelNameInlineEditorKeepsModalRowsIntact (0.00s)
+=== RUN   TestRenamedReferencedModelStillCannotBeDeleted
+    command_config_test.go:189: 重命名尚未保存时仍应按原身份保护删除，models=[]bootstrap.ModelConfig{bootstrap.ModelConfig{Name:"renamed", ContextWindow:0, JSONSchema:(*bool)(nil)}} message="Mô hình đang được sử dụng, vui lòng chuyển đổi bằng /model trước khi xóa"
+--- FAIL: TestRenamedReferencedModelStillCannotBeDeleted (0.00s)
+=== RUN   TestCancellingNewModelNameRemovesTemporaryRow
+--- PASS: TestCancellingNewModelNameRemovesTemporaryRow (0.00s)
+=== RUN   TestParseContextWindowInput
+--- PASS: TestParseContextWindowInput (0.00s)
+=== RUN   TestModelConfigModalDoesNotRenderAPIKey
+--- PASS: TestModelConfigModalDoesNotRenderAPIKey (0.00s)
+=== RUN   TestProviderHubEditsAPIKeyInlineAndTrims
+--- PASS: TestProviderHubEditsAPIKeyInlineAndTrims (0.00s)
+=== RUN   TestProviderHubEditsBaseURLInlineAndKeepsLongTailVisible
+--- PASS: TestProviderHubEditsBaseURLInlineAndKeepsLongTailVisible (0.00s)
+=== RUN   TestSaveConfigHighlightsOnlyWhenDirty
+    command_config_test.go:318: 有变更时保存项应使用成功色，lines=["\x1b[1;38;2;229;179;73m› \x1b[0m\x1b[1;38;2;229;179;73mGiao thức\x1b[0m \x1b[38;2;138;129;117mopenai\x1b[0m" "  Endpoint  \x1b[38;2;138;129;117mchat\x1b[0m" "  API Key   \x1b[38;2;138;129;117m******\x1b[0m" "  Base URL  \x1b[38;2;138;129;117mhttps://old.example/v1\x1b[0m" "  Mô hình   \x1b[38;2;138;129;117m1 cái\x1b[0m" "  Kiểm tra kết nối \x1b[38;2;138;129;117mm1\x1b[0m" "  \x1b[38;2;126;195;136mLưu cấu hình\x1b[0m"]
+--- FAIL: TestSaveConfigHighlightsOnlyWhenDirty (0.00s)
+=== RUN   TestStyledBaseURLLineKeepsANSIAndFillsModalWidth
+--- PASS: TestStyledBaseURLLineKeepsANSIAndFillsModalWidth (0.00s)
+=== RUN   TestProviderHubDeleteClearsOnlyOptionalAPIKey
+    command_config_test.go:353: 可选 Key 的 Delete 应标记清除，action="clear" status="Đã xóa"
+--- FAIL: TestProviderHubDeleteClearsOnlyOptionalAPIKey (0.00s)
+=== RUN   TestConfigTextInputSupportsCursorEditing
+--- PASS: TestConfigTextInputSupportsCursorEditing (0.00s)
+=== RUN   TestProviderHubShowsConfigPathAndConnectionAction
+    command_config_test.go:391: 配置 Hub 缺少 "高级配置":
+        ┌─ /config Cấu hình mô hình ───────────────────────────────────────────┐
+        │ proxy(Thêm mới)                                                      │
+        │ › API Key   Chưa thiết lập                                           │
+        │   Base URL  Địa chỉ mặc định                                         │
+        │   Mô hình   2 cái                                                    │
+        │   Kiểm tra kết nối m2                                                │
+        │   Lưu cấu hình                                                       │
+        │                                                                      │
+        │ Cấu hình nâng cao (extra / extra_body / stream_idle_timeout):C:\work │
+        │   \.ainovel\config.json                                              │
+        └↑↓ Chọn · Enter Sửa/Vào · Esc Quay lại · Delete Xóa───────────────────┘
+--- FAIL: TestProviderHubShowsConfigPathAndConnectionAction (0.00s)
+=== RUN   TestModelConfigMessageWrapKeepsErrorTail
+--- PASS: TestModelConfigMessageWrapKeepsErrorTail (0.00s)
+=== RUN   TestConnectionActionStartsAsyncTestWithoutLeavingHub
+--- PASS: TestConnectionActionStartsAsyncTestWithoutLeavingHub (0.00s)
+=== RUN   TestConnectionTestCanBeCancelled
+    command_config_test.go:428: Esc 应取消在途测试并等待结果，cancelled=true testing=true message="Đang hủy kiểm tra kết nối..."
+--- FAIL: TestConnectionTestCanBeCancelled (0.00s)
+=== RUN   TestConfigCommandIsRegistered
+--- PASS: TestConfigCommandIsRegistered (0.00s)
+=== RUN   TestModelSwitchLabelIncludesContextWindow
+--- PASS: TestModelSwitchLabelIncludesContextWindow (0.00s)
+=== RUN   TestModelConfigModalIsCompactOverlay
+--- PASS: TestModelConfigModalIsCompactOverlay (0.00s)
+=== RUN   TestProviderMenuIsTwoLevel
+--- PASS: TestProviderMenuIsTwoLevel (0.00s)
+=== RUN   TestCommandInputHighlightsOnlyRegisteredCommands
+--- PASS: TestCommandInputHighlightsOnlyRegisteredCommands (0.00s)
+=== RUN   TestCommandInputDoesNotHighlightArguments
+--- PASS: TestCommandInputDoesNotHighlightArguments (0.00s)
+=== RUN   TestModelSwitchKeepsUnrepresentableThinkingIntent
+--- PASS: TestModelSwitchKeepsUnrepresentableThinkingIntent (0.00s)
+=== RUN   TestModelSwitchAppliesExplicitThinkingChange
+--- PASS: TestModelSwitchAppliesExplicitThinkingChange (0.00s)
+=== RUN   TestAdvanceCommandsAreRegistered
+--- PASS: TestAdvanceCommandsAreRegistered (0.00s)
+=== RUN   TestReviewWaitingPlaceholder
+    commands_advance_test.go:37: review placeholder should expose both choices, got "Đang chờ nghiệm thu từng chương: nhập ý kiến sửa đổi, hoặc /next cho qua chương tiếp"
+--- FAIL: TestReviewWaitingPlaceholder (0.00s)
+=== RUN   TestRevisionCommandIsRegisteredAndNeedsIdle
+--- PASS: TestRevisionCommandIsRegisteredAndNeedsIdle (0.00s)
+=== RUN   TestSimulationCommandsAreRegisteredAndNeedIdle
+--- PASS: TestSimulationCommandsAreRegisteredAndNeedIdle (0.00s)
+=== RUN   TestSimulationCommandsAreBlockedWhileRunning
+2026/08/28 15:25:54 ERROR Lệnh chỉ có thể được thực thi ở trạng thái rảnh rỗi: /simulate module=event category=ERROR
+--- PASS: TestSimulationCommandsAreBlockedWhileRunning (0.00s)
+=== RUN   TestImportHistoryCoalescesRetryLines
+--- PASS: TestImportHistoryCoalescesRetryLines (0.00s)
+=== RUN   TestRenderImportLineWrapsWithoutClipping
+--- PASS: TestRenderImportLineWrapsWithoutClipping (0.00s)
+=== RUN   TestRenderImportLineMultilineBlock
+--- PASS: TestRenderImportLineMultilineBlock (0.00s)
+=== RUN   TestWrapTextResetsAtNewlines
+--- PASS: TestWrapTextResetsAtNewlines (0.00s)
+=== RUN   TestImportEscResumeGate
+--- PASS: TestImportEscResumeGate (1.06s)
+=== RUN   TestRetryCountdown
+    import_test.go:177: 7.5s 应上取整为 8s，得 "Thử lại sau 8s"
+--- FAIL: TestRetryCountdown (0.00s)
+=== RUN   TestParseImportArgsGuide
+    import_test.go:199: 与其它选项组合phân tích không khớp ：{SourcePath:book.txt AutoConfirm:true StoryResolution: ContinueAfter:false Guidance:序chương 并入第一chương AcceptSegmentation:false}
+--- FAIL: TestParseImportArgsGuide (0.00s)
+=== RUN   TestRenderTopBarShowsVersion
+--- PASS: TestRenderTopBarShowsVersion (0.00s)
+=== RUN   TestRenderDetailContentShowsSynopsis
+    panels_test.go:27: detail panel missing synopsis: ":: Tóm tắt\n少年在永夜中寻找黎明。\n\n\n"
+--- FAIL: TestRenderDetailContentShowsSynopsis (0.00s)
+=== RUN   TestSameDetailSnapshotDetectsOutlineStateChanges
+--- PASS: TestSameDetailSnapshotDetectsOutlineStateChanges (0.00s)
+=== RUN   TestRenderErrorEventKeepsOneLineSummary
+--- PASS: TestRenderErrorEventKeepsOneLineSummary (0.00s)
+=== RUN   TestRenderStatusBar
+    panels_test.go:73: trạng thái栏缺少 "省$0.12"："◆ openrouter test-model(200K,med) │ ↑1.2M ↓89.3k │ $0.31/$5.00 Tiết kiệm $0.12                                  ./output"
+--- FAIL: TestRenderStatusBar (0.00s)
+=== RUN   TestRenderStatusBarAutoThinkingAndEmpty
+--- PASS: TestRenderStatusBarAutoThinkingAndEmpty (0.00s)
+=== RUN   TestRenderUsageLineSeparatesFullWidthNameAndTokens
+--- PASS: TestRenderUsageLineSeparatesFullWidthNameAndTokens (0.00s)
+=== RUN   TestTruncateByDisplayWidth
+--- PASS: TestTruncateByDisplayWidth (0.00s)
+=== RUN   TestRenderDetailContentWrapsCJK
+--- PASS: TestRenderDetailContentWrapsCJK (0.00s)
+=== RUN   TestStartCommandLoadsPromptFile
+2026/08/28 15:25:56 INFO 世界thiết lập   第一tậpđại cương module=event category=USER summary="Yêu cầu sáng tác: 世界thiết lập   第一tậpđại cương"
+2026/08/28 15:25:56 INFO Đang khởi tạo sáng tác module=event category=SYSTEM
+--- PASS: TestStartCommandLoadsPromptFile (0.00s)
+=== RUN   TestEnterStartingSwitchesToWorkbenchImmediately
+2026/08/28 15:25:56 INFO 写一本东方玄幻长篇 module=event category=USER summary="Yêu cầu sáng tác: 写一本东方玄幻长篇"
+2026/08/28 15:25:56 INFO Đang khởi tạo sáng tác module=event category=SYSTEM
+    startup_test.go:60: placeholder = "Đang khởi tạo sáng tác..."
+--- FAIL: TestEnterStartingSwitchesToWorkbenchImmediately (0.00s)
+=== RUN   TestStartupFailureStaysInWorkbench
+2026/08/28 15:25:56 INFO 写一本东方玄幻长篇 module=event category=USER summary="Yêu cầu sáng tác: 写一本东方玄幻长篇"
+2026/08/28 15:25:56 INFO Đang khởi tạo sáng tác module=event category=SYSTEM
+2026/08/28 15:25:56 ERROR model 账户chưa kích hoạt module=event category=ERROR
+    startup_test.go:91: placeholder = "Khởi động thất bại, vui lòng kiểm tra cấu hình model hoặc dùng /model để chuyển đổi model"
+--- FAIL: TestStartupFailureStaysInWorkbench (0.00s)
+=== RUN   TestApplyStartupPromptEventTruncatesSummaryButKeepsDetail
+2026/08/28 15:25:56 INFO 设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设 module=event category=USER summary="Yêu cầu sáng tác: 设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设..."
+--- PASS: TestApplyStartupPromptEventTruncatesSummaryButKeepsDetail (0.00s)
+=== RUN   TestStreamFlushTimerRunsOnlyForPendingData
+--- PASS: TestStreamFlushTimerRunsOnlyForPendingData (0.00s)
+FAIL
+FAIL	github.com/voocel/ainovel-cli/internal/entry/tui	1.074s
+FAIL

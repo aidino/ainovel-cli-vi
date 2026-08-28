@@ -1,0 +1,34 @@
+--- FAIL: TestLint_CleanText (0.00s)
+    lint_test.go:10: clean text should pass: [{Rule:non_cjk_fragments Target:ch, ng Limit:<nil> Actual:2 Severity:warning}]
+--- FAIL: TestLint_NonCJKFragments (0.00s)
+    lint_test.go:41: total count: got 5 want 3
+    lint_test.go:44: examples should be distinct: "ch, ng, pattern"
+--- FAIL: TestBuildSnapshot_DegradedPropagates (0.00s)
+    snapshot_test.go:85: giảm cấp nguồn 应作为 raw preferences giữ lại 
+FAIL
+FAIL	github.com/voocel/ainovel-cli/internal/rules	0.011s
+2026/08/28 15:25:50 WARN đã sửa đuôi chưa commit của kiểm toán phán quyết module=store file=meta/decisions.jsonl discarded_bytes=34
+2026/08/28 15:25:50 WARN đã sửa đuôi chưa commit của kiểm toán phán quyết module=store file=meta/decisions.jsonl discarded_bytes=91
+--- FAIL: TestSessionStore_MetaInjected_AssistantWithUsage (0.00s)
+    session_test.go:38: open /tmp/TestSessionStore_MetaInjected_AssistantWithUsage3970829097/001/meta/sessions/agents/writer-ch01.jsonl: open /tmp/TestSessionStore_MetaInjected_AssistantWithUsage3970829097/001/meta/sessions/agents/writer-ch01.jsonl: no such file or directory
+--- FAIL: TestSessionStore_MetaModelSwitch (0.00s)
+    session_test.go:73: open /tmp/TestSessionStore_MetaModelSwitch750729155/001/meta/sessions/agents/writer-ch01.jsonl: open /tmp/TestSessionStore_MetaModelSwitch750729155/001/meta/sessions/agents/writer-ch01.jsonl: no such file or directory
+2026/08/28 15:25:50 INFO dữ kiện tăng trưởng đã di trú sang append log module=store from=timeline.json to=timeline.jsonl records=2
+2026/08/28 15:25:50 WARN đã sửa đuôi chưa commit của append log module=store file=timeline.jsonl discarded_bytes=31
+2026/08/28 15:25:50 INFO dữ kiện tăng trưởng đã di trú sang append log module=store from=meta/state_changes.json to=meta/state_changes.jsonl records=2
+FAIL
+FAIL	github.com/voocel/ainovel-cli/internal/store	0.353s
+2026/08/28 15:25:50 WARN tự sửa đầu ra chuẩn hóa quy tắc module=rules source=startup_prompt attempt=1 layer=decode structured_mode=prompt_contract err="không tìm thấy đối tượng JSON trong đầu ra"
+--- FAIL: TestNormalize_FeedbackRetryRecovers (0.00s)
+    normalize_test.go:194: 次轮应并入上一轮坏输出与纠正提示，sawBad=true sawHint=false
+2026/08/28 15:25:50 WARN tự sửa đầu ra chuẩn hóa quy tắc module=rules source=startup_prompt attempt=1 layer=decode structured_mode=prompt_contract err="không tìm thấy đối tượng JSON trong đầu ra"
+2026/08/28 15:25:50 WARN tự sửa đầu ra chuẩn hóa quy tắc module=rules source=startup_prompt attempt=2 layer=decode structured_mode=prompt_contract err="không tìm thấy đối tượng JSON trong đầu ra"
+2026/08/28 15:25:50 WARN tự sửa đầu ra chuẩn hóa quy tắc module=rules source=startup_prompt attempt=3 layer=decode structured_mode=prompt_contract err="không tìm thấy đối tượng JSON trong đầu ra"
+2026/08/28 15:25:50 WARN tự sửa đầu ra chuẩn hóa quy tắc module=rules source=startup_prompt attempt=4 layer=decode structured_mode=prompt_contract err="không tìm thấy đối tượng JSON trong đầu ra"
+--- FAIL: TestNormalize_NativeSendsSchemaAndRejectsFences (0.00s)
+    normalize_test.go:322: 期望契约违约错误, got chuẩn hóa thất bại: userrules_normalize: schema gốc vi phạm hợp đồng: phân tích JSON thất bại: invalid character '`' looking for beginning of value
+2026/08/28 15:25:50 WARN chuẩn hóa quy tắc thất bại, hạ cấp thành sở thích nguyên văn module=rules source=startup_prompt err="model chuẩn hóa chưa cấu hình"
+2026/08/28 15:25:50 WARN chuẩn hóa quy tắc thất bại, hạ cấp thành sở thích nguyên văn module=rules source=runtime_update err="model chuẩn hóa chưa cấu hình"
+FAIL
+FAIL	github.com/voocel/ainovel-cli/internal/userrules	0.014s
+FAIL

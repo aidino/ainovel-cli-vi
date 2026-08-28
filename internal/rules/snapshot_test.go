@@ -81,8 +81,8 @@ func TestBuildSnapshot_DegradedPropagates(t *testing.T) {
 	if len(snap.Structured.FatigueWords) == 0 {
 		t.Fatalf("giảm cấp 不应影响其它nguồn 的 structured")
 	}
-	if !strings.Contains(snap.Preferences, "原文giảm cấp ") {
-		t.Fatalf("giảm cấp nguồn 应作为 raw preferences giữ lại ")
+	if !strings.Contains(snap.Preferences, "原文giảm cấp") {
+		t.Fatalf("giảm cấp nguồn 应作为 raw preferences giữ lại")
 	}
 }
 

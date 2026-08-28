@@ -1,0 +1,127 @@
+=== RUN   TestBootstrapExistingBookFailureStaysInWorkbench
+--- PASS: TestBootstrapExistingBookFailureStaysInWorkbench (0.00s)
+=== RUN   TestBootstrapCompletedBookLandsOnDoneWorkbench
+--- PASS: TestBootstrapCompletedBookLandsOnDoneWorkbench (0.00s)
+=== RUN   TestSelectingProviderOpensHub
+--- PASS: TestSelectingProviderOpensHub (0.00s)
+=== RUN   TestCustomProviderHubShowsProtocolAndEndpoint
+--- PASS: TestCustomProviderHubShowsProtocolAndEndpoint (0.00s)
+=== RUN   TestEscapeBackHierarchy
+--- PASS: TestEscapeBackHierarchy (0.00s)
+=== RUN   TestModelListAddsAndEditsInPlace
+--- PASS: TestModelListAddsAndEditsInPlace (0.00s)
+=== RUN   TestModelListEditsSelectedCellAndCancels
+--- PASS: TestModelListEditsSelectedCellAndCancels (0.00s)
+=== RUN   TestModelRenameProducesExplicitDraftAndReferenceNotice
+--- PASS: TestModelRenameProducesExplicitDraftAndReferenceNotice (0.00s)
+=== RUN   TestModelListRendersEditableColumnsAndReferences
+--- PASS: TestModelListRendersEditableColumnsAndReferences (0.00s)
+=== RUN   TestModelNameInlineEditorKeepsModalRowsIntact
+--- PASS: TestModelNameInlineEditorKeepsModalRowsIntact (0.00s)
+=== RUN   TestRenamedReferencedModelStillCannotBeDeleted
+--- PASS: TestRenamedReferencedModelStillCannotBeDeleted (0.00s)
+=== RUN   TestCancellingNewModelNameRemovesTemporaryRow
+--- PASS: TestCancellingNewModelNameRemovesTemporaryRow (0.00s)
+=== RUN   TestParseContextWindowInput
+--- PASS: TestParseContextWindowInput (0.00s)
+=== RUN   TestModelConfigModalDoesNotRenderAPIKey
+--- PASS: TestModelConfigModalDoesNotRenderAPIKey (0.00s)
+=== RUN   TestProviderHubEditsAPIKeyInlineAndTrims
+--- PASS: TestProviderHubEditsAPIKeyInlineAndTrims (0.00s)
+=== RUN   TestProviderHubEditsBaseURLInlineAndKeepsLongTailVisible
+--- PASS: TestProviderHubEditsBaseURLInlineAndKeepsLongTailVisible (0.00s)
+=== RUN   TestSaveConfigHighlightsOnlyWhenDirty
+--- PASS: TestSaveConfigHighlightsOnlyWhenDirty (0.00s)
+=== RUN   TestStyledBaseURLLineKeepsANSIAndFillsModalWidth
+--- PASS: TestStyledBaseURLLineKeepsANSIAndFillsModalWidth (0.00s)
+=== RUN   TestProviderHubDeleteClearsOnlyOptionalAPIKey
+--- PASS: TestProviderHubDeleteClearsOnlyOptionalAPIKey (0.00s)
+=== RUN   TestConfigTextInputSupportsCursorEditing
+--- PASS: TestConfigTextInputSupportsCursorEditing (0.00s)
+=== RUN   TestProviderHubShowsConfigPathAndConnectionAction
+--- PASS: TestProviderHubShowsConfigPathAndConnectionAction (0.00s)
+=== RUN   TestModelConfigMessageWrapKeepsErrorTail
+--- PASS: TestModelConfigMessageWrapKeepsErrorTail (0.00s)
+=== RUN   TestConnectionActionStartsAsyncTestWithoutLeavingHub
+--- PASS: TestConnectionActionStartsAsyncTestWithoutLeavingHub (0.00s)
+=== RUN   TestConnectionTestCanBeCancelled
+--- PASS: TestConnectionTestCanBeCancelled (0.00s)
+=== RUN   TestConfigCommandIsRegistered
+--- PASS: TestConfigCommandIsRegistered (0.00s)
+=== RUN   TestModelSwitchLabelIncludesContextWindow
+--- PASS: TestModelSwitchLabelIncludesContextWindow (0.00s)
+=== RUN   TestModelConfigModalIsCompactOverlay
+--- PASS: TestModelConfigModalIsCompactOverlay (0.00s)
+=== RUN   TestProviderMenuIsTwoLevel
+--- PASS: TestProviderMenuIsTwoLevel (0.00s)
+=== RUN   TestCommandInputHighlightsOnlyRegisteredCommands
+--- PASS: TestCommandInputHighlightsOnlyRegisteredCommands (0.00s)
+=== RUN   TestCommandInputDoesNotHighlightArguments
+--- PASS: TestCommandInputDoesNotHighlightArguments (0.00s)
+=== RUN   TestModelSwitchKeepsUnrepresentableThinkingIntent
+--- PASS: TestModelSwitchKeepsUnrepresentableThinkingIntent (0.00s)
+=== RUN   TestModelSwitchAppliesExplicitThinkingChange
+--- PASS: TestModelSwitchAppliesExplicitThinkingChange (0.00s)
+=== RUN   TestAdvanceCommandsAreRegistered
+--- PASS: TestAdvanceCommandsAreRegistered (0.00s)
+=== RUN   TestReviewWaitingPlaceholder
+--- PASS: TestReviewWaitingPlaceholder (0.00s)
+=== RUN   TestRevisionCommandIsRegisteredAndNeedsIdle
+--- PASS: TestRevisionCommandIsRegisteredAndNeedsIdle (0.00s)
+=== RUN   TestSimulationCommandsAreRegisteredAndNeedIdle
+--- PASS: TestSimulationCommandsAreRegisteredAndNeedIdle (0.00s)
+=== RUN   TestSimulationCommandsAreBlockedWhileRunning
+2026/08/28 15:34:23 ERROR Lệnh chỉ có thể được thực thi ở trạng thái rảnh rỗi: /simulate module=event category=ERROR
+--- PASS: TestSimulationCommandsAreBlockedWhileRunning (0.00s)
+=== RUN   TestImportHistoryCoalescesRetryLines
+--- PASS: TestImportHistoryCoalescesRetryLines (0.00s)
+=== RUN   TestRenderImportLineWrapsWithoutClipping
+--- PASS: TestRenderImportLineWrapsWithoutClipping (0.00s)
+=== RUN   TestRenderImportLineMultilineBlock
+--- PASS: TestRenderImportLineMultilineBlock (0.00s)
+=== RUN   TestWrapTextResetsAtNewlines
+--- PASS: TestWrapTextResetsAtNewlines (0.00s)
+=== RUN   TestImportEscResumeGate
+--- PASS: TestImportEscResumeGate (1.06s)
+=== RUN   TestRetryCountdown
+--- PASS: TestRetryCountdown (0.00s)
+=== RUN   TestParseImportArgsGuide
+--- PASS: TestParseImportArgsGuide (0.00s)
+=== RUN   TestRenderTopBarShowsVersion
+--- PASS: TestRenderTopBarShowsVersion (0.00s)
+=== RUN   TestRenderDetailContentShowsSynopsis
+--- PASS: TestRenderDetailContentShowsSynopsis (0.00s)
+=== RUN   TestSameDetailSnapshotDetectsOutlineStateChanges
+--- PASS: TestSameDetailSnapshotDetectsOutlineStateChanges (0.00s)
+=== RUN   TestRenderErrorEventKeepsOneLineSummary
+--- PASS: TestRenderErrorEventKeepsOneLineSummary (0.00s)
+=== RUN   TestRenderStatusBar
+--- PASS: TestRenderStatusBar (0.00s)
+=== RUN   TestRenderStatusBarAutoThinkingAndEmpty
+--- PASS: TestRenderStatusBarAutoThinkingAndEmpty (0.00s)
+=== RUN   TestRenderUsageLineSeparatesFullWidthNameAndTokens
+--- PASS: TestRenderUsageLineSeparatesFullWidthNameAndTokens (0.00s)
+=== RUN   TestTruncateByDisplayWidth
+--- PASS: TestTruncateByDisplayWidth (0.00s)
+=== RUN   TestRenderDetailContentWrapsCJK
+--- PASS: TestRenderDetailContentWrapsCJK (0.00s)
+=== RUN   TestStartCommandLoadsPromptFile
+2026/08/28 15:34:24 INFO 世界thiết lập   第一tậpđại cương module=event category=USER summary="Yêu cầu sáng tác: 世界thiết lập   第一tậpđại cương"
+2026/08/28 15:34:24 INFO Đang khởi tạo sáng tác module=event category=SYSTEM
+--- PASS: TestStartCommandLoadsPromptFile (0.00s)
+=== RUN   TestEnterStartingSwitchesToWorkbenchImmediately
+2026/08/28 15:34:24 INFO 写一本东方玄幻长篇 module=event category=USER summary="Yêu cầu sáng tác: 写一本东方玄幻长篇"
+2026/08/28 15:34:24 INFO Đang khởi tạo sáng tác module=event category=SYSTEM
+--- PASS: TestEnterStartingSwitchesToWorkbenchImmediately (0.00s)
+=== RUN   TestStartupFailureStaysInWorkbench
+2026/08/28 15:34:24 INFO 写一本东方玄幻长篇 module=event category=USER summary="Yêu cầu sáng tác: 写一本东方玄幻长篇"
+2026/08/28 15:34:24 INFO Đang khởi tạo sáng tác module=event category=SYSTEM
+2026/08/28 15:34:24 ERROR model 账户chưa kích hoạt module=event category=ERROR
+--- PASS: TestStartupFailureStaysInWorkbench (0.00s)
+=== RUN   TestApplyStartupPromptEventTruncatesSummaryButKeepsDetail
+2026/08/28 15:34:24 INFO 设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设 module=event category=USER summary="Yêu cầu sáng tác: 设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设设..."
+--- PASS: TestApplyStartupPromptEventTruncatesSummaryButKeepsDetail (0.00s)
+=== RUN   TestStreamFlushTimerRunsOnlyForPendingData
+--- PASS: TestStreamFlushTimerRunsOnlyForPendingData (0.00s)
+PASS
+ok  	github.com/voocel/ainovel-cli/internal/entry/tui	1.077s

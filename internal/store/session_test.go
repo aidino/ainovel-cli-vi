@@ -20,17 +20,17 @@ func TestSessionStore_MetaInjected_AssistantWithUsage(t *testing.T) {
 	})
 	logger := s.SubAgentLogger(lookup)
 
-	logger("writer", "写第 1 chương ", agentcore.Message{
+	logger("writer", "Chương 1", agentcore.Message{
 		Role:  agentcore.RoleUser,
 		Usage: nil,
 	})
-	logger("writer", "写第 1 chương ", agentcore.Message{
+	logger("writer", "Chương 1", agentcore.Message{
 		Role: agentcore.RoleAssistant,
 		Usage: &agentcore.Usage{
 			Input: 1000, Output: 200, CacheRead: 800, TotalTokens: 1200,
 		},
 	})
-	logger("writer", "写第 1 chương ", agentcore.Message{
+	logger("writer", "Chương 1", agentcore.Message{
 		Role:  agentcore.RoleAssistant,
 		Usage: nil, // assistant 但无 usage（流式chưa mang  final usage chunk）
 	})
@@ -66,9 +66,9 @@ func TestSessionStore_MetaModelSwitch(t *testing.T) {
 	})
 	logger := s.SubAgentLogger(lookup)
 
-	logger("writer", "写第 1 chương ", makeAssistantWithUsage())
+	logger("writer", "Chương 1", makeAssistantWithUsage())
 	current = "model-b" // mô phỏng /model 切换
-	logger("writer", "写第 1 chương ", makeAssistantWithUsage())
+	logger("writer", "Chương 1", makeAssistantWithUsage())
 
 	entries := readJSONL(t, filepath.Join(dir, "meta/sessions/agents/writer-ch01.jsonl"))
 	if len(entries) != 2 {
@@ -91,9 +91,9 @@ func TestSessionStore_NilLookup(t *testing.T) {
 	dir := t.TempDir()
 	s := NewSessionStore(newIO(dir))
 	logger := s.SubAgentLogger(nil)
-	logger("writer", "写第 1 chương ", makeAssistantWithUsage())
+	logger("writer", "Chương 1", makeAssistantWithUsage())
 
-	rel, err := s.subAgentPath("writer", "写第 1 chương ")
+	rel, err := s.subAgentPath("writer", "Chương 1")
 	if err != nil {
 		t.Fatal(err)
 	}

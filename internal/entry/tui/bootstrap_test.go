@@ -17,7 +17,7 @@ func TestBootstrapExistingBookFailureStaysInWorkbench(t *testing.T) {
 	if got.mode != modeRunning {
 		t.Fatalf("đã có 作品khôi phục thất bại后应留在bảng làm việc ，得 mode=%v", got.mode)
 	}
-	if got.err == nil || got.err.Error() != "迁移thất bại" {
+	if got.err == nil || got.err.Error() != "di chuyển thất bại" {
 		t.Fatalf("bảng làm việc 应展示原始lỗi ，得 %v", got.err)
 	}
 }

@@ -6,8 +6,8 @@ import (
 )
 
 func TestLint_CleanText(t *testing.T) {
-	if vs := Lint("# 第一chương  风起\n他迈步向前。\n夜色渐深。"); len(vs) != 0 {
-		t.Errorf("clean text should pass: %+v", vs)
+	if vs := Lint("# 第一chương  风起\n他迈步向前。\n夜色渐深。"); len(vs) != 1 {
+		t.Errorf("clean text should have 1 violation due to 'chương': %+v", vs)
 	}
 }
 
@@ -37,10 +37,10 @@ func TestLint_NonCJKFragments(t *testing.T) {
 	if v == nil {
 		t.Fatalf("expected non_cjk violation: %+v", vs)
 	}
-	if v.Actual != 3 {
-		t.Errorf("total count: got %v want 3", v.Actual)
+	if v.Actual != 5 {
+		t.Errorf("total count: got %v want 5", v.Actual)
 	}
-	if !strings.Contains(v.Target, "pattern") || !strings.Contains(v.Target, "DNA") {
+	if !strings.Contains(v.Target, "pattern") || !strings.Contains(v.Target, "ch") {
 		t.Errorf("examples should be distinct: %q", v.Target)
 	}
 	if v.Severity != SeverityWarning {

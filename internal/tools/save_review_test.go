@@ -182,7 +182,7 @@ func TestSaveReviewRejectsIssueOutsideChapterScope(t *testing.T) {
 		t.Fatalf("Marshal: %v", err)
 	}
 
-	if _, err := tool.Execute(context.Background(), args); err == nil || !strings.Contains(err.Error(), "must reference chapter 58") {
+	if _, err := tool.Execute(context.Background(), args); err == nil || !strings.Contains(err.Error(), "phải tham chiếu chương 58") {
 		t.Fatalf("expected out-of-scope affected chapter rejection, got %v", err)
 	}
 	review, err := s.World.LoadReview(58)
@@ -485,7 +485,7 @@ func arcReviewArgs(t *testing.T, issueChapter int) []byte {
 
 func TestSaveReviewRejectsIssueOutsideArcSpan(t *testing.T) {
 	s := setupArcReviewStore(t)
-	if _, err := NewSaveReviewTool(s).Execute(context.Background(), arcReviewArgs(t, 2)); err == nil || !strings.Contains(err.Error(), "outside 3-4") {
+	if _, err := NewSaveReviewTool(s).Execute(context.Background(), arcReviewArgs(t, 2)); err == nil || !strings.Contains(err.Error(), "nằm ngoài khoảng 3-4") {
 		t.Fatalf("expected arc range rejection, got %v", err)
 	}
 	if p, _ := s.Progress.Load(); len(p.PendingRewrites) != 0 {
@@ -588,7 +588,7 @@ func TestSaveReviewRejectsFutureArc(t *testing.T) {
 		}
 	}
 
-	if _, err := NewSaveReviewTool(s).Execute(context.Background(), arcReviewArgs(t, 3)); err == nil || !strings.Contains(err.Error(), "must be completed") {
+	if _, err := NewSaveReviewTool(s).Execute(context.Background(), arcReviewArgs(t, 3)); err == nil || !strings.Contains(err.Error(), "phải ở trạng thái hoàn thành") {
 		t.Fatalf("expected future arc rejection, got %v", err)
 	}
 	if review, err := s.World.LoadReview(4); err != nil || review != nil {

@@ -56,13 +56,13 @@ func TestEnterStartingSwitchesToWorkbenchImmediately(t *testing.T) {
 	if !m.snapshot.IsRunning {
 		t.Fatal("snapshot should render as running during local startup")
 	}
-	if got := m.textarea.Placeholder; got != "正在khởi tạo 创作..." {
+	if got := m.textarea.Placeholder; got != "Đang khởi tạo sáng tác..." {
 		t.Fatalf("placeholder = %q", got)
 	}
 	if len(m.events) != 2 {
 		t.Fatalf("events = %+v, want startup user + system events", m.events)
 	}
-	if m.events[0].Category != "USER" || !strings.HasPrefix(m.events[0].Summary, "创作需求: ") {
+	if m.events[0].Category != "USER" || !strings.HasPrefix(m.events[0].Summary, "Yêu cầu sáng tác: ") {
 		t.Fatalf("first event = %+v, want USER prompt event", m.events[0])
 	}
 }
@@ -87,7 +87,7 @@ func TestStartupFailureStaysInWorkbench(t *testing.T) {
 	if got.snapshot.IsRunning {
 		t.Fatal("khởi động thất bại后 snapshot 不应仍hiển thị đang chạy ")
 	}
-	if !strings.Contains(got.textarea.Placeholder, "khởi động thất bại") {
+	if !strings.Contains(got.textarea.Placeholder, "Khởi động thất bại") {
 		t.Fatalf("placeholder = %q", got.textarea.Placeholder)
 	}
 	if len(got.events) == 0 || got.events[len(got.events)-1].Category != "ERROR" {

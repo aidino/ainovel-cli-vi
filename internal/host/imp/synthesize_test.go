@@ -51,7 +51,7 @@ func TestValidateStructure(t *testing.T) {
 func TestAssembleFoundationHappyClosed(t *testing.T) {
 	facts := factsN(3)
 	s := &BookSynthesis{
-		Synopsis:     "无剧透tóm tắt ",
+		Synopsis:     "无剧透tóm tắt",
 		Premise:      "# 故事前提\n\n前提",
 		Characters:   []domain.Character{{Name: "甲"}},
 		PlanningTier: domain.PlanningTierShort,
@@ -69,7 +69,7 @@ func TestAssembleFoundationHappyClosed(t *testing.T) {
 	if !f.Volumes[len(f.Volumes)-1].Final {
 		t.Fatal("closed 时末tập应 Final")
 	}
-	if f.Book.Title != "book" || f.Book.Synopsis != "无剧透tóm tắt " {
+	if f.Book.Title != "book" || f.Book.Synopsis != "无剧透tóm tắt" {
 		t.Fatalf("作品thông tin 组装lỗi : %+v", f.Book)
 	}
 }
@@ -79,7 +79,7 @@ func TestAssembleFoundationTitleMismatch(t *testing.T) {
 	facts[1].Title = "" // 破坏tiêu đề nhất quán 性会在 FlattenOutline 校验thất bại？tiêu đề 空但结构取自 facts，故nhất quán 。
 	// 用结构ghi đè不到的chương 制造真实không nhất quán：chương 数không khớp 。
 	s := &BookSynthesis{
-		Synopsis: "无剧透tóm tắt ", Premise: "# 故事前提", Characters: []domain.Character{{Name: "甲"}},
+		Synopsis: "无剧透tóm tắt", Premise: "# 故事前提", Characters: []domain.Character{{Name: "甲"}},
 		PlanningTier: domain.PlanningTierShort, StoryStatus: storyOpen,
 		Compass:   domain.StoryCompass{EndingDirection: "x"},
 		Structure: []ImportedVolumeRange{{Arcs: []ImportedArcRange{{StartChapter: 1, EndChapter: 1}}}},
@@ -131,7 +131,7 @@ func TestSynthesizeRejectsRangeMismatch(t *testing.T) {
 	if err == nil {
 		t.Fatal("区间起止chương 与请求không khớp 应từ chối")
 	}
-	if !strings.Contains(err.Error(), "chương 范围") {
+	if !strings.Contains(err.Error(), "phạm vi chương") {
 		t.Fatalf("lỗi 应指出区间范围không khớp ，得：%v", err)
 	}
 }
