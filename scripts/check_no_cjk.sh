@@ -8,9 +8,7 @@
 set -uo pipefail
 
 ALLOW=(
-  "assets/testdata/writer-golden.md"   # golden gốc — sẽ thay ở GĐ7
   "internal/tools/premise_structure.go" # alias tiếng Trung cố ý giữ để đọc premise bản gốc
-  "VIET_HOA_PLAN.md"                    # kế hoạch có ví dụ chữ Hán
   "docs/vi-glossary.md"                 # bảng thuật ngữ có cột tiếng Trung
 )
 

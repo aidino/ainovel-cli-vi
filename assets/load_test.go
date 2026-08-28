@@ -53,12 +53,12 @@ func TestLoad_NoOverrides(t *testing.T) {
 
 func TestInterventionPromptsKeepScopeContract(t *testing.T) {
 	prompts := loadPrompts()
-	for _, phrase := range []string{"上下文不等于修改授权", "最小充分范围", "分析范围不等于修改范围"} {
+	for _, phrase := range []string{"ngữ cảnh không đồng nghĩa quyền sửa đổi", "phạm vi tối thiểu vừa đủ", "phạm vi phân tích không đồng nghĩa phạm vi sửa"} {
 		if !strings.Contains(prompts.ArbiterIntervention, phrase) {
 			t.Fatalf("Arbiter 干预提示缺少范围契约 %q", phrase)
 		}
 	}
-	for _, phrase := range []string{"用户原始干预", "分析范围不等于修改范围", "最小充分章节集合"} {
+	for _, phrase := range []string{"yêu cầu can thiệp gốc của người dùng", "phạm vi phân tích không đồng nghĩa phạm vi sửa", "tập chương tối thiểu vừa đủ"} {
 		if !strings.Contains(prompts.Editor, phrase) {
 			t.Fatalf("Editor 提示缺少范围契约 %q", phrase)
 		}
@@ -166,7 +166,7 @@ func TestOverrideVoice_SharesAssemblyPath(t *testing.T) {
 		t.Fatal("占位符必须被消耗")
 	}
 	// 协议部分不受 voice 覆盖影响
-	if !strings.Contains(got, "## 执行协议") {
+	if !strings.Contains(got, "## Giao thức thực thi") {
 		t.Fatal("协议模板不得被 voice 覆盖破坏")
 	}
 }
