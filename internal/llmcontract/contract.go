@@ -146,8 +146,8 @@ func PreparePrompt(base string, c Contract, res Resolution) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("llmcontract: marshal %s prompt schema: %w", c.Name, err)
 	}
-	contract := "## 输出契约\n\n" +
-		"只输出一个符合下列 JSON Schema 的 JSON 对象，不要输出解释、Markdown 围栏或标签本身。\n\n" +
+	contract := "## Hợp đồng đầu ra\n\n" +
+		"Chỉ xuất ra một đối tượng JSON đúng với JSON Schema dưới đây, không xuất giải thích, khối Markdown hay chính nhãn.\n\n" +
 		"<output-json-schema>\n" + string(schemaJSON) + "\n</output-json-schema>"
 	if strings.TrimSpace(base) == "" {
 		return contract, nil
@@ -156,7 +156,7 @@ func PreparePrompt(base string, c Contract, res Resolution) (string, error) {
 }
 
 // Nullable 把一个 schema 的 type 扩展为可空联合(["<t>","null"]),用于 strict
-// 模式下"全字段 required、可选语义用 null"的表达。返回拷贝,不修改传入 map。
+// biểu đạt "mọi trường required, ngữ nghĩa tùy chọn dùng null" trong chế độ. Trả về bản sao, không sửa map truyền vào.
 func Nullable(s map[string]any) map[string]any {
 	out := maps.Clone(s)
 	if t, ok := out["type"].(string); ok {
@@ -195,7 +195,7 @@ func validateStrictReady(s map[string]any, path string) error {
 		required, _ := s["required"].([]string)
 		for name, sub := range props {
 			if !slices.Contains(required, name) {
-				return fmt.Errorf("%s.%s 未列入 required(strict 要求全属性 required)", path, name)
+				return fmt.Errorf("%s.%s không nằm trong required(strict yêu cầu mọi thuộc tính phải required)", path, name)
 			}
 			if subMap, ok := sub.(map[string]any); ok {
 				if err := validateStrictReady(subMap, path+"."+name); err != nil {

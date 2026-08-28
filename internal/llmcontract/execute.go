@@ -73,8 +73,8 @@ type Request[T any] struct {
 	Hooks        Hooks
 }
 
-const promptCorrection = "上面的输出不符合 JSON Schema。请根据错误修正，并只输出完整 JSON 对象，不要解释或 Markdown 围栏。"
-const semanticCorrection = "上面的 JSON 结构合法但字段取值未通过业务校验。请根据错误修正，并重新输出完整 JSON 对象。"
+const promptCorrection = "Đầu ra ở trên không đúng JSON Schema. Hãy sửa theo lỗi, và chỉ xuất đối tượng JSON hoàn chỉnh, không giải thích hay khối Markdown."
+const semanticCorrection = "JSON ở trên hợp lệ về cấu trúc nhưng giá trị trường chưa qua kiểm tra nghiệp vụ. Hãy sửa theo lỗi, và xuất lại đối tượng JSON hoàn chỉnh."
 
 // Execute 统一完成协议选择、提示词准备、请求重试、停止原因分类、Schema/DTO
 // 解码和业务反馈自愈。prompt 模式的格式/Schema 错误以及两种模式的业务错误会
@@ -82,13 +82,13 @@ const semanticCorrection = "上面的 JSON 结构合法但字段取值未通过�
 func Execute[T any](ctx context.Context, model llmretry.Generator, req Request[T]) (T, error) {
 	var zero T
 	if model == nil {
-		return zero, &Failure{Kind: FailureProtocol, Contract: req.Contract.Name, Err: errors.New("模型未配置")}
+		return zero, &Failure{Kind: FailureProtocol, Contract: req.Contract.Name, Err: errors.New("model chưa được cấu hình")}
 	}
 
 	schemaOptions, resolution := Plan(model, req.Contract)
 	systemPrompt, err := PreparePrompt(req.SystemPrompt, req.Contract, resolution)
 	if err != nil {
-		return zero, &Failure{Kind: FailureContract, Contract: req.Contract.Name, Err: fmt.Errorf("准备输出契约: %w", err)}
+		return zero, &Failure{Kind: FailureContract, Contract: req.Contract.Name, Err: fmt.Errorf("chuẩn bị hợp đồng đầu ra: %w", err)}
 	}
 	if req.Hooks.Resolved != nil {
 		req.Hooks.Resolved(resolution)
@@ -116,7 +116,7 @@ func Execute[T any](ctx context.Context, model llmretry.Generator, req Request[T
 			return zero, &Failure{Kind: FailureRequest, Contract: req.Contract.Name, Err: err}
 		}
 		if resp == nil {
-			return zero, &Failure{Kind: FailureProtocol, Contract: req.Contract.Name, Err: errors.New("模型返回空响应")}
+			return zero, &Failure{Kind: FailureProtocol, Contract: req.Contract.Name, Err: errors.New("model trả về phản hồi rỗng")}
 		}
 
 		raw := resp.Message.TextContent()

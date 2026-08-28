@@ -21,7 +21,7 @@ import (
 )
 
 // normalizeMaxTokens 单次归一化的输出上限（思考 token 与 JSON 输出共享这一预算）。
-// 归一化 JSON 本身很小（通常 <1k），这里留大头是给"无法关闭思考的推理模型"的思考预算——
+// JSON chuẩn hóa vốn rất nhỏ (thường <1k), để phần lớn ở đây là ngân sách suy nghĩ cho "model lý luận không tắt được suy nghĩ" —
 // 留窄了思考会挤占 JSON 导致截断、解析失败。max_tokens 是上限不是计费量，调大不增成本。
 const normalizeMaxTokens = 8192
 
@@ -29,19 +29,19 @@ const normalizeMaxTokens = 8192
 // （strict 模式禁止动态 key 的 map），两种模式共用同一 DTO 约定。
 var normalizeContract = llmcontract.Contract{
 	Name:        "userrules_normalize",
-	Description: "把用户自然语言写作规则归一化为结构化字段",
+	Description: "Chuẩn hóa quy tắc viết bằng ngôn ngữ tự nhiên của người dùng thành trường có cấu trúc",
 	Schema: schema.Object(
 		schema.Property("structured", schema.Object(
-			schema.Property("genre", schema.String("题材;无则空字符串")).Required(),
-			schema.Property("forbidden_chars", schema.Array("禁止出现的字符", schema.String("字符"))).Required(),
-			schema.Property("forbidden_phrases", schema.Array("禁止出现的短语(字面精确匹配)", schema.String("短语"))).Required(),
-			schema.Property("fatigue_words", schema.Array("疲劳词及每章出现上限", schema.Object(
-				schema.Property("word", schema.String("疲劳词")).Required(),
-				schema.Property("max_per_chapter", schema.Int("每章出现次数上限(正整数)")).Required(),
+			schema.Property("genre", schema.String("thể loại; không có thì chuỗi rỗng")).Required(),
+			schema.Property("forbidden_chars", schema.Array("ký tự cấm xuất hiện", schema.String("ký tự"))).Required(),
+			schema.Property("forbidden_phrases", schema.Array("cụm từ cấm xuất hiện (khớp chính xác theo nghĩa đen)", schema.String("cụm từ"))).Required(),
+			schema.Property("fatigue_words", schema.Array("từ mệt mỏi và trần xuất hiện mỗi chương", schema.Object(
+				schema.Property("word", schema.String("từ mệt mỏi")).Required(),
+				schema.Property("max_per_chapter", schema.Int("trần số lần xuất hiện mỗi chương (số nguyên dương)")).Required(),
 			))).Required(),
 		)).Required(),
-		schema.Property("preferences", schema.String("自然语言风格/人物/审美偏好;无则空字符串")).Required(),
-		schema.Property("uncertain", schema.Array("故意未提升到 structured 的项+原因", schema.String("条目"))).Required(),
+		schema.Property("preferences", schema.String("sở thích văn phong/nhân vật/thẩm mỹ bằng ngôn ngữ tự nhiên; không có thì chuỗi rỗng")).Required(),
+		schema.Property("uncertain", schema.Array("mục cố tình không nâng lên structured + lý do", schema.String("mục"))).Required(),
 	),
 }
 
@@ -69,7 +69,7 @@ func (n *Normalizer) Normalize(ctx context.Context, source, text string) (rules.
 		return rules.Candidate{Source: source}, nil
 	}
 	if n == nil || n.model == nil {
-		return rules.Candidate{}, fmt.Errorf("归一化模型未配置")
+		return rules.Candidate{}, fmt.Errorf("model chuẩn hóa chưa cấu hình")
 	}
 
 	out, err := llmcontract.Execute(ctx, n.model, llmcontract.Request[normalizerOutput]{
@@ -84,30 +84,30 @@ func (n *Normalizer) Normalize(ctx context.Context, source, text string) (rules.
 		Agent: "rules",
 		Hooks: llmcontract.Hooks{
 			Resolved: func(res llmcontract.Resolution) {
-				slog.Debug("规则归一化协议选择", "module", "rules", "source", source,
+				slog.Debug("chọn giao thức chuẩn hóa quy tắc", "module", "rules", "source", source,
 					"contract", normalizeContract.Name, "structured_mode", res.Mode,
 					"capability_source", res.Source, "provider", res.Provider, "model", res.Model,
 					"schema_fingerprint", normalizeContract.Fingerprint())
 			},
 			Correction: func(ev llmcontract.Correction) {
-				slog.Warn("规则归一化输出自愈", "module", "rules", "source", source,
+				slog.Warn("tự sửa đầu ra chuẩn hóa quy tắc", "module", "rules", "source", source,
 					"attempt", ev.Attempt, "layer", ev.Layer, "structured_mode", ev.Mode, "err", ev.Err)
 			},
 		},
 	})
 	if err != nil {
-		return rules.Candidate{}, fmt.Errorf("归一化失败: %w", err)
+		return rules.Candidate{}, fmt.Errorf("chuẩn hóa thất bại: %w", err)
 	}
 	return out.toCandidate(source)
 }
 
 // degraded 构造一个降级候选：归一化失败时把原文当作风格偏好，不提炼任何机械规则。
-// uncertain 标注来源（便于回显"哪些来源未能解析"），但不含技术错误细节——技术错误只进日志。
+// uncertain đánh dấu nguồn (tiện hiển thị lại "nguồn nào chưa phân tích được"), nhưng không kèm chi tiết lỗi kỹ thuật — lỗi kỹ thuật chỉ vào log.
 func degraded(source, text string) rules.Candidate {
 	return rules.Candidate{
 		Source:      source,
 		Preferences: text,
-		Uncertain:   []string{source + "：归一化失败，已按原文作为风格偏好处理（未提炼机械规则）"},
+		Uncertain:   []string{source + ": chuẩn hóa thất bại, đã xử lý theo nguyên văn như sở thích văn phong (chưa chưng cất quy tắc cơ khí)"},
 		Degraded:    true,
 	}
 }
@@ -139,10 +139,10 @@ func (o normalizerOutput) toCandidate(source string) (rules.Candidate, error) {
 	for _, e := range o.Structured.FatigueWords {
 		word := strings.TrimSpace(e.Word)
 		if word == "" {
-			return rules.Candidate{}, fmt.Errorf("fatigue_words 含空词条目")
+			return rules.Candidate{}, fmt.Errorf("fatigue_words chứa mục từ rỗng")
 		}
 		if e.MaxPerChapter < 1 {
-			return rules.Candidate{}, fmt.Errorf("fatigue_words[%q].max_per_chapter 必须是正整数, got %d", word, e.MaxPerChapter)
+			return rules.Candidate{}, fmt.Errorf("fatigue_words[%q].max_per_chapter phải là số nguyên dương, got %d", word, e.MaxPerChapter)
 		}
 		if fatigue == nil {
 			fatigue = make(map[string]int, len(o.Structured.FatigueWords))

@@ -57,23 +57,23 @@ func (f InterventionFacts) QueueHead() int {
 func CollectInterventionFacts(st *storepkg.Store) (InterventionFacts, error) {
 	var f InterventionFacts
 	if st == nil {
-		return f, fmt.Errorf("store 不能为空")
+		return f, fmt.Errorf("store không được rỗng")
 	}
 	missing, err := st.FoundationMissing()
 	if err != nil {
-		return f, fmt.Errorf("读取基础设定状态: %w", err)
+		return f, fmt.Errorf("đọc trạng thái thiết lập nền tảng: %w", err)
 	}
 	f.FoundationMissing = missing
 	book, err := st.Book.Load()
 	if err != nil {
-		return f, fmt.Errorf("读取作品信息: %w", err)
+		return f, fmt.Errorf("đọc thông tin tác phẩm: %w", err)
 	}
 	if book != nil {
 		f.Title = book.Title
 	}
 	p, err := st.Progress.Load()
 	if err != nil {
-		return f, fmt.Errorf("读取进度: %w", err)
+		return f, fmt.Errorf("đọc tiến độ: %w", err)
 	}
 	if p != nil {
 		f.Phase = string(p.Phase)
@@ -83,7 +83,7 @@ func CollectInterventionFacts(st *storepkg.Store) (InterventionFacts, error) {
 		if p.Layered {
 			outline, outlineErr := st.Outline.LoadOutline()
 			if outlineErr != nil {
-				return f, fmt.Errorf("读取当前详细大纲: %w", outlineErr)
+				return f, fmt.Errorf("đọc đại cương chi tiết hiện tại: %w", outlineErr)
 			}
 			f.OutlinedChapters = len(outline)
 		} else {
@@ -95,7 +95,7 @@ func CollectInterventionFacts(st *storepkg.Store) (InterventionFacts, error) {
 	}
 	meta, err := st.RunMeta.Load()
 	if err != nil {
-		return f, fmt.Errorf("读取运行元信息: %w", err)
+		return f, fmt.Errorf("đọc metadata vận hành: %w", err)
 	}
 	if meta != nil {
 		f.PlanningTier = string(meta.PlanningTier)
@@ -112,7 +112,7 @@ func CollectInterventionFacts(st *storepkg.Store) (InterventionFacts, error) {
 	}
 	recent, err := st.Decisions.Recent(5)
 	if err != nil {
-		return f, fmt.Errorf("读取近期裁定: %w", err)
+		return f, fmt.Errorf("đọc phán quyết gần đây: %w", err)
 	}
 	for _, r := range recent {
 		if r.Kind != "intervention" {
@@ -152,32 +152,32 @@ type InterventionDecision struct {
 
 var interventionContract = llmcontract.Contract{
 	Name:        "arbiter_intervention",
-	Description: "用户干预裁定：回答、规则、暂停、重开与派单",
+	Description: "Phán quyết can thiệp người dùng: trả lời, quy tắc, tạm dừng, mở lại và điều phát",
 	Schema: schema.Object(
-		schema.Property("answer", llmcontract.Nullable(schema.String("回显给用户的文字；无则为 null"))).Required(),
-		schema.Property("rules", llmcontract.Nullable(schema.String("要落盘的长效写作规则原文；无则为 null"))).Required(),
+		schema.Property("answer", llmcontract.Nullable(schema.String("văn bản hiển thị lại cho người dùng; rỗng thì null"))).Required(),
+		schema.Property("rules", llmcontract.Nullable(schema.String("nguyên văn quy tắc viết dài hạn cần ghi xuống đĩa; rỗng thì null"))).Required(),
 		schema.Property("hold", llmcontract.Nullable(schema.Object(
-			schema.Property("cancel", schema.Bool("是否取消既有一次性暂停")).Required(),
-			schema.Property("after", llmcontract.Nullable(schema.Enum("暂停触发点；取消时为 null", string(domain.AdvanceHoldAtBoundary), string(domain.AdvanceHoldAfterRewritesDrained), string(domain.AdvanceHoldAtChapter)))).Required(),
-			schema.Property("target_chapter", llmcontract.Nullable(schema.Int("after=chapter 时的目标章节；其他情况为 null"))).Required(),
-			schema.Property("reason", llmcontract.Nullable(schema.String("用户诉求摘要；取消时可为 null"))).Required(),
+			schema.Property("cancel", schema.Bool("có hủy lệnh tạm dừng một lần đang có hay không")).Required(),
+			schema.Property("after", llmcontract.Nullable(schema.Enum("điểm kích hoạt tạm dừng; khi hủy là null", string(domain.AdvanceHoldAtBoundary), string(domain.AdvanceHoldAfterRewritesDrained), string(domain.AdvanceHoldAtChapter)))).Required(),
+			schema.Property("target_chapter", llmcontract.Nullable(schema.Int("chương mục tiêu khi after=chapter; trường hợp khác là null"))).Required(),
+			schema.Property("reason", llmcontract.Nullable(schema.String("tóm tắt nguyện vọng người dùng; khi hủy có thể là null"))).Required(),
 		))).Required(),
 		schema.Property("reopen", llmcontract.Nullable(schema.Object(
-			schema.Property("chapters", schema.Array("需要重开的章节号", schema.Int("章节号"))).Required(),
-			schema.Property("reason", llmcontract.Nullable(schema.String("重开理由"))).Required(),
+			schema.Property("chapters", schema.Array("số chương cần mở lại", schema.Int("số chương"))).Required(),
+			schema.Property("reason", llmcontract.Nullable(schema.String("lý do mở lại"))).Required(),
 		))).Required(),
-		schema.Property("dispatch", dispatchSchema("派单目标；无需派单时为 null")).Required(),
-		schema.Property("reason", schema.String("一句话裁定理由")).Required(),
+		schema.Property("dispatch", dispatchSchema("mục tiêu điều phát; khi không cần điều phát là null")).Required(),
+		schema.Property("reason", schema.String("lý do phán quyết trong một câu")).Required(),
 	),
 }
 
 // ValidateAgainst 按事实做机械校验(场景内合法性;类型已排除跨场景动作)。
 func (d *InterventionDecision) ValidateAgainst(f InterventionFacts) error {
 	if strings.TrimSpace(d.Reason) == "" {
-		return fmt.Errorf("reason 不能为空")
+		return fmt.Errorf("reason không được rỗng")
 	}
 	if d.Answer == "" && d.Rules == "" && d.Hold == nil && d.Reopen == nil && d.Dispatch == nil {
-		return fmt.Errorf("空决策：至少要有一个动作或 answer")
+		return fmt.Errorf("quyết định rỗng: ít nhất phải có một hành động hoặc answer")
 	}
 	if err := d.Dispatch.validate(); err != nil {
 		return err
@@ -188,34 +188,34 @@ func (d *InterventionDecision) ValidateAgainst(f InterventionFacts) error {
 	complete := f.Phase == string(domain.PhaseComplete)
 	if d.Reopen != nil {
 		if !complete {
-			return fmt.Errorf("reopen 仅限完本期（当前 phase=%s）", f.Phase)
+			return fmt.Errorf("reopen chỉ dùng cho kỳ hoàn thành (phase=%s hiện tại)", f.Phase)
 		}
 		if len(d.Reopen.Chapters) == 0 {
-			return fmt.Errorf("reopen.chapters 不能为空")
+			return fmt.Errorf("reopen.chapters không được rỗng")
 		}
 		for _, ch := range d.Reopen.Chapters {
 			if ch < 1 || ch > f.CompletedChapters {
-				return fmt.Errorf("reopen 章节 %d 越界（已完成 %d 章）", ch, f.CompletedChapters)
+				return fmt.Errorf("chương reopen %d vượt ranh (đã hoàn thành %d chương)", ch, f.CompletedChapters)
 			}
 		}
 	}
 	if complete && d.Dispatch != nil {
-		return fmt.Errorf("完本期禁止直接派单；返工用 reopen（入队后由 Router 自动派发）")
+		return fmt.Errorf("kỳ hoàn thành cấm điều phát trực tiếp; làm lại dùng reopen (sau khi vào hàng, Router tự điều phát)")
 	}
 	if d.Hold != nil && !d.Hold.Cancel {
 		if f.Phase != string(domain.PhaseWriting) {
-			return fmt.Errorf("一次性暂停仅限写作期（当前 phase=%s）", f.Phase)
+			return fmt.Errorf("tạm dừng một lần chỉ dùng cho giai đoạn viết (phase=%s hiện tại)", f.Phase)
 		}
 		hold := domain.AdvanceHold{After: d.Hold.After, TargetChapter: d.Hold.TargetChapter, Reason: d.Hold.Reason}
 		if err := hold.Validate(); err != nil {
-			return fmt.Errorf("hold 无效: %w", err)
+			return fmt.Errorf("hold không hợp lệ: %w", err)
 		}
 		nextChapter := f.NextChapter
 		if nextChapter == 0 {
 			nextChapter = f.CompletedChapters + 1
 		}
 		if hold.After == domain.AdvanceHoldAtChapter && hold.TargetChapter < nextChapter {
-			return fmt.Errorf("目标章节 %d 早于当前下一章 %d", hold.TargetChapter, nextChapter)
+			return fmt.Errorf("chương mục tiêu %d sớm hơn chương kế tiếp hiện tại %d", hold.TargetChapter, nextChapter)
 		}
 	}
 	return nil
@@ -228,15 +228,15 @@ func validateDispatchAgainst(dispatch *DispatchOp, phase string) error {
 		return nil
 	}
 	if phase == "" {
-		return fmt.Errorf("缺少 phase，禁止执行派单")
+		return fmt.Errorf("thiếu phase, cấm thực thi điều phát")
 	}
 	if phase == string(domain.PhaseComplete) {
-		return fmt.Errorf("完本期禁止直接派单")
+		return fmt.Errorf("kỳ hoàn thành cấm điều phát trực tiếp")
 	}
 	switch dispatch.Agent {
 	case "writer", "editor":
 		if phase != string(domain.PhaseWriting) {
-			return fmt.Errorf("%s 仅能在 writing 阶段派发（当前 phase=%s）", dispatch.Agent, phase)
+			return fmt.Errorf("%s chỉ điều phát được trong giai đoạn writing (phase=%s hiện tại)", dispatch.Agent, phase)
 		}
 	}
 	return nil
