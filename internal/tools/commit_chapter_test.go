@@ -46,7 +46,7 @@ func TestCommitChapterSchemaDescribesFeedbackAsObject(t *testing.T) {
 		t.Fatalf("feedback schema missing: %#v", props["feedback"])
 	}
 	desc, _ := feedback["description"].(string)
-	if !strings.Contains(desc, "JSON object") || !strings.Contains(desc, "字符串化 JSON") {
+	if !strings.Contains(desc, "JSON object") || !strings.Contains(desc, "JSON dạng chuỗi") {
 		t.Fatalf("feedback description should warn against stringified JSON, got %q", desc)
 	}
 	if got := fmt.Sprint(feedback["type"]); got != "[object null]" {
