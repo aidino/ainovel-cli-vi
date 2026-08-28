@@ -166,16 +166,16 @@ func NewArchitectStopGuard(st *store.Store, onBlock BlockHook) agentcore.StopGua
 // 否决该次退出并催促，直到对应摘要落盘。
 func NewEditorStopGuard(st *store.Store, task string, onBlock BlockHook) agentcore.StopGuard {
 	switch {
-	case strings.Contains(task, "save_volume_summary") || strings.Contains(task, "卷摘要"):
+	case strings.Contains(task, "save_volume_summary") || strings.Contains(task, "tóm tắt tập") || strings.Contains(task, "卷摘要"):
 		return newCheckpointDeltaGuard(st, "editor", []string{"volume_summary"},
-			staticBlockMsg("本次任务是生成卷摘要：你必须调用 save_volume_summary 落盘后才能结束，save_review 复核不算完成。"), onBlock)
-	case strings.Contains(task, "save_arc_summary") || strings.Contains(task, "弧摘要"):
+			staticBlockMsg("Nhiệm vụ lần này là sinh tóm tắt tập: bạn phải gọi save_volume_summary ghi xuống đĩa rồi mới được kết thúc; save_review kiểm lại không tính là hoàn thành."), onBlock)
+	case strings.Contains(task, "save_arc_summary") || strings.Contains(task, "tóm tắt arc") || strings.Contains(task, "弧摘要"):
 		return newCheckpointDeltaGuard(st, "editor", []string{"arc_summary"},
-			staticBlockMsg("本次任务是生成弧摘要：你必须调用 save_arc_summary 落盘后才能结束，save_review 复核不算完成。"), onBlock)
+			staticBlockMsg("Nhiệm vụ lần này là sinh tóm tắt arc: bạn phải gọi save_arc_summary ghi xuống đĩa rồi mới được kết thúc; save_review kiểm lại không tính là hoàn thành."), onBlock)
 	default:
-		// 评审或临时任务：任一审阅/摘要落盘即可（保持既有宽松行为）。
+		// Nhiệm vụ đọc kiểm hoặc tạm thời: bất kỳreview/summary nào ghi xuống đĩa cũng được (giữ hành vi rộng như cũ).
 		return newCheckpointDeltaGuard(st, "editor",
 			[]string{"review", "arc_summary", "volume_summary"},
-			staticBlockMsg("你必须调用 save_review / save_arc_summary / save_volume_summary 之一落盘结果后才能结束。"), onBlock)
+			staticBlockMsg("Bạn phải gọi một trong các tool save_review / save_arc_summary / save_volume_summary để ghi kết quả xuống đĩa rồi mới được kết thúc."), onBlock)
 	}
 }

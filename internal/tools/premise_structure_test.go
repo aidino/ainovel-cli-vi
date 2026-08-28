@@ -23,17 +23,17 @@ func TestParsePremiseSections(t *testing.T) {
 `
 
 	sections := parsePremiseSections(premise)
-	if sections["题材和基调"] == "" {
-		t.Fatalf("expected 题材和基调 section, got %+v", sections)
+	if sections["Thể loại và tông giọng"] == "" {
+		t.Fatalf("expected 'Thể loại và tông giọng' section (từ heading gốc 题材和基调), got %+v", sections)
 	}
-	if sections["题材定位"] == "" {
-		t.Fatalf("expected 题材定位 section, got %+v", sections)
+	if sections["Định vị thể loại"] == "" {
+		t.Fatalf("expected 'Định vị thể loại' section (từ heading gốc 题材定位), got %+v", sections)
 	}
-	if sections["核心冲突"] == "" {
-		t.Fatalf("expected 核心冲突 section, got %+v", sections)
+	if sections["Xung đột cốt lõi"] == "" {
+		t.Fatalf("expected 'Xung đột cốt lõi' section (từ heading gốc 核心冲突), got %+v", sections)
 	}
-	if sections["中段转折"] == "" {
-		t.Fatalf("expected 中期转向 alias normalized to 中段转折, got %+v", sections)
+	if sections["Bước ngoặt giữa truyện"] == "" {
+		t.Fatalf("expected alias 中期转向 normalized to 'Bước ngoặt giữa truyện', got %+v", sections)
 	}
 }
 

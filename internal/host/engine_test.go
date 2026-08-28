@@ -191,7 +191,7 @@ func testTextMsg(text string) agentcore.Message {
 	}
 }
 
-var chapterRe = regexp.MustCompile(`写第 (\d+) 章`)
+var chapterRe = regexp.MustCompile(`(?:Viết(?: lại)? chương|Đánh bóng chương) (\d+)`)
 
 // scriptedWriterModel 按对话内已有的 tool 结果数决定下一步,
 // 走完整 plan → draft → check → commit 序列(真实工具,真实落盘)。

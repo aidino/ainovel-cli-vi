@@ -92,7 +92,10 @@ func loadLegacyBook(st *storepkg.Store) (*domain.BookMetadata, error) {
 	if title != legacy.NovelName {
 		return nil, fmt.Errorf("旧作品书名冲突: progress=%q, premise=%q", legacy.NovelName, title)
 	}
-	synopsis := legacyPremiseSection(premise, "核心冲突")
+	synopsis := legacyPremiseSection(premise, "Xung đột cốt lõi")
+	if synopsis == "" {
+		synopsis = legacyPremiseSection(premise, "核心冲突") // premise tiếng Trung của bản gốc
+	}
 	if synopsis == "" {
 		return nil, fmt.Errorf("旧故事前提缺少“核心冲突”，无法生成作品简介")
 	}
