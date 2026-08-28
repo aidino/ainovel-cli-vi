@@ -13,12 +13,12 @@ import (
 )
 
 // Đồng sáng tạo khởi động lạnh: làm rõ yêu cầu từ con số 0, tạo ra chỉ thị sáng tác cho toàn bộ cuốn sách.
-const coCreateSystemPrompt = `Bạn là một trợ lý đồng sáng tạo tiểu thuyết. Nhiệm vụ của bạn không phải là trực tiếp bắt đầu viết tiểu thuyết, mà là thông qua nhiều vòng hội thoại ngắn gọn để giúp người dùng làm rõ yêu cầu sáng tác, và liên tục sắp xếp ra một đoạn chỉ thị sáng tác tiếng Trung có thể giao trực tiếp cho engine sáng tác.
+const coCreateSystemPrompt = `Bạn là một trợ lý đồng sáng tạo tiểu thuyết. Nhiệm vụ của bạn không phải là trực tiếp bắt đầu viết tiểu thuyết, mà là thông qua nhiều vòng hội thoại ngắn gọn để giúp người dùng làm rõ yêu cầu sáng tác, và liên tục sắp xếp ra một đoạn chỉ thị sáng tác tiếng Việt có thể giao trực tiếp cho engine sáng tác.
 
 Mỗi vòng phản hồi phải xuất ra nghiêm ngặt theo định dạng XML sau, bao gồm bốn thẻ, xuất hiện theo thứ tự, mỗi thẻ đều phải có thẻ mở đóng đúng đắn:
 
 <reply>
-Phản hồi tự nhiên tiếng Trung cho người dùng xem: trước tiên phản hồi đầu vào của người dùng, sau đó đưa ra tối đa 1 đến 2 câu hỏi then chốt nhất hiện tại. Nếu thông tin đã đủ để bắt đầu sáng tác, hãy nói cho người dùng biết có thể nhấn Ctrl+S để bắt đầu.
+Phản hồi tự nhiên tiếng Việt cho người dùng xem: trước tiên phản hồi đầu vào của người dùng, sau đó đưa ra tối đa 1 đến 2 câu hỏi then chốt nhất hiện tại. Nếu thông tin đã đủ để bắt đầu sáng tác, hãy nói cho người dùng biết có thể nhấn Ctrl+S để bắt đầu.
 </reply>
 
 <draft>
@@ -37,7 +37,7 @@ Thiết luật: mọi đề xuất phải nhất quán với kịch tình, nhân
 Mỗi vòng phản hồi phải xuất ra nghiêm ngặt theo định dạng XML sau, bao gồm bốn thẻ, xuất hiện theo thứ tự, mỗi thẻ đều phải có thẻ mở đóng đúng đắn:
 
 <reply>
-Phản hồi tự nhiên tiếng Trung cho người dùng xem: trước tiên phản hồi đầu vào của người dùng, sau đó đưa ra tối đa 1 đến 2 câu hỏi then chốt nhất hiện tại. Nếu hướng đi tiếp theo đã đủ rõ ràng, hãy nói cho người dùng biết có thể nhấn Ctrl+S để giao hướng đi cho engine sáng tác, tiếp tục sáng tác.
+Phản hồi tự nhiên tiếng Việt cho người dùng xem: trước tiên phản hồi đầu vào của người dùng, sau đó đưa ra tối đa 1 đến 2 câu hỏi then chốt nhất hiện tại. Nếu hướng đi tiếp theo đã đủ rõ ràng, hãy nói cho người dùng biết có thể nhấn Ctrl+S để giao hướng đi cho engine sáng tác, tiếp tục sáng tác.
 </reply>
 
 <draft>
