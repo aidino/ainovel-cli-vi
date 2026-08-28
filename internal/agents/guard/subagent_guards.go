@@ -151,19 +151,19 @@ func NewArchitectStopGuard(st *store.Store, onBlock BlockHook) agentcore.StopGua
 			"book", "premise", "outline", "layered_outline", "characters", "world_rules",
 			"foundation_audit", "expand_arc", "append_volume", "update_compass", "complete_book", "revise_outline", "resolve_outline_feedback",
 		},
-		staticBlockMsg("你必须调用 save_book、save_foundation、revise_outline、resolve_outline_feedback 或 audit_foundation 将产出落盘后才能结束。只输出 Markdown/JSON 文字等于丢失。"),
+		staticBlockMsg("Bạn phải gọi save_book, save_foundation, revise_outline, resolve_outline_feedback hoặc audit_foundation để ghi sản phẩm xuống đĩa rồi mới được kết thúc. Chỉ xuất văn bản Markdown/JSON coi như mất."),
 		onBlock,
 	)
 }
 
-// NewEditorStopGuard 要求 editor 本轮落盘与"任务"匹配的产物后才能结束。
+// NewEditorStopGuard yêu cầu editor lượt này phải ghi sản phẩm khớp với "nhiệm vụ" rồi mới được kết thúc.
 //
-// 任务感知：被派去生成摘要时，仅 save_review（复核）不算完成——必须产出对应摘要。
-// 否则"被派生成弧摘要却先复核"的 editor 会满足旧的宽松判据提前结束，弧摘要永不落盘
-// （配合 dispatcher 去重哑火曾导致卷中骨架弧死循环，详见 outline-exhaustion-livelock）。
-// 终态工具退出同样会咨询 StopGuard（契约测试 TestContract_TerminalToolExitConsultsStopGuard），
-// 所以 save_review 在 build.go 里硬停是安全的：摘要任务里 editor 先复核时本 guard 会
-// 否决该次退出并催促，直到对应摘要落盘。
+// Nhận thức nhiệm vụ: khi được điều đi sinh tóm tắt, chỉ save_review (kiểm lại) không tính hoàn thành — phải sản xuất tóm tắt tương ứng.
+// Nếu không, editor "được điều sinh tóm tắt arc lại đi kiểm lại trước" sẽ thỏa tiêu chí rộng cũ mà kết thúc sớm, tóm tắt arc mãi không xuống đĩa
+// (cộng với khử trùng dispatcher thất bại từng gây vòng lặp arc khung trong tập, xem outline-exhaustion-livelock).
+// Thoát tool trạng thái cuối cũng sẽ hỏi StopGuard (test hợp đồng TestContract_TerminalToolExitConsultsStopGuard),
+// nên save_review dừng cứng trong build.go là an toàn: trong nhiệm vụ tóm tắt, editor đi kiểm lại trước thì guard này sẽ
+// phủ quyết lần thoát đó và thúc giục, cho đến khi tóm tắt tương ứng được ghi xuống đĩa.
 func NewEditorStopGuard(st *store.Store, task string, onBlock BlockHook) agentcore.StopGuard {
 	switch {
 	case strings.Contains(task, "save_volume_summary") || strings.Contains(task, "tóm tắt tập") || strings.Contains(task, "卷摘要"):
