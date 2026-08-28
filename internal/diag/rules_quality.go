@@ -220,7 +220,7 @@ func WordCountAnomaly(snap *Snapshot) []Finding {
 	for ch, w := range wc {
 		ratio := float64(w) / avg
 		if ratio < ThresholdWordShortRatio {
-			anomalies = append(anomalies, fmt.Sprintf("ch%d(%d字,%.0f%%)", ch, w, ratio*100))
+			anomalies = append(anomalies, fmt.Sprintf("ch%d(%d từ,%.0f%%)", ch, w, ratio*100))
 		} else if ratio > ThresholdWordLongRatio {
 			anomalies = append(anomalies, fmt.Sprintf("ch%d(%d字,%.0f%%)", ch, w, ratio*100))
 		}
@@ -235,9 +235,9 @@ func WordCountAnomaly(snap *Snapshot) []Finding {
 		Confidence: ConfLow,
 		AutoLevel:  AutoNone,
 		Target:     "context.window",
-		Title:      fmt.Sprintf("章节字数异常 (均值 %d 字)", int(math.Round(avg))),
+		Title:      fmt.Sprintf("Số từ chương bất thường (trung bình %d từ)", int(math.Round(avg))),
 		Evidence:   strings.Join(anomalies, "; "),
-		Suggestion: "极短章节可能是输出截断（token 限制），极长章节可能消耗过多上下文窗口。检查模型 max_tokens 配置。",
+		Suggestion: "Chương quá ngắn có thể do đầu ra bị cắt (giới hạn token), chương quá dài có thể tiêu hao quá nhiều cửa sổ ngữ cảnh. Kiểm tra cấu hình max_tokens của mô hình.",
 	}}
 }
 

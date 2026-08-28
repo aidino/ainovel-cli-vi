@@ -49,7 +49,7 @@ func RenderExport(rep Report, rc RuntimeCapture) []byte {
 	if st.Flow != "" {
 		fmt.Fprintf(&b, " / flow `%s`", st.Flow)
 	}
-	fmt.Fprintf(&b, " · 章节 %d/%d · 字数 %d\n", st.CompletedChapters, st.TotalChapters, st.TotalWords)
+	fmt.Fprintf(&b, " · 章节 %d/%d · số từ %d\n", st.CompletedChapters, st.TotalChapters, st.TotalWords)
 	if st.PlanningTier != "" {
 		fmt.Fprintf(&b, "- 规划 `%s`\n", st.PlanningTier)
 	}

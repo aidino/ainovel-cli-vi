@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"slices"
-	"unicode/utf8"
 
 	"github.com/voocel/agentcore/schema"
 	"github.com/voocel/ainovel-cli/internal/domain"
+	"github.com/voocel/ainovel-cli/internal/utils"
 	"github.com/voocel/ainovel-cli/internal/errs"
 	"github.com/voocel/ainovel-cli/internal/store"
 )
@@ -111,7 +111,7 @@ func (t *DraftChapterTool) Execute(_ context.Context, args json.RawMessage) (jso
 			"written":    true,
 			"chapter":    a.Chapter,
 			"mode":       "append",
-			"word_count": utf8.RuneCountInString(full),
+			"word_count": utils.CountWords(full),
 			"next_step":  "先 read_chapter(source=draft) 回读草稿，再调用 check_consistency，最后 commit_chapter",
 		})
 	default: // write
@@ -128,7 +128,7 @@ func (t *DraftChapterTool) Execute(_ context.Context, args json.RawMessage) (jso
 			"written":    true,
 			"chapter":    a.Chapter,
 			"mode":       "write",
-			"word_count": utf8.RuneCountInString(a.Content),
+			"word_count": utils.CountWords(a.Content),
 			"next_step":  "先 read_chapter(source=draft) 回读草稿，再调用 check_consistency，最后 commit_chapter",
 		})
 	}

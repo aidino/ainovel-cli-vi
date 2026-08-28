@@ -9,11 +9,11 @@ import (
 	"slices"
 	"strings"
 	"time"
-	"unicode/utf8"
 
 	"github.com/voocel/agentcore/schema"
 	"github.com/voocel/ainovel-cli/internal/chapterfacts"
 	"github.com/voocel/ainovel-cli/internal/domain"
+	"github.com/voocel/ainovel-cli/internal/utils"
 	"github.com/voocel/ainovel-cli/internal/errs"
 	"github.com/voocel/ainovel-cli/internal/revision"
 	"github.com/voocel/ainovel-cli/internal/rules"
@@ -228,7 +228,7 @@ func (t *CommitChapterTool) Execute(_ context.Context, args json.RawMessage) (js
 	if content == "" {
 		return nil, fmt.Errorf("no content found for chapter %d: %w", a.Chapter, errs.ErrToolPrecondition)
 	}
-	wordCount := utf8.RuneCountInString(content)
+	wordCount := utils.CountWords(content)
 
 	var pending domain.PendingCommit
 	if existingPending != nil {
@@ -553,7 +553,7 @@ func (t *CommitChapterTool) executeRewriteCommit(a commitArgs, progress *domain.
 	if content == "" {
 		return nil, fmt.Errorf("第 %d 章返工提交缺少 draft_content，无法安全恢复: %w", chapter, errs.ErrToolConflict)
 	}
-	wordCount := utf8.RuneCountInString(content)
+	wordCount := utils.CountWords(content)
 
 	// 2. 正文或标题至少一项发生变化；标题打磨无需伪造正文改动。
 	if !recovering {

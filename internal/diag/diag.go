@@ -13,8 +13,8 @@ const (
 	ThresholdDimScoreLow      = 70  // ChronicLowDimension: 维度均分低于此值告警
 	ThresholdContractMissRate = 0.3 // ContractMissPattern: 合同未达成率上限
 	ThresholdRewriteRate      = 0.5 // ExcessiveRewrites: 改写率上限
-	ThresholdWordShortRatio   = 0.4 // WordCountAnomaly: 字数低于均值此比例视为异常
-	ThresholdWordLongRatio    = 2.5 // WordCountAnomaly: 字数高于均值此比例视为异常
+	ThresholdWordShortRatio   = 0.4 // WordCountAnomaly: số từ dưới trung bình tỷ lệ này coi là bất thường
+	ThresholdWordLongRatio    = 2.5 // WordCountAnomaly: số từ trên trung bình tỷ lệ này coi là bất thường
 	ThresholdHookWeakScore    = 75  // HookWeakChain: hook 低于此分视为偏弱
 	ThresholdHookWeakChain    = 3   // HookWeakChain: 连续偏弱章数阈值
 	ThresholdPayoffMissRate   = 0.4 // PayoffMissPattern: payoff 未兑现率上限

@@ -7,6 +7,7 @@ import (
 
 	"github.com/voocel/agentcore/schema"
 	"github.com/voocel/ainovel-cli/internal/store"
+	"github.com/voocel/ainovel-cli/internal/utils"
 )
 
 // ReadChapterTool 读取章节原文，让 Agent 能回读自己和前文的文字。
@@ -158,7 +159,7 @@ func (t *ReadChapterTool) Execute(_ context.Context, args json.RawMessage) (json
 		"chapter":    a.Chapter,
 		"source":     a.Source,
 		"content":    content,
-		"word_count": len([]rune(content)),
+		"word_count": utils.CountWords(content),
 	})
 }
 
