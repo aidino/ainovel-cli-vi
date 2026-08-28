@@ -62,7 +62,7 @@ func newCheckpointDeltaGuard(st *store.Store, agentName string, requiredSteps []
 	return func(_ context.Context, info agentcore.StopInfo) agentcore.StopDecision {
 		// 不可恢复错误：直接升级，不浪费一次催促。
 		if _, hard := hardStopReasons[info.Message.StopReason]; hard {
-			slog.Error("subagent stop_guard 检测到不可恢复停机，立即升级",
+			slog.Error("subagent stop_guard phát hiện treo không thể phục hồi, leo thang ngay",
 				"module", "agent.guard", "agent", agentName,
 				"turn", info.TurnIndex, "stop_reason", info.Message.StopReason)
 			if onBlock != nil {
@@ -99,14 +99,14 @@ func newCheckpointDeltaGuard(st *store.Store, agentName string, requiredSteps []
 		lastBlockSeq.Store(latestSeq)
 		n := consecutive.Add(1)
 		if n > subagentMaxConsecutiveBlocks {
-			slog.Error("subagent stop_guard 连续阻拦超限，升级为终止",
+			slog.Error("subagent stop_guard chặn liên tiếp vượt hạn, leo thang thành chấm dứt",
 				"module", "agent.guard", "agent", agentName, "turn", info.TurnIndex, "consecutive", n)
 			if onBlock != nil {
 				onBlock(agentName, "escalated", n)
 			}
 			return agentcore.StopDecision{Allow: false, Escalate: true}
 		}
-		slog.Warn("subagent stop_guard 拦截 end_turn",
+		slog.Warn("subagent stop_guard chặn end_turn",
 			"module", "agent.guard", "agent", agentName, "turn", info.TurnIndex, "consecutive", n)
 		if onBlock != nil {
 			onBlock(agentName, "blocked", n)
@@ -136,11 +136,11 @@ func writerBlockMsg(seen map[string]struct{}) string {
 	_, hasCheck := seen["consistency_check"]
 	switch {
 	case !hasDraft && !hasEdit:
-		return "禁止结束：本轮尚未落盘任何正文。请按 plan_chapter → draft_chapter → check_consistency → commit_chapter 的顺序完成本章；正文只输出在聊天里等于丢失，必须通过工具落盘并提交。"
+		return "Cấm kết thúc: lượt này chưa ghi bất kỳ phần thân nào xuống đĩa. Hãy hoàn thành chương theo thứ tự plan_chapter → draft_chapter → check_consistency → commit_chapter; phần thân chỉ xuất trong chat coi như mất, bắt buộc ghi xuống đĩa qua tool và nộp."
 	case !hasCheck:
-		return "禁止结束：正文已落盘但未收尾。请先调 check_consistency 核对一致性，再调 commit_chapter 提交本章。draft_chapter / edit_chapter 只是保存草稿，不算完成。"
+		return "Cấm kết thúc: phần thân đã ghi nhưng chưa khép lại. Hãy trước hết gọi check_consistency đối chiếu tính nhất quán, rồi gọi commit_chapter nộp chương này. draft_chapter / edit_chapter chỉ là lưu bản thảo, không tính hoàn thành."
 	default:
-		return "禁止结束：本章只差 commit_chapter 提交。请立即调用 commit_chapter；若它返回错误，先按错误信息处理（核对章节号、按提示补齐前置动作）再重试提交，不要在未提交的状态下结束。"
+		return "Cấm kết thúc: chương này chỉ còn thiếu commit_chapter. Hãy gọi commit_chapter ngay; nếu nó trả lỗi, trước hết xử lý theo thông tin lỗi (đối chiếu số chương, bổ sung hành động tiền đề theo gợi ý) rồi thử nộp lại, đừng kết thúc khi chưa nộp."
 	}
 }
 

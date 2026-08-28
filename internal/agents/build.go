@@ -65,7 +65,7 @@ func ParseThinkingLevel(s string) (agentcore.ThinkingLevel, error) {
 		agentcore.ThinkingHigh, agentcore.ThinkingXHigh, agentcore.ThinkingMax:
 		return lv, nil
 	default:
-		return "", fmt.Errorf("无效推理强度 %q（可选：off/low/medium/high/xhigh/max）", s)
+		return "", fmt.Errorf("cường độ suy luận không hợp lệ %q (chọn: off/low/medium/high/xhigh/max)", s)
 	}
 }
 
@@ -89,7 +89,7 @@ func AvailableThinkingForModel(model agentcore.ChatModel) []agentcore.ThinkingLe
 func roleThinking(cfg bootstrap.Config, role string) agentcore.ThinkingLevel {
 	lv, err := ParseThinkingLevel(cfg.ResolveReasoningEffort(role))
 	if err != nil {
-		slog.Warn("忽略无效推理强度配置", "module", "agent", "role", role, "err", err)
+		slog.Warn("bỏ qua cấu hình cường độ suy luận không hợp lệ", "module", "agent", "role", role, "err", err)
 		return ""
 	}
 	return lv
@@ -146,7 +146,7 @@ func BuildWorkers(
 
 	// Provider failover 只记日志,不通知宿主
 	reportFailover := func(ev bootstrap.FailoverEvent) {
-		slog.Warn("provider 切换",
+		slog.Warn("chuyển provider",
 			"module", "agent",
 			"role", ev.Role,
 			"reason", ev.Reason,
@@ -192,7 +192,7 @@ func BuildWorkers(
 	architectThinking, _ := ResolveThinkingForModel(architectModel, roleThinking(cfg, "architect"))
 	architectShort := subagent.Config{
 		Name:             "architect_short",
-		Description:      "短篇规划师：为单卷、单冲突、高密度故事生成紧凑设定与扁平大纲",
+		Description:      "Quy hoạch sư truyện ngắn: sinh thiết lập đặc chắc và đại cương phẳng cho truyện một tập, một xung đột, mật độ cao",
 		Model:            architectModel,
 		SystemPrompt:     bundle.Prompts.ArchitectShort,
 		Tools:            architectTools,
@@ -209,7 +209,7 @@ func BuildWorkers(
 	}
 	architectLong := subagent.Config{
 		Name:                "architect_long",
-		Description:         "长篇规划师：为连载型、可持续升级的故事生成分层设定与卷弧大纲",
+		Description:         "Quy hoạch sư trường thiên: sinh thiết lập phân tầng và đại cương tập arc cho truyện dài kỳ nâng cấp bền vững",
 		Model:               architectModel,
 		SystemPrompt:        bundle.Prompts.ArchitectLong,
 		Tools:               architectTools,
@@ -232,7 +232,7 @@ func BuildWorkers(
 
 	writer := subagent.Config{
 		Name:             "writer",
-		Description:      "创作者：自主完成一章的构思、写作、自审和提交",
+		Description:      "Người sáng tác: tự chủ hoàn thànhthiết tưởng, viết, tự kiểm và nộp một chương",
 		Model:            writerModel,
 		SystemPrompt:     writerPrompt,
 		Tools:            writerTools,
@@ -278,7 +278,7 @@ func BuildWorkers(
 
 	editor := subagent.Config{
 		Name:             "editor",
-		Description:      "审阅者：阅读原文，从结构和审美两个层面发现问题",
+		Description:      "Người đọc kiểm: đọc nguyên văn, phát hiện vấn đề ở hai tầng kết cấu và thẩm mỹ",
 		Model:            editorModel,
 		SystemPrompt:     bundle.Prompts.Editor,
 		Tools:            editorTools,
