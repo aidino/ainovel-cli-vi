@@ -12,7 +12,7 @@ import (
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
-// ResolveOutlineFeedbackTool 落盘“现有计划仍适用”的审查结论并消费反馈。
+// ResolveOutlineFeedbackTool Ghi đĩa kết luận kiểm tra 'kế hoạch hiện tại vẫn áp dụng' và tiêu thụ phản hồi.
 type ResolveOutlineFeedbackTool struct{ store *store.Store }
 
 func NewResolveOutlineFeedbackTool(store *store.Store) *ResolveOutlineFeedbackTool {

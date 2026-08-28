@@ -13,10 +13,10 @@ import (
 	"github.com/voocel/ainovel-cli/internal/bootstrap"
 )
 
-// Command 是 `ainovel-cli eval` 子命令入口，返回进程退出码：
-// 0=PASS/WARN，1=有 case FAIL，2=用法/配置错误。
+// Command là điểm vào của lệnh con `ainovel-cli eval`, trả về mã thoát của tiến trình:
+// 0=PASS/WARN, 1=có case FAIL, 2=lỗi cách dùng/cấu hình.
 //
-// 清晰流程：加载配置 → 加载 case → 按 single/A-B 编排运行 → 采集 → 评分 → 聚合 → 报告。
+// Quy trình rõ ràng: Tải cấu hình → tải case → sắp xếp chạy theo single/A-B → thu thập → chấm điểm → tổng hợp → báo cáo.
 func Command(argv []string) int {
 	fs := flag.NewFlagSet("eval", flag.ContinueOnError)
 	casesPath := fs.String("cases", "", "thư mục case hoặc một file .json đơn (bắt buộc)")
@@ -40,8 +40,8 @@ func Command(argv []string) int {
 		return 2
 	}
 
-	// eval 的 -config 指向独立文件时按单文件加载（可复现、不被本机全局/项目污染）；
-	// 缺省则走默认的全局+项目两层合并。
+	// Khi -config của eval trỏ tới file độc lập, sẽ tải theo dạng file đơn (có thể tái tạo, không bị ô nhiễm bởi toàn cục/dự án của máy);
+	// Nếu thiếu thì đi theo gộp hai lớp toàn cục+dự án mặc định.
 	loadConfig := bootstrap.LoadConfig
 	if strings.TrimSpace(*configPath) != "" {
 		loadConfig = func() (bootstrap.Config, error) { return bootstrap.LoadConfigFile(*configPath) }
@@ -93,13 +93,13 @@ func Command(argv []string) int {
 		}
 		var progressW io.Writer
 		if !*ci {
-			progressW = os.Stderr // CI 模式静默逐事件输出，保持日志干净
+			progressW = os.Stderr // Chế độ CI xuất từng sự kiện một cách tĩnh lặng, giữ cho log sạch sẽ
 		}
 
 		if variantName == "" {
 			runs := make([]RunResult, 0, *repeat)
 			for i := 1; i <= *repeat; i++ {
-				bundle := assets.Load(style, assets.LoadOptions{}) // 纯内置,确定性 baseline,不受本机覆盖污染
+				bundle := assets.Load(style, assets.LoadOptions{}) // Thuần tích hợp, baseline xác định, không bị ô nhiễm bởi ghi đè trên máy
 				dir := runDir(*outDir, c.ID, ArmSingle, i, *repeat)
 				res := runOne(cfg, bundle, c, dir, *timeout, progressW)
 				res.Arm, res.Repeat = ArmSingle, i
@@ -172,7 +172,7 @@ func runDir(outDir, caseID, arm string, repeat, totalRepeats int) string {
 	return filepath.Join(outDir, "artifacts", caseID, fmt.Sprintf("r%d", repeat), arm)
 }
 
-// loadVariant 读取 variant 目录下所有 *.md（文件名→内容）。空目录返回空 map。
+// loadVariant đọc tất cả *.md trong thư mục variant (tên file→nội dung). Thư mục rỗng trả về map rỗng.
 func loadVariant(dir string) (map[string]string, error) {
 	if strings.TrimSpace(dir) == "" {
 		return nil, nil
@@ -200,8 +200,8 @@ func loadVariant(dir string) (map[string]string, error) {
 
 func applyVariant(b *assets.Bundle, prompts map[string]string) error {
 	for file, raw := range prompts {
-		// voice.md 是文风层独立 variant 入口:只替换文风段,协议模板不动,
-		// 组装仍走 BuildWriterPrompt 同一路径(docs/voice-layer.md §3.6)。
+		// voice.md là đầu vào variant độc lập ở lớp văn phong: chỉ thay thế đoạn văn phong, mẫu giao thức giữ nguyên,
+		// việc lắp ráp vẫn đi qua cùng một đường dẫn BuildWriterPrompt (docs/voice-layer.md §3.6).
 		if file == "voice.md" {
 			b.OverrideVoice(raw)
 			continue

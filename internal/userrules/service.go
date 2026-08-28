@@ -10,25 +10,25 @@ import (
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
-// Service 编排用户规则快照的生成与更新：归一化各来源 → 确定性合并 → 落盘。
+// Service biên đạo việc sinh và cập nhật điểm khôi phục quy tắc người dùng: chuẩn hóa các nguồn → gộp xác định → ghi đĩa.
 //
-// 两个调用方共用同一套逻辑：
-//   - 开书/刷新：Build / GetOrBuild，由 Host 确定性调用。
-//   - 运行中更新：Arbiter 提取 rules 后，Host 调用 AddRuntimeRule。
+// Hai bên gọi dùng chung một bộ logic:
+//   - Mở sách/Làm mới: Build / GetOrBuild, do Host gọi một cách xác định.
+//   - Cập nhật lúc chạy: Sau khi Trọng tài trích xuất rules, Host gọi AddRuntimeRule.
 type Service struct {
 	store     *store.Store
 	norm      *Normalizer
 	rulesOpts rules.LoadOptions
 }
 
-// NewService 构造服务。model 用于归一化（应为能力较强的模型）；model 为 nil 时
-// 所有来源降级为 raw preferences（仍可产出快照，机械检查由 system_defaults 兜底）。
+// NewService cấu trúc dịch vụ. model dùng để chuẩn hóa (nên là model có năng lực mạnh); khi model là nil
+// mọi nguồn bị hạ cấp thành raw preferences (vẫn có thể sinh ra điểm khôi phục, kiểm tra máy móc do system_defaults bọc đáy).
 func NewService(st *store.Store, model agentcore.ChatModel, opts rules.LoadOptions) *Service {
 	return &Service{store: st, norm: NewNormalizer(model), rulesOpts: opts}
 }
 
-// normalizeOrDegrade 归一化一个来源；失败时记录真实错误并降级为 raw preferences
-// （快照 Status=degraded、原文保留）——降级是可见事实，错误原因进日志。
+// normalizeOrDegrade chuẩn hóa một nguồn; khi thất bại thì ghi lại lỗi thực sự và hạ cấp thành raw preferences
+// (điểm khôi phục Status=degraded, nguyên văn được giữ lại) —— hạ cấp là sự thật nhìn thấy được, lý do lỗi vào nhật ký.
 func (s *Service) normalizeOrDegrade(ctx context.Context, source, text string) rules.Candidate {
 	cand, err := s.norm.Normalize(ctx, source, text)
 	if err != nil {
@@ -38,8 +38,8 @@ func (s *Service) normalizeOrDegrade(ctx context.Context, source, text string) r
 	return cand
 }
 
-// Build 从静态来源（system_defaults + rules 文件 + 启动 prompt）归一化生成快照并落盘。
-// 开书/刷新时调用。startupPrompt 可空。
+// Build chuẩn hóa từ các nguồn tĩnh (system_defaults + file rules + prompt khởi động) sinh ra điểm khôi phục và ghi đĩa.
+// Gọi khi mở sách/làm mới. startupPrompt có thể rỗng.
 func (s *Service) Build(ctx context.Context, startupPrompt string) (*rules.Snapshot, error) {
 	cands := []rules.Candidate{rules.SystemDefaults()}
 	for _, rs := range rules.RawFileSources(s.rulesOpts) {
@@ -55,8 +55,8 @@ func (s *Service) Build(ctx context.Context, startupPrompt string) (*rules.Snaps
 	return &snap, nil
 }
 
-// GetOrBuild 返回当前快照；缺失时按 system_defaults + rules 文件初始化。
-// 运行时读取路径统一走这里。
+// GetOrBuild trả về điểm khôi phục hiện tại; khi thiếu sẽ khởi tạo theo system_defaults + file rules.
+// Đường dẫn đọc lúc chạy hợp nhất đi qua đây.
 func (s *Service) GetOrBuild(ctx context.Context) (*rules.Snapshot, error) {
 	cur, err := s.store.UserRules.Load()
 	if err != nil {
@@ -68,9 +68,9 @@ func (s *Service) GetOrBuild(ctx context.Context) (*rules.Snapshot, error) {
 	return s.Build(ctx, "")
 }
 
-// AddRuntimeRule 归一化一条运行中长期规则，以最高优先级叠加到当前快照并落盘。
-// 永不因归一化失败而报错——失败时该条降级为 raw preferences。
-// 返回叠加后的快照与本次的归一化候选。
+// AddRuntimeRule chuẩn hóa một quy tắc dài hạn lúc chạy, gộp đè lên điểm khôi phục hiện tại với độ ưu tiên cao nhất và ghi đĩa.
+// Không bao giờ báo lỗi vì chuẩn hóa thất bại —— khi thất bại thì mục đó hạ cấp thành raw preferences.
+// Trả về điểm khôi phục sau khi gộp đè và ứng viên chuẩn hóa của lần này.
 func (s *Service) AddRuntimeRule(ctx context.Context, text string) (*rules.Snapshot, rules.Candidate, error) {
 	cur, err := s.GetOrBuild(ctx)
 	if err != nil {

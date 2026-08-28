@@ -158,7 +158,7 @@ Tham chiếu `planning_memory.completion_signals` và `planning_memory.compass`,
 
 **Nhắc nhở bẫy hai chiều**:
 - **Thu bút quá sớm**: nhân vật chính đạt trưởng thành tinh thần + mâu thuẫn chính ổn định hóa ≠ toàn truyện hoàn thành. Thiên lệch huấn luyện của mô hình nghiêng về "thấy thế ổn định là thu bút", nhưng độc giả dài kỳ mong đợi "sau thế ổn định mở xung đột mới → nâng cấp lăn". Trước khi phán "kết mở kiểu thường ngày" là điểm kết, phải chính diện qua điều 2-3 trước, đừng bị không khí ổn định của chương cuối tập cuốn đi.
-- **Kéo truyện nhồi nước": kết thúc đã trả lời, trục dài đã thu, chỉ vì số chương chưa tới estimated_scale mà cố mở xung đột mới, là sự phản bội lớn hơn với độc giả. Truyện đã tới điểm kết thì tuyên bố tập ca nhận mà thu dignified — `completion_signals.final_volume` tồn tại nghĩa là đã tuyên bố, đừng tuyên bố lặp, cũng đừng append tập thường mới sau khi tuyên bố (điều đó sẽ giải trừ trạng thái ca nhận).
+- **Kéo truyện nhồi nước**: kết thúc đã trả lời, trục dài đã thu, chỉ vì số chương chưa tới estimated_scale mà cố mở xung đột mới, là sự phản bội lớn hơn với độc giả. Truyện đã tới điểm kết thì tuyên bố tập ca nhận mà thu dignified — `completion_signals.final_volume` tồn tại nghĩa là đã tuyên bố, đừng tuyên bố lặp, cũng đừng append tập thường mới sau khi tuyên bố (điều đó sẽ giải trừ trạng thái ca nhận).
 
 Yêu cầu: tập này đảm nhận chức năng tường thuật khác với tập trước; arc đầu nối tự nhiên với kết tập trước; kiểm tra các chi tiết gieo mầm chưa thu và bố trí thu hồi trong mục tiêu arc.
 

@@ -15,35 +15,35 @@ import (
 
 func TestAllowsFilter(t *testing.T) {
 	if New("", nil).allows(KindDeadlock) != true {
-		t.Error("events 缺省应全放行")
+		t.Error("events mặc định nên cho phép tất cả")
 	}
 	n := New("", []string{KindRunEnd, KindBudget})
 	if !n.allows(KindRunEnd) || !n.allows(KindBudget) {
-		t.Error("列入的 kind 应放行")
+		t.Error("列入的 kind 应放dòng ")
 	}
 	if n.allows(KindDeadlock) {
-		t.Error("未列入的 kind 应拦截")
+		t.Error("未列入的 kind 应chặn")
 	}
 	var nilN *Notifier
 	if nilN.allows(KindRunEnd) {
-		t.Error("nil Notifier 应拦截一切")
+		t.Error("nil Notifier 应chặn一切")
 	}
-	nilN.Send(Notification{Kind: KindRunEnd}) // 不应 panic
+	nilN.Send(Notification{Kind: KindRunEnd}) // không nên panic
 }
 
 func TestKindsAreUniqueAndKnown(t *testing.T) {
 	seen := map[string]bool{}
 	for _, kind := range Kinds() {
 		if kind == "" || seen[kind] {
-			t.Fatalf("通知事件名必须非空且唯一: %q", kind)
+			t.Fatalf("通知事件名phải 非空và唯一: %q", kind)
 		}
 		seen[kind] = true
 		if !IsKnownKind(kind) {
-			t.Fatalf("Kinds 与 IsKnownKind 不一致: %q", kind)
+			t.Fatalf("Kinds 与 IsKnownKind không nhất quán: %q", kind)
 		}
 	}
 	if IsKnownKind("repeat") {
-		t.Fatal("旧 repeat 事件不应继续出现在新契约中")
+		t.Fatal("旧 repeat 事件不应继续xuất hiện 在新契约中")
 	}
 }
 
@@ -63,17 +63,17 @@ func TestCommandChannelEnvAndStdin(t *testing.T) {
 			`[System.IO.File]::WriteAllText(` + powerShellQuote(jsonFile) + `, $payload, $utf8)`
 	}
 	n := New(command, nil)
-	nt := Notification{Kind: KindBudget, Level: "warn", Title: "ainovel: 预算", Body: "已花费 $8.00"}
+	nt := Notification{Kind: KindBudget, Level: "warn", Title: "ainovel: ngân sách ", Body: "已花费 $8.00"}
 	if err := n.deliverError(nt); err != nil {
-		t.Fatalf("command 执行失败: %v", err)
+		t.Fatalf("command thực thi thất bại: %v", err)
 	}
 
 	env, err := os.ReadFile(envFile)
 	if err != nil {
-		t.Fatalf("command 未执行: %v", err)
+		t.Fatalf("command 未thực thi : %v", err)
 	}
-	if got := strings.TrimSpace(string(env)); got != "budget|warn|ainovel: 预算|已花费 $8.00" {
-		t.Errorf("环境变量传递不符: %q", got)
+	if got := strings.TrimSpace(string(env)); got != "budget|warn|ainovel: ngân sách |已花费 $8.00" {
+		t.Errorf("biến môi trường 传递không khớp : %q", got)
 	}
 
 	raw, err := os.ReadFile(jsonFile)
@@ -82,10 +82,10 @@ func TestCommandChannelEnvAndStdin(t *testing.T) {
 	}
 	var decoded Notification
 	if err := json.Unmarshal(raw, &decoded); err != nil {
-		t.Fatalf("stdin 非合法 JSON: %v", err)
+		t.Fatalf("stdin 非hợp lệ  JSON: %v", err)
 	}
 	if decoded != nt {
-		t.Errorf("stdin JSON 不符: %+v", decoded)
+		t.Errorf("stdin JSON không khớp: %+v", decoded)
 	}
 }
 
@@ -100,10 +100,10 @@ func TestCommandChannelTimeoutKill(t *testing.T) {
 	start := time.Now()
 	err := n.deliverError(Notification{Kind: KindRunEnd})
 	if !errors.Is(err, context.DeadlineExceeded) {
-		t.Fatalf("超时命令应返回 context deadline exceeded，got %v", err)
+		t.Fatalf("hết giờ 命令nên trả về context deadline exceeded，got %v", err)
 	}
 	if elapsed := time.Since(start); elapsed > 5*time.Second {
-		t.Fatalf("超时未强杀, 阻塞 %v", elapsed)
+		t.Fatalf("hết giờ 未强杀, chặn  %v", elapsed)
 	}
 }
 
@@ -113,7 +113,7 @@ func TestFindPowerShellPrefersPwsh(t *testing.T) {
 	}
 	want, err := exec.LookPath("pwsh.exe")
 	if err != nil {
-		t.Skip("pwsh.exe 未安装，仅验证 Windows PowerShell 兼容路径")
+		t.Skip("pwsh.exe 未安装，仅xác minh Windows PowerShell 兼容đường dẫn")
 	}
 	got, err := findPowerShell()
 	if err != nil {

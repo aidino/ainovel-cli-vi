@@ -16,7 +16,7 @@ const validGlobal = `{
   "providers": { "openrouter": { "api_key": "sk-test-123456" } }
 }`
 
-// writeGlobal 在隔离的 HOME 下写入全局配置，并返回该 HOME。
+// writeGlobal 在隔离的 HOME 下ghi toàn cục cấu hình，并trả về 该 HOME。
 func writeGlobal(t *testing.T, content string) string {
 	t.Helper()
 	home := t.TempDir()
@@ -35,8 +35,8 @@ func writeGlobal(t *testing.T, content string) string {
 	return home
 }
 
-// writeProjectConfig 在当前工作目录的 ./.ainovel/ 下写入项目级配置。
-// 调用前需先 t.Chdir 到目标目录。
+// writeProjectConfig 在当前工作thư mục的 ./.ainovel/ 下ghi 项目级cấu hình。
+// gọi 前需先 t.Chdir 到目标thư mục。
 func writeProjectConfig(t *testing.T, content string) {
 	t.Helper()
 	if err := os.MkdirAll(".ainovel", 0o755); err != nil {
@@ -47,7 +47,7 @@ func writeProjectConfig(t *testing.T, content string) {
 	}
 }
 
-// 根因 3：项目级 ./.ainovel/config.json 存在但是坏 JSON，必须报错，不能静默吞掉退回全局。
+// 根因 3：项目级 ./.ainovel/config.json 存在但是坏 JSON，phải báo lỗi，不能静默吞掉退回toàn cục 。
 func TestLoadConfig_CorruptProjectFailsLoud(t *testing.T) {
 	writeGlobal(t, validGlobal)
 	proj := t.TempDir()
@@ -56,12 +56,12 @@ func TestLoadConfig_CorruptProjectFailsLoud(t *testing.T) {
 	writeProjectConfig(t, `{ "model": "x", }`)
 
 	if _, err := LoadConfig(); err == nil {
-		t.Fatal("坏的 ./.ainovel/config.json 应当报错，却被静默忽略了")
+		t.Fatal("坏的 ./.ainovel/config.json 应当báo lỗi，却被静默bỏ qua 了")
 	}
 }
 
-// 全局是最低优先级基底：坏文件不得阻断更高优先级的项目级覆盖（回归守卫——
-// 上一版误把全局也 fail-loud，导致"坏全局 + 有效项目配置"的用户被无关文件挡住）。
+// toàn cục 是最低优先级基底：坏tệp不得阻断更高优先级的项目级ghi đè（回归守卫——
+// 上一版误把toàn cục 也 fail-loud，导致"坏toàn cục  + 有效项目cấu hình"的người dùng 被无关tệp挡住）。
 func TestLoadConfig_CorruptGlobalDoesNotBlockProjectOverride(t *testing.T) {
 	writeGlobal(t, `{ not json`)
 	proj := t.TempDir()
@@ -70,21 +70,21 @@ func TestLoadConfig_CorruptGlobalDoesNotBlockProjectOverride(t *testing.T) {
 
 	cfg, err := LoadConfig()
 	if err != nil {
-		t.Fatalf("坏全局不应阻断有效项目级配置，得到: %v", err)
+		t.Fatalf("坏toàn cục 不应阻断有效项目级cấu hình，nhận được : %v", err)
 	}
 	if cfg.Provider != "openrouter" {
-		t.Errorf("应使用项目级配置的值，得到 provider=%q", cfg.Provider)
+		t.Errorf("应使用项目级cấu hình的值，nhận được  provider=%q", cfg.Provider)
 	}
 }
 
-// 就近编辑：项目目录有 ./.ainovel/config.json 时 EffectiveConfigPath 指向它（绝对路径），
-// 否则回落全局——/config 与 /model 都据此决定写盘位置。
+// 就近biên tập viên ：项目thư mục有 ./.ainovel/config.json 时 EffectiveConfigPath 指向它（绝对đường dẫn），
+// 否则rơi lạitoàn cục ——/config 与 /model 都据此决定写盘位置。
 func TestEffectiveConfigPathPrefersProject(t *testing.T) {
 	writeGlobal(t, validGlobal)
 
-	t.Chdir(t.TempDir()) // 无项目配置
+	t.Chdir(t.TempDir()) // 无项目cấu hình
 	if got := EffectiveConfigPath(); got != DefaultConfigPath() {
-		t.Fatalf("无项目配置应回落全局，got %q want %q", got, DefaultConfigPath())
+		t.Fatalf("无项目cấu hình应rơi lạitoàn cục ，got %q want %q", got, DefaultConfigPath())
 	}
 
 	proj := t.TempDir()
@@ -95,23 +95,23 @@ func TestEffectiveConfigPathPrefersProject(t *testing.T) {
 		t.Fatalf("abs: %v", err)
 	}
 	if got := EffectiveConfigPath(); got != wantAbs {
-		t.Fatalf("有项目配置应写项目，got %q want %q", got, wantAbs)
+		t.Fatalf("有项目cấu hình应写项目，got %q want %q", got, wantAbs)
 	}
 }
 
-// 文件不存在是正常情况（便携/首次），不能报错。
+// tệpkhông tồn tại是正常情况（便携/首次），不能báo lỗi。
 func TestLoadConfig_MissingFilesNoError(t *testing.T) {
 	home := t.TempDir()
-	t.Setenv("HOME", home) // ~/.ainovel/config.json 不存在
+	t.Setenv("HOME", home) // ~/.ainovel/config.json không tồn tại
 	t.Setenv("USERPROFILE", home)
-	t.Chdir(t.TempDir()) // 也没有 ./.ainovel/config.json
+	t.Chdir(t.TempDir()) // cũng không có ./.ainovel/config.json
 
 	if _, err := LoadConfig(); err != nil {
-		t.Fatalf("缺失配置文件不应报错，得到: %v", err)
+		t.Fatalf("thiếu cấu hìnhtệp不nên báo lỗi，nhận được : %v", err)
 	}
 }
 
-// 正常路径：全局 + 项目级合并生效。
+// 正常đường dẫn：toàn cục  + 项目级合并生效。
 func TestLoadConfig_ValidMergeWorks(t *testing.T) {
 	writeGlobal(t, validGlobal)
 	proj := t.TempDir()
@@ -130,19 +130,19 @@ func TestLoadConfig_ValidMergeWorks(t *testing.T) {
 
 	cfg, err := LoadConfig()
 	if err != nil {
-		t.Fatalf("有效配置不应报错: %v", err)
+		t.Fatalf("有效cấu hình不nên báo lỗi: %v", err)
 	}
 	if cfg.Provider != "openrouter" {
-		t.Errorf("provider 应保留全局值 openrouter，得到 %q", cfg.Provider)
+		t.Errorf("provider 应giữ lại toàn cục 值 openrouter，nhận được  %q", cfg.Provider)
 	}
 	if cfg.ModelName != "google/gemini-2.5-pro" {
-		t.Errorf("model 应被项目级覆盖，得到 %q", cfg.ModelName)
+		t.Errorf("model 应被项目级ghi đè，nhận được  %q", cfg.ModelName)
 	}
 	if cfg.ReasoningEffort != "high" {
-		t.Errorf("reasoning_effort 应被项目级覆盖，得到 %q", cfg.ReasoningEffort)
+		t.Errorf("reasoning_effort 应被项目级ghi đè，nhận được  %q", cfg.ReasoningEffort)
 	}
 	if got := cfg.Roles["writer"].ReasoningEffort; got != "low" {
-		t.Errorf("roles.writer.reasoning_effort 应被项目级覆盖，得到 %q", got)
+		t.Errorf("roles.writer.reasoning_effort 应被项目级ghi đè，nhận được  %q", got)
 	}
 }
 
@@ -210,8 +210,8 @@ func TestMergeConfig_ProviderExtraFields(t *testing.T) {
 	}
 }
 
-// 根因 2（issue #37 核心复现）：项目级覆盖 provider 但没声明对应 providers 凭证，
-// ValidateBase 必须报 config 错误（而非放行后在更深处崩溃）。
+// 根因 2（issue #37 核心复现）：项目级ghi đè provider 但没声明对应 providers 凭证，
+// ValidateBase phải 报 config lỗi （而非放dòng 后在更深处đổ vỡ ）。
 func TestValidateBase_ProviderOverrideWithoutCredentials(t *testing.T) {
 	cfg := Config{
 		Provider:  "mimo",
@@ -223,10 +223,10 @@ func TestValidateBase_ProviderOverrideWithoutCredentials(t *testing.T) {
 	cfg.FillDefaults()
 	err := cfg.ValidateBase()
 	if err == nil {
-		t.Fatal("provider 缺凭证应报错")
+		t.Fatal("provider 缺凭证nên báo lỗi")
 	}
 	if !errors.Is(err, errs.ErrConfig) {
-		t.Errorf("应包装 errs.ErrConfig，得到: %v", err)
+		t.Errorf("应包装 errs.ErrConfig，nhận được : %v", err)
 	}
 }
 
@@ -241,10 +241,10 @@ func TestValidateBaseRejectsInvalidProviderAPI(t *testing.T) {
 	cfg.FillDefaults()
 	err := cfg.ValidateBase()
 	if err == nil {
-		t.Fatal("provider api 非法应报错")
+		t.Fatal("provider api 非法nên báo lỗi")
 	}
 	if !errors.Is(err, errs.ErrConfig) {
-		t.Errorf("应包装 errs.ErrConfig，得到: %v", err)
+		t.Errorf("应包装 errs.ErrConfig，nhận được : %v", err)
 	}
 }
 
@@ -259,29 +259,29 @@ func TestValidateBaseRejectsProviderAPIOnNonOpenAIProvider(t *testing.T) {
 	cfg.FillDefaults()
 	err := cfg.ValidateBase()
 	if err == nil {
-		t.Fatal("非 OpenAI provider 配置 api 应报错")
+		t.Fatal("非 OpenAI provider cấu hình api nên báo lỗi")
 	}
 	if !errors.Is(err, errs.ErrConfig) {
-		t.Errorf("应包装 errs.ErrConfig，得到: %v", err)
+		t.Errorf("应包装 errs.ErrConfig，nhận được : %v", err)
 	}
 }
 
-// 示例配置必须自洽：去注释后是合法 JSON、
-// 顶层 provider 指针不悬空、且点破了“指针”心智——它是用户照抄的样板，自己坏了就坑人。
+// 示例cấu hìnhphải 自洽：去注释后是hợp lệ  JSON、
+// 顶层 provider 指针不悬空、và点破了“指针”心智——它是người dùng 照抄的样板，自己坏了就坑人。
 func TestExampleConfigIsValidAndSelfConsistent(t *testing.T) {
 	if exampleConfig == "" {
-		t.Fatal("go:embed 未生效，exampleConfig 为空")
+		t.Fatal("go:embed 未生效，exampleConfig trống")
 	}
 	rootExample, err := os.ReadFile(filepath.Join("..", "..", "config.example.jsonc"))
 	if err != nil {
-		t.Fatalf("读取根目录 config.example.jsonc: %v", err)
+		t.Fatalf("đọc 根thư mục config.example.jsonc: %v", err)
 	}
 	if string(rootExample) != exampleConfig {
-		t.Fatal("根目录 config.example.jsonc 与 internal/bootstrap/config.example.jsonc 不一致")
+		t.Fatal("根thư mục config.example.jsonc 与 internal/bootstrap/config.example.jsonc không nhất quán")
 	}
 	var cfg Config
 	if err := json.Unmarshal(stripJSONComments([]byte(exampleConfig)), &cfg); err != nil {
-		t.Fatalf("内置示例去注释后不是合法 JSON（用户照抄即坑）: %v", err)
+		t.Fatalf("内置示例去注释后不是hợp lệ  JSON（người dùng 照抄即坑）: %v", err)
 	}
 	if cfg.Provider == "" || cfg.ModelName == "" {
 		t.Fatal("示例应给出默认 provider/model")
@@ -301,14 +301,14 @@ func TestWriteStartupError(t *testing.T) {
 
 	path := WriteStartupError("boom: provider not configured")
 	if path == "" {
-		t.Fatal("应返回落盘路径")
+		t.Fatal("nên trả về落盘đường dẫn")
 	}
 	data, err := os.ReadFile(path)
 	if err != nil {
-		t.Fatalf("读取 last-error.log: %v", err)
+		t.Fatalf("đọc  last-error.log: %v", err)
 	}
 	if want := "boom: provider not configured"; !contains(string(data), want) {
-		t.Errorf("日志应包含 %q，实际: %s", want, data)
+		t.Errorf("日志nên chứa %q，thực tế : %s", want, data)
 	}
 }
 

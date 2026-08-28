@@ -20,10 +20,10 @@ func completeShortFoundation(t *testing.T) *store.Store {
 	if err := s.Progress.Init(1); err != nil {
 		t.Fatal(err)
 	}
-	if err := s.Book.Save(domain.BookMetadata{Title: "审查测试", Synopsis: "林舟在夜禁之城寻找生路。"}); err != nil {
+	if err := s.Book.Save(domain.BookMetadata{Title: "审查kiểm tra ", Synopsis: "林舟在夜禁之城寻找生路。"}); err != nil {
 		t.Fatal(err)
 	}
-	if err := s.Outline.SavePremise("# 审查测试\n\n## 主角目标\n林舟求生"); err != nil {
+	if err := s.Outline.SavePremise("# 审查kiểm tra \n\n## 主角目标\n林舟求生"); err != nil {
 		t.Fatal(err)
 	}
 	if err := s.Outline.SaveOutline([]domain.OutlineEntry{{Chapter: 1, Title: "求生", CoreEvent: "林舟脱险"}}); err != nil {
@@ -58,9 +58,9 @@ func TestAuditFoundationControlsWritingTransition(t *testing.T) {
 	failed, _ := json.Marshal(map[string]any{
 		"fingerprint": fingerprint,
 		"ready":       false,
-		"summary":     "角色名不一致",
+		"summary":     "nhân vật名không nhất quán",
 		"issues": []map[string]any{{
-			"artifact": "characters", "description": "人物不一致", "evidence": "前提为林舟，角色表为他人", "suggestion": "统一角色",
+			"artifact": "characters", "description": "人物không nhất quán", "evidence": "前提为林舟，nhân vật表为他人", "suggestion": "统一nhân vật",
 		}},
 	})
 	if _, err := tool.Execute(context.Background(), failed); err != nil {
@@ -73,7 +73,7 @@ func TestAuditFoundationControlsWritingTransition(t *testing.T) {
 	passed, _ := json.Marshal(map[string]any{
 		"fingerprint": fingerprint,
 		"ready":       true,
-		"summary":     "基础设定一致",
+		"summary":     "基础thiết lập nhất quán ",
 		"issues":      []any{},
 	})
 	if _, err := tool.Execute(context.Background(), passed); err != nil {
@@ -92,7 +92,7 @@ func TestSaveFoundationWaitsForSemanticAudit(t *testing.T) {
 	if err := s.Progress.Init(1); err != nil {
 		t.Fatal(err)
 	}
-	if err := s.Book.Save(domain.BookMetadata{Title: "测试书", Synopsis: "林舟冒险进入夜禁之城。"}); err != nil {
+	if err := s.Book.Save(domain.BookMetadata{Title: "kiểm tra 书", Synopsis: "林舟冒险进入夜禁之城。"}); err != nil {
 		t.Fatal(err)
 	}
 	if err := s.Outline.SavePremise("# test"); err != nil {
@@ -133,7 +133,7 @@ func TestAuditFoundationRejectsStaleFingerprint(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := s.Outline.SavePremise("# 已修改的版本"); err != nil {
+	if err := s.Outline.SavePremise("# 已修改的phiên bản "); err != nil {
 		t.Fatal(err)
 	}
 	args, _ := json.Marshal(map[string]any{

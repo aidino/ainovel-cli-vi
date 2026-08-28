@@ -9,12 +9,12 @@ import (
 	"github.com/voocel/ainovel-cli/internal/errs"
 )
 
-// ProgressStore 管理创作进度状态。
+// ProgressStore quản lý trạng thái tiến độ sáng tác.
 type ProgressStore struct{ io *IO }
 
 func NewProgressStore(io *IO) *ProgressStore { return &ProgressStore{io: io} }
 
-// Load 读取 meta/progress.json。不存在时返回 nil。
+// Load đọc meta/progress.json. Trả về nil khi không tồn tại.
 func (s *ProgressStore) Load() (*domain.Progress, error) {
 	s.io.mu.RLock()
 	defer s.io.mu.RUnlock()
@@ -32,7 +32,7 @@ func (s *ProgressStore) loadUnlocked() (*domain.Progress, error) {
 	return &p, nil
 }
 
-// Save 保存进度。
+// Save lưu tiến độ.
 func (s *ProgressStore) Save(p *domain.Progress) error {
 	s.io.mu.Lock()
 	defer s.io.mu.Unlock()
@@ -43,7 +43,7 @@ func (s *ProgressStore) saveUnlocked(p *domain.Progress) error {
 	return s.io.WriteJSONUnlocked("meta/progress.json", p)
 }
 
-// Init 创建初始进度。
+// Init tạo tiến độ ban đầu.
 func (s *ProgressStore) Init(totalChapters int) error {
 	return s.Save(&domain.Progress{
 		Phase:         domain.PhaseInit,
@@ -51,7 +51,7 @@ func (s *ProgressStore) Init(totalChapters int) error {
 	})
 }
 
-// SetTotalChapters 更新大纲容量：非分层模式为详细章数，分层模式为内部估算。
+// SetTotalChapters cập nhật dung lượng đại cương: chế độ không phân tầng là số chương chi tiết, chế độ phân tầng là ước tính nội bộ.
 func (s *ProgressStore) SetTotalChapters(n int) error {
 	return s.io.WithWriteLock(func() error {
 		p, err := s.loadUnlocked()
@@ -66,7 +66,7 @@ func (s *ProgressStore) SetTotalChapters(n int) error {
 	})
 }
 
-// UpdatePhase 更新创作阶段。
+// UpdatePhase cập nhật giai đoạn sáng tác.
 func (s *ProgressStore) UpdatePhase(phase domain.Phase) error {
 	return s.io.WithWriteLock(func() error {
 		p, err := s.loadUnlocked()
@@ -84,8 +84,8 @@ func (s *ProgressStore) UpdatePhase(phase domain.Phase) error {
 	})
 }
 
-// AdvancePhase 将创作阶段至少推进到 phase；已经到达更后阶段时保持不变。
-// 适用于可重复保存的阶段工件，避免修订旧工件被误判为阶段回退。
+// AdvancePhase đẩy giai đoạn sáng tác lên ít nhất phase; giữ nguyên khi đã đạt đến giai đoạn muộn hơn.
+// Áp dụng cho các artifact giai đoạn có thể lưu lặp lại, tránh việc sửa đổi artifact cũ bị đánh giá nhầm là thụt lùi giai đoạn.
 func (s *ProgressStore) AdvancePhase(phase domain.Phase) error {
 	return s.io.WithWriteLock(func() error {
 		p, err := s.loadUnlocked()
@@ -106,8 +106,8 @@ func (s *ProgressStore) AdvancePhase(phase domain.Phase) error {
 	})
 }
 
-// StartChapter 标记某章进入写作中状态。它不能承担阶段迁移职责；调用方必须先由
-// foundation/import 流程把 Progress 明确推进到 writing，避免错误派单绕过规划阶段。
+// StartChapter đánh dấu một chương bước vào trạng thái đang sáng tác. Nó không thể đảm nhận trách nhiệm di chuyển giai đoạn; bên gọi phải được
+// quy trình foundation/import đẩy Progress rõ ràng sang writing, tránh việc phân công sai bỏ qua giai đoạn quy hoạch.
 func (s *ProgressStore) StartChapter(chapter int) error {
 	if chapter <= 0 {
 		return fmt.Errorf("chapter must be > 0")
@@ -135,8 +135,8 @@ func (s *ProgressStore) StartChapter(chapter int) error {
 	})
 }
 
-// IsChapterCompleted 检查章节是否已提交完成。读取失败显式返回，不能把损坏的
-// progress 当成“未完成”后继续覆盖章节。
+// IsChapterCompleted kiểm tra chương đã được cam kết hoàn thành chưa. Đọc thất bại sẽ trả về rõ ràng, không thể coi progress hỏng
+// là "chưa hoàn thành" rồi tiếp tục ghi đè chương.
 func (s *ProgressStore) IsChapterCompleted(chapter int) (bool, error) {
 	p, err := s.Load()
 	if err != nil {
@@ -148,7 +148,7 @@ func (s *ProgressStore) IsChapterCompleted(chapter int) (bool, error) {
 	return slices.Contains(p.CompletedChapters, chapter), nil
 }
 
-// MarkChapterComplete 标记章节完成，原子性更新进度。
+// MarkChapterComplete đánh dấu chương đã hoàn thành, cập nhật tiến độ nguyên tử.
 func (s *ProgressStore) MarkChapterComplete(chapter, wordCount int, hookType, dominantStrand string) error {
 	return s.io.WithWriteLock(func() error {
 		p, err := s.loadUnlocked()
@@ -204,7 +204,7 @@ func (s *ProgressStore) MarkChapterComplete(chapter, wordCount int, hookType, do
 	})
 }
 
-// MarkComplete 标记全书创作完成，并清除重开返工标记（完结即不再处于返工态）。
+// MarkComplete đánh dấu đã hoàn thành sáng tác toàn bộ cuốn sách, và xóa dấu hiệu làm lại mở lại (hoàn kết tức là không còn ở trạng thái làm lại).
 func (s *ProgressStore) MarkComplete() error {
 	return s.io.WithWriteLock(func() error {
 		p, err := s.loadUnlocked()
@@ -223,10 +223,10 @@ func (s *ProgressStore) MarkComplete() error {
 	})
 }
 
-// Reopen 把已完结的书重新打开进入返工态：phase complete→writing + 目标章入队 + flow=rewriting，
-// 在一次写锁内原子完成。这是 phaseOrder“只前进”约束的唯一豁免出口——故意不走
-// ValidatePhaseTransition；回退的合法性收敛在本方法、且受 phase=complete 前置守卫保护，
-// 避免误用导致状态机失控。改完队列后 commit_chapter 会自动重新收尾完结。
+// Reopen mở lại sách đã hoàn kết vào trạng thái làm lại: phase complete→writing + chương mục tiêu vào hàng đợi + flow=rewriting,
+// hoàn thành nguyên tử trong một lần khóa ghi. Đây là lối thoát miễn trừ duy nhất của ràng buộc phaseOrder "chỉ tiến lên"——cố ý không đi qua
+// ValidatePhaseTransition; tính hợp pháp của việc lùi lại hội tụ trong phương thức này, và được bảo vệ bởi rào chắn phase=complete,
+// tránh lạm dụng dẫn đến máy trạng thái mất kiểm soát. Sau khi thay đổi hàng đợi, commit_chapter sẽ tự động kết thúc hoàn kết.
 func (s *ProgressStore) Reopen(chapters []int, reason string) error {
 	return s.io.WithWriteLock(func() error {
 		p, err := s.loadUnlocked()
@@ -243,19 +243,19 @@ func (s *ProgressStore) Reopen(chapters []int, reason string) error {
 		if err != nil {
 			return err
 		}
-		p.Phase = domain.PhaseWriting // 唯一合法回退，受上面 complete 前置约束保护
+		p.Phase = domain.PhaseWriting // Lùi lại hợp pháp duy nhất, được bảo vệ bởi ràng buộc complete ở trên
 		p.PendingRewrites = normalized
 		p.RewriteReason = reason
 		p.Flow = domain.FlowRewriting
-		p.ReopenedFromComplete = true // 排空后按结构完整重新完结，见 commit_chapter drain 块
+		p.ReopenedFromComplete = true // Hoàn kết lại theo toàn vẹn cấu trúc sau khi làm trống, xem khối commit_chapter drain
 		return s.saveUnlocked(p)
 	})
 }
 
-// ReopenContinue 把已完结的书重开为续写态：仅 phase complete→writing，不入返工队列、
-// 不置 ReopenedFromComplete（那是"返工排空后按原结构自动重新完结"的 drain 语义，
-// 续写重开恰恰要扩展结构）。与 Reopen 同为 phaseOrder"只前进"约束的豁免出口，
-// 同受 phase=complete 前置守卫保护；重开后由卷末路由派发架构师续卷。
+// ReopenContinue mở lại sách đã hoàn kết vào trạng thái viết tiếp: chỉ phase complete→writing, không vào hàng đợi làm lại,
+// không đặt ReopenedFromComplete (đó là ngữ nghĩa drain "hoàn kết lại tự động theo cấu trúc cũ sau khi làm trống hàng đợi làm lại",
+// viết tiếp mở lại chính là để mở rộng cấu trúc). Cùng với Reopen là lối thoát miễn trừ của ràng buộc phaseOrder "chỉ tiến lên",
+// cùng được bảo vệ bởi rào chắn phase=complete; sau khi mở lại, bộ định tuyến cuối tập sẽ phân công kiến trúc sư viết tiếp tập.
 func (s *ProgressStore) ReopenContinue() error {
 	return s.io.WithWriteLock(func() error {
 		p, err := s.loadUnlocked()
@@ -269,12 +269,12 @@ func (s *ProgressStore) ReopenContinue() error {
 			return fmt.Errorf("mở lại chỉ áp dụng cho sách đã hoàn thành (phase=%s hiện tại): %w", p.Phase, errs.ErrToolPrecondition)
 		}
 		p.Phase = domain.PhaseWriting
-		p.ReopenCount++ // 审计 + 保证再完结的 progress digest 与上次不同（见字段注释）
+		p.ReopenCount++ // Kiểm toán + đảm bảo progress digest sau khi hoàn kết lại khác với lần trước (xem chú thích trường)
 		return s.saveUnlocked(p)
 	})
 }
 
-// ClearInProgress 清除进度中间状态。
+// ClearInProgress xóa trạng thái trung gian của tiến độ.
 func (s *ProgressStore) ClearInProgress() error {
 	return s.io.WithWriteLock(func() error {
 		p, err := s.loadUnlocked()
@@ -290,7 +290,7 @@ func (s *ProgressStore) ClearInProgress() error {
 	})
 }
 
-// UpdateVolumeArc 更新当前卷弧位置。
+// UpdateVolumeArc cập nhật vị trí tập và arc hiện tại.
 func (s *ProgressStore) UpdateVolumeArc(volume, arc int) error {
 	return s.io.WithWriteLock(func() error {
 		p, err := s.loadUnlocked()
@@ -306,7 +306,7 @@ func (s *ProgressStore) UpdateVolumeArc(volume, arc int) error {
 	})
 }
 
-// SetLayered 设置分层模式标志。
+// SetLayered thiết lập cờ chế độ phân tầng.
 func (s *ProgressStore) SetLayered(layered bool) error {
 	return s.io.WithWriteLock(func() error {
 		p, err := s.loadUnlocked()
@@ -321,7 +321,7 @@ func (s *ProgressStore) SetLayered(layered bool) error {
 	})
 }
 
-// SetFlow 更新当前流程状态。
+// SetFlow cập nhật trạng thái luồng hiện tại.
 func (s *ProgressStore) SetFlow(flow domain.FlowState) error {
 	return s.io.WithWriteLock(func() error {
 		p, err := s.loadUnlocked()
@@ -339,8 +339,8 @@ func (s *ProgressStore) SetFlow(flow domain.FlowState) error {
 	})
 }
 
-// SetPendingRewrites 设置待重写章节队列和原因。
-// PendingRewrites 只允许包含已完成章节；未完成章节还没有终稿，不能进入重写/打磨队列。
+// SetPendingRewrites thiết lập hàng đợi chương chờ viết lại và lý do.
+// PendingRewrites chỉ cho phép chứa các chương đã hoàn thành; chương chưa hoàn thành chưa có bản cuối, không thể vào hàng đợi viết lại/đánh bóng.
 func (s *ProgressStore) SetPendingRewrites(chapters []int, reason string) error {
 	return s.io.WithWriteLock(func() error {
 		p, err := s.loadUnlocked()
@@ -360,8 +360,8 @@ func (s *ProgressStore) SetPendingRewrites(chapters []int, reason string) error 
 	})
 }
 
-// ApplyReviewOutcome 原子应用审阅产生的流程状态。审阅语义由上层决定；Store 只负责
-// 校验 Flow 迁移和返工章节，并保证 Flow、PendingRewrites、RewriteReason 不出现中间态。
+// ApplyReviewOutcome áp dụng nguyên tử trạng thái luồng sinh ra từ đọc kiểm. Ngữ nghĩa đọc kiểm do tầng trên quyết định; Store chỉ chịu trách nhiệm
+// xác nhận di chuyển Flow và chương làm lại, và đảm bảo Flow, PendingRewrites, RewriteReason không xuất hiện trạng thái trung gian.
 func (s *ProgressStore) ApplyReviewOutcome(flow domain.FlowState, chapters []int, reason string) (*domain.Progress, error) {
 	var latest *domain.Progress
 	err := s.io.WithWriteLock(func() error {
@@ -401,7 +401,7 @@ func (s *ProgressStore) ApplyReviewOutcome(flow domain.FlowState, chapters []int
 	return latest, err
 }
 
-// ValidatePendingRewrites 校验章节列表是否可进入返工队列，不修改状态。
+// ValidatePendingRewrites xác nhận danh sách chương có thể vào hàng đợi làm lại không, không sửa đổi trạng thái.
 func (s *ProgressStore) ValidatePendingRewrites(chapters []int) error {
 	s.io.mu.RLock()
 	defer s.io.mu.RUnlock()
@@ -418,7 +418,7 @@ func (s *ProgressStore) ValidatePendingRewrites(chapters []int) error {
 	return err
 }
 
-// CompleteRewrite 从待重写队列中移除已完成的章节。
+// CompleteRewrite xóa các chương đã hoàn thành khỏi hàng đợi chờ viết lại.
 func (s *ProgressStore) CompleteRewrite(chapter int) error {
 	return s.io.WithWriteLock(func() error {
 		p, err := s.loadUnlocked()
@@ -446,7 +446,7 @@ func (s *ProgressStore) CompleteRewrite(chapter int) error {
 	})
 }
 
-// ClearPendingRewrites 强制清空重写队列。
+// ClearPendingRewrites buộc làm trống hàng đợi viết lại.
 func (s *ProgressStore) ClearPendingRewrites() error {
 	return s.io.WithWriteLock(func() error {
 		p, err := s.loadUnlocked()
@@ -466,9 +466,9 @@ func (s *ProgressStore) ClearPendingRewrites() error {
 	})
 }
 
-// ValidateChapterWork 校验当前章节是否允许被规划或提交。
-// Writer 只能在 writing 阶段工作；打磨/重写流程下，只允许处理 PendingRewrites
-// 中的章节。阶段约束在 Store 边界再守一次，避免错误的 Arbiter 派单绕过 Router。
+// ValidateChapterWork xác nhận chương hiện tại có được phép quy hoạch hoặc cam kết không.
+// Writer chỉ có thể làm việc ở giai đoạn writing; dưới quy trình đánh bóng/viết lại, chỉ cho phép xử lý các chương trong PendingRewrites.
+// Giai đoạn ràng buộc được bảo vệ thêm một lần ở ranh giới Store, tránh việc phân công sai của Arbiter vượt qua Router.
 func (s *ProgressStore) ValidateChapterWork(chapter int) error {
 	p, err := s.Load()
 	if err != nil {

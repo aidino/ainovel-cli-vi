@@ -18,27 +18,27 @@ import (
 	"github.com/voocel/ainovel-cli/internal/stylestat"
 )
 
-// Collected 是一次运行产出的只读采集结果。全部来自已有评测器与事实层，eval 不自己重算。
+// Collected là kết quả thu thập chỉ đọc của một lần chạy sinh ra. Tất cả đến từ các trình đánh giá đã có và lớp sự thật, eval không tự tính lại.
 type Collected struct {
 	Dir         string
-	Report      diag.Report // diag.Diagnose：工件 + 运行时 Findings + Stats
+	Report      diag.Report // diag.Diagnose: sản phẩm + runtime Findings + Stats
 	Progress    *domain.Progress
 	Checkpoints []domain.Checkpoint
-	Pending     map[string]bool // 残留信号：pending_commit/pending_steer/last_commit/last_review
-	LoadErrors  []string        // 契约依赖工件的真实读取失败（非"不存在"）；Grade 据此 hard fail
-	RuntimeErr  string          // runner 捕获的运行时错误（hard fail），空=无
+	Pending     map[string]bool // Tín hiệu còn sót lại: pending_commit/pending_steer/last_commit/last_review
+	LoadErrors  []string        // Lỗi đọc thực sự (không phải "không tồn tại") của sản phẩm phụ thuộc hợp đồng; Grade dựa vào đây để hard fail
+	RuntimeErr  string          // Lỗi runtime bị runner bắt được (hard fail), rỗng=không có
 	Style       StyleCollection
 	Usage       UsageMetrics
 	ToolCalls   int
 }
 
-// StyleCollection 是从章节终稿中采集的全书文体事实。
+// StyleCollection là sự thật văn phong toàn sách thu thập từ bản cuối các chương.
 type StyleCollection struct {
 	Status string           `json:"status"` // ok / insufficient_sample
 	Stats  *stylestat.Stats `json:"stats,omitempty"`
 }
 
-// UsageMetrics 是 meta/usage.json 中已有的可靠成本/token 事实。
+// UsageMetrics là sự thật chi phí/token đáng tin cậy đã có trong meta/usage.json.
 type UsageMetrics struct {
 	Input         int     `json:"input,omitempty"`
 	Output        int     `json:"output,omitempty"`
@@ -49,9 +49,9 @@ type UsageMetrics struct {
 	UsageRecorded bool    `json:"usage_recorded"`
 }
 
-// Collect 对一个已完成的输出目录做离线采集。runtimeErr 是 runner 驱动期间的错误（如有）。
-// 工件读取错误不静默吞：文件不存在视为"无数据"，其余（损坏/无权限）记入 LoadErrors，
-// 避免"读不到 pending 文件"被误判成"没有 pending"而 false pass（fail-loud）。
+// Collect thực hiện thu thập ngoại tuyến trên một thư mục đầu ra đã hoàn thành. runtimeErr là lỗi trong quá trình điều khiển của runner (nếu có).
+// Lỗi đọc sản phẩm không bị nuốt thầm lặng: file không tồn tại coi như "không có dữ liệu", các lỗi khác (hỏng/không có quyền) ghi vào LoadErrors,
+// tránh việc "không đọc được file pending" bị phán đoán nhầm thành "không có pending" dẫn đến false pass (fail-loud).
 func Collect(dir string, runtimeErr error) Collected {
 	s := store.NewStore(dir)
 	rep, _ := diag.Diagnose(s)
@@ -247,8 +247,8 @@ func countToolCallsInFile(path string) (int, error) {
 	return total, nil
 }
 
-// HasCheckpoint 判断采集到的 checkpoint 中是否存在匹配 spec 的记录。
-// spec 形如 "chapter:1:commit" / "arc:1:1:arc_summary" / "volume:1:volume_summary" / "global:layered_outline"。
+// HasCheckpoint kiểm tra xem trong các checkpoint thu thập được có tồn tại bản ghi khớp với spec không.
+// spec có dạng "chapter:1:commit" / "arc:1:1:arc_summary" / "volume:1:volume_summary" / "global:layered_outline".
 func (c Collected) HasCheckpoint(spec string) (bool, error) {
 	scope, step, err := parseCheckpointSpec(spec)
 	if err != nil {
@@ -262,7 +262,7 @@ func (c Collected) HasCheckpoint(spec string) (bool, error) {
 	return false, nil
 }
 
-// parseCheckpointSpec 把契约串解析成 (Scope, step)。
+// parseCheckpointSpec phân tích chuỗi hợp đồng thành (Scope, step).
 func parseCheckpointSpec(spec string) (domain.Scope, string, error) {
 	parts := strings.Split(spec, ":")
 	bad := func() (domain.Scope, string, error) {

@@ -34,7 +34,7 @@ func TestDraftChapterRejectsUnfinishedPendingRewrite(t *testing.T) {
 	tool := NewDraftChapterTool(s)
 	args, err := json.Marshal(map[string]any{
 		"chapter": 65,
-		"content": "错误写入未来章节。",
+		"content": "lỗi ghi 未来chương。",
 		"mode":    "write",
 	})
 	if err != nil {
@@ -60,17 +60,17 @@ func TestDraftChapterRejectsUnexpandedLayeredChapter(t *testing.T) {
 	}
 	if err := s.Outline.SaveLayeredOutline([]domain.VolumeOutline{{
 		Index: 1,
-		Title: "第一卷",
+		Title: "第一tập",
 		Arcs: []domain.ArcOutline{{
 			Index: 1,
-			Title: "第一弧",
+			Title: "第一arc ",
 			Chapters: []domain.OutlineEntry{
 				{Chapter: 1, Title: "一"},
 				{Chapter: 2, Title: "二"},
 			},
 		}, {
 			Index:             2,
-			Title:             "第二弧",
+			Title:             "第二arc ",
 			EstimatedChapters: 3,
 		}},
 	}}); err != nil {
@@ -86,7 +86,7 @@ func TestDraftChapterRejectsUnexpandedLayeredChapter(t *testing.T) {
 	tool := NewDraftChapterTool(s)
 	args, err := json.Marshal(map[string]any{
 		"chapter": 3,
-		"content": "越界正文。",
+		"content": "越界chính văn。",
 		"mode":    "write",
 	})
 	if err != nil {

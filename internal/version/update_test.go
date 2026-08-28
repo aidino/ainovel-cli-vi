@@ -124,9 +124,9 @@ func TestReplaceExecutable(t *testing.T) {
 	if string(data) != "new" {
 		t.Fatalf("content = %q", data)
 	}
-	// 权限保持断言只在有 POSIX 权限位语义的平台上有意义：Windows 把一切上报为
-	// 0666/0444、执行位永不出现（可执行性来自 .exe 扩展名），此断言在该平台恒假。
-	// 替换/回滚/备份清理断言与平台相关（Windows rename 语义不同），必须继续运行。
+	// 权限保持khẳng định只在有 POSIX 权限位语义的nền tảng 上有意义：Windows 把一切上报为
+	// 0666/0444、thực thi 位永不xuất hiện （可thực thi 性来自 .exe 扩展名），此khẳng định在该nền tảng 恒假。
+	// 替换/回滚/sao lưu dọn dẹp khẳng định与nền tảng 相关（Windows rename 语义khác nhau ），phải 继续chạy 。
 	if runtime.GOOS != "windows" {
 		info, err := os.Stat(dst)
 		if err != nil {

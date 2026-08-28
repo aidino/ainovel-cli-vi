@@ -15,27 +15,27 @@ import (
 	"github.com/voocel/ainovel-cli/internal/utils"
 )
 
-// DefaultContextWindow 模型未在 registry 登记时的兜底窗口大小。
+// DefaultContextWindow Kích thước cửa sổ dự phòng khi model chưa đăng ký trong registry.
 const DefaultContextWindow = 200000
 
-// CompactRatio 触发上下文压缩的相对阈值：tokens >= window * CompactRatio 时压缩。
-// 0.85 是经验值，给"下一轮 prompt + 大工具结果"留 15% 头部空间，同时让大窗口
-// 模型也能在 85% 主动压缩，避免在 1M 名义窗口下吃满才压（注意力衰退区）。
+// CompactRatio Ngưỡng tương đối kích hoạt nén ngữ cảnh: nén khi tokens >= window * CompactRatio.
+// 0.85 là giá trị kinh nghiệm, chừa 15% không gian cho "prompt lượt tới + kết quả công cụ lớn", đồng thời cho cửa sổ lớn
+// Model cũng có thể chủ động nén ở 85%, tránh đợi đầy cửa sổ danh nghĩa 1M mới nén (vùng suy giảm sự chú ý).
 //
-// 压缩比例不暴露给用户配置；用户只配置每个模型的真实 context_window。
+// Tỷ lệ nén không hiển thị cho người dùng cấu hình; người dùng chỉ cấu hình context_window thực sự của mỗi model.
 const CompactRatio = 0.85
 
-// MinCompactReserve 是 ReserveTokens 的下限。小窗口模型（如 32k 本地 qwen3:8b）
-// 按 0.15 比例算 reserve 仅 4800，单次 commit_chapter 工具响应就能塞 5-8k，
-// 一章正文 8-15k——会出现"压完立刻又超"。8000 兜底保证最坏场景下还有半轮缓冲。
+// MinCompactReserve là giới hạn dưới của ReserveTokens. Model cửa sổ nhỏ (như 32k local qwen3:8b)
+// tính reserve theo tỷ lệ 0.15 chỉ có 4800, một lần phản hồi công cụ commit_chapter có thể nhét 5-8k,
+// Một chương chính văn 8-15k——sẽ xuất hiện "nén xong lại vượt ngay". 8000 dự phòng đảm bảo trong trường hợp xấu nhất vẫn còn nửa vòng đệm.
 const MinCompactReserve = 8000
 
-// CompactReserveTokens 按 CompactRatio 反算 ReserveTokens 并应用 MinCompactReserve floor：
+// CompactReserveTokens tính ngược ReserveTokens theo CompactRatio và áp dụng sàn MinCompactReserve:
 //
 //	threshold = window - reserve = window * CompactRatio
 //	reserve   = max(MinCompactReserve, window * (1 - CompactRatio))
 //
-// 给 agentcore.context.Engine 的 EngineConfig.ReserveTokens 用。
+// Dành cho EngineConfig.ReserveTokens của agentcore.context.Engine.
 func CompactReserveTokens(window int) int {
 	if window <= 0 {
 		return 0
@@ -47,37 +47,37 @@ func CompactReserveTokens(window int) int {
 	return reserve
 }
 
-// ProviderConfig 定义单个 LLM 提供商的凭证。
+// ProviderConfig Định nghĩa chứng chỉ của một nhà cung cấp LLM đơn lẻ.
 type ProviderConfig struct {
-	Type    string        `json:"type,omitempty"`     // API 协议类型（openai/anthropic/gemini），自定义代理时指定
-	API     string        `json:"api,omitempty"`      // OpenAI 协议 endpoint：chat（默认）/ responses
+	Type    string        `json:"type,omitempty"`     // Kiểu giao thức API (openai/anthropic/gemini), chỉ định khi dùng proxy tùy chỉnh
+	API     string        `json:"api,omitempty"`      // Endpoint giao thức OpenAI: chat (mặc định) / responses
 	APIKey  string        `json:"api_key,omitempty"`  // API Key
 	BaseURL string        `json:"base_url,omitempty"` // API Base URL
-	Models  []ModelConfig `json:"models,omitempty"`   // 可选模型列表，供 TUI 切换时展示
-	// ExtraBody 透传给该 provider 每次请求的额外参数（如 temperature/top_p/min_p/
-	// presence_penalty，或厂商特有键如 nvidia 开 think 的 chat_template_kwargs）。
-	// OpenAI 兼容端逐字并入请求体（即 extra_body 约定）；值由用户自负其责。
+	Models  []ModelConfig `json:"models,omitempty"`   // Danh sách model tùy chọn, để hiển thị khi chuyển đổi ở TUI
+	// ExtraBody Truyền xuyên suốt các tham số bổ sung cho mỗi yêu cầu của provider này (như temperature/top_p/min_p/
+	// presence_penalty, hoặc các khóa đặc thù của hãng như chat_template_kwargs mở think của nvidia).
+	// Đầu tương thích OpenAI sẽ gộp nguyên văn vào thân yêu cầu (tức quy ước extra_body); người dùng tự chịu trách nhiệm về giá trị.
 	ExtraBody map[string]any `json:"extra_body,omitempty"`
-	// Extra 透传给 provider 级配置（litellm.ProviderConfig.Extra），用于 HTTP
-	// headers、user_agent、anthropic_beta 等客户端/传输层选项。
+	// Extra Truyền xuyên suốt cho cấu hình cấp provider (litellm.ProviderConfig.Extra), dùng cho
+	// các tùy chọn HTTP headers, user_agent, anthropic_beta cấp client/tầng truyền tải.
 	Extra map[string]any `json:"extra,omitempty"`
-	// StreamIdleTimeout 流式空闲看门狗：超过该时长收不到任何 chunk 即断流
-	// （Go duration 字符串，如 "900s" / "15m"）。留空默认 5m——云端服务的合理上界；
-	// LocalAI/ollama 等自建慢推理首块可远超 5 分钟，按 provider 放宽即可，
-	// 不拖累其它通道的挂死检测（#79）。
+	// StreamIdleTimeout Watchdog rảnh rỗi dạng stream: quá thời gian này không nhận được chunk nào sẽ ngắt stream
+	// (Chuỗi Go duration, ví dụ "900s" / "15m"). Để trống mặc định là 5m——giới hạn trên hợp lý của dịch vụ đám mây;
+	// Suy luận chậm tự dựng như LocalAI/ollama thì khối đầu tiên có thể vượt quá 5 phút, chỉ cần nới lỏng theo provider,
+	// Không làm chậm phát hiện treo của các kênh khác (#79).
 	StreamIdleTimeout string `json:"stream_idle_timeout,omitempty"`
 }
 
-// ModelConfig 描述某个 provider 下可切换的模型及其可选上下文窗口。
-// 为兼容旧配置，既可从 JSON 字符串（"model-name"）读取，也可从对象读取；
-// 写回时始终规范化为对象形式。
+// ModelConfig mô tả các model có thể chuyển đổi dưới một provider và cửa sổ ngữ cảnh tùy chọn của chúng.
+// Để tương thích cấu hình cũ, vừa có thể đọc từ chuỗi JSON ("model-name"), vừa có thể đọc từ đối tượng;
+// Khi ghi lại luôn chuẩn hóa thành dạng đối tượng.
 type ModelConfig struct {
 	Name          string `json:"name"`
 	ContextWindow int    `json:"context_window,omitempty"`
-	// JSONSchema 是原生结构化输出（response_format json_schema）的三态声明：
-	// 未配置=按 provider adapter 的模型级能力判断；true=用户声明该 endpoint/模型
-	// 支持（请求被拒绝时原样暴露，不静默降级）；false=强制走 prompt contract。
-	// 自定义代理与聚合网关的能力以用户声明为准，程序不探测。
+	// JSONSchema là khai báo 3 trạng thái của đầu ra có cấu trúc nguyên bản (response_format json_schema):
+	// Chưa cấu hình = phán đoán theo năng lực cấp model của provider adapter; true = người dùng khai báo endpoint/model này
+	// hỗ trợ (khi yêu cầu bị từ chối sẽ hiển thị nguyên trạng, không hạ cấp ngầm); false = bắt buộc dùng prompt contract.
+	// Khả năng của proxy tùy chỉnh và cổng tổng hợp dựa vào khai báo của người dùng, chương trình không dò tìm.
 	JSONSchema *bool `json:"json_schema,omitempty"`
 }
 
@@ -98,7 +98,7 @@ func (m *ModelConfig) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// ModelConfig 返回指定模型的显式配置。
+// ModelConfig trả về cấu hình rõ ràng của model được chỉ định.
 func (pc ProviderConfig) ModelConfig(name string) (ModelConfig, bool) {
 	name = strings.TrimSpace(name)
 	for _, model := range pc.Models {
@@ -109,8 +109,8 @@ func (pc ProviderConfig) ModelConfig(name string) (ModelConfig, bool) {
 	return ModelConfig{}, false
 }
 
-// ModelJSONSchema 返回模型的 json_schema 三态声明；未列入 models 或未配置时
-// 返回 nil（按 adapter 能力判断）。
+// ModelJSONSchema trả về khai báo 3 trạng thái json_schema của model; khi chưa được đưa vào models hoặc chưa cấu hình
+// trả về nil (phán đoán theo năng lực adapter).
 func (c Config) ModelJSONSchema(provider, model string) *bool {
 	if pc, ok := c.Providers[provider]; ok {
 		if mc, ok := pc.ModelConfig(model); ok {
@@ -120,13 +120,13 @@ func (c Config) ModelJSONSchema(provider, model string) *bool {
 	return nil
 }
 
-// defaultStreamIdleTimeout：长输出 + 长 ctx 场景下，reasoning-aware provider
-// （mimo / deepseek-r1 等）思考阶段如果 server 端不流式发 reasoning delta，
-// SSE 整段会保持沉默。litellm 默认 watchdog 是 2 分钟，对 8000 字写作章节经常
-// 触发误杀；5 分钟覆盖绝大多数实测案例（参见 tasks/todo.md plan→draft 思考时长统计）。
+// defaultStreamIdleTimeout: trong kịch bản đầu ra dài + ctx dài, reasoning-aware provider
+// (mimo / deepseek-r1 v.v.) ở giai đoạn suy nghĩ nếu server không phát reasoning delta dạng stream,
+// toàn bộ đoạn SSE sẽ giữ im lặng. Watchdog mặc định của litellm là 2 phút, với chương viết 8000 chữ thường
+// kích hoạt giết nhầm; 5 phút bao phủ hầu hết các trường hợp thực tế (xem thống kê thời gian suy nghĩ plan→draft ở tasks/todo.md).
 const defaultStreamIdleTimeout = 5 * time.Minute
 
-// StreamIdleTimeoutValue 解析该 provider 的流式空闲超时；留空回落默认值。
+// StreamIdleTimeoutValue phân tích timeout nhàn rỗi stream của provider; để trống lùi về giá trị mặc định.
 func (pc ProviderConfig) StreamIdleTimeoutValue() (time.Duration, error) {
 	s := strings.TrimSpace(pc.StreamIdleTimeout)
 	if s == "" {
@@ -142,11 +142,11 @@ func (pc ProviderConfig) StreamIdleTimeoutValue() (time.Duration, error) {
 	return d, nil
 }
 
-// RequiresAPIKey 返回该 provider 是否必须显式配置 api_key。
-// 约定：
-// 1. ollama / bedrock 允许无 key；
-// 2. 显式指定 Type 的配置视为自定义代理，允许无 key；
-// 3. 其他 provider 默认要求 key，保持对官方托管接口的保守校验。
+// RequiresAPIKey trả về provider này có bắt buộc cấu hình api_key hay không.
+// Quy ước:
+// 1. ollama / bedrock cho phép không có key;
+// 2. Cấu hình chỉ định Type rõ ràng được xem là proxy tùy chỉnh, cho phép không có key;
+// 3. Các provider khác mặc định yêu cầu key, giữ nguyên kiểm tra thận trọng với các API lưu trữ chính thức.
 func (pc ProviderConfig) RequiresAPIKey(name string) bool {
 	switch name {
 	case "ollama", "bedrock":
@@ -155,8 +155,8 @@ func (pc ProviderConfig) RequiresAPIKey(name string) bool {
 	return pc.Type == ""
 }
 
-// ProviderType 返回有效的 API 协议类型。
-// 优先使用显式 Type；否则要求 provider 名本身已在 litellm 注册表中。
+// ProviderType trả về loại giao thức API hợp lệ.
+// Ưu tiên dùng Type chỉ định rõ; nếu không yêu cầu bản thân tên provider đã có trong registry litellm.
 func (pc ProviderConfig) ProviderType(name string) (string, error) {
 	if pc.Type != "" {
 		return pc.Type, nil
@@ -167,26 +167,26 @@ func (pc ProviderConfig) ProviderType(name string) (string, error) {
 	return "", fmt.Errorf("provider %q thiếu type, và không nằm trong danh sách provider đã biết của litellm: %w", name, errs.ErrConfig)
 }
 
-// ModelRef 表示一个 provider/model 组合。
+// ModelRef đại diện cho một tổ hợp provider/model.
 type ModelRef struct {
-	Provider string `json:"provider"` // provider 名称（Providers map 中的 key）
-	Model    string `json:"model"`    // 模型名（原样透传，不做任何解析）
+	Provider string `json:"provider"` // tên provider (khóa trong map Providers)
+	Model    string `json:"model"`    // tên model (truyền nguyên trạng, không parse gì cả)
 }
 
-// RoleConfig 定义单个角色的模型覆盖。
+// RoleConfig định nghĩa model ghi đè cho một vai trò đơn lẻ.
 type RoleConfig struct {
-	Provider  string     `json:"provider"`            // 主 provider 名称（Providers map 中的 key）
-	Model     string     `json:"model"`               // 主模型名（原样透传，不做任何解析）
-	Fallbacks []ModelRef `json:"fallbacks,omitempty"` // 显式备用 provider/model 列表
-	// ReasoningEffort 该角色的推理强度（off/low/medium/high/xhigh/max），空=继承顶层默认。
-	// 由 agents.ParseThinkingLevel 校验后应用，越级值视为空。
+	Provider  string     `json:"provider"`            // tên provider chính (khóa trong map Providers)
+	Model     string     `json:"model"`               // tên model chính (truyền nguyên trạng, không parse gì cả)
+	Fallbacks []ModelRef `json:"fallbacks,omitempty"` // danh sách provider/model dự phòng rõ ràng
+	// Cường độ suy luận của vai trò này (off/low/medium/high/xhigh/max), rỗng = kế thừa mặc định cấp trên cùng.
+	// Do agents.ParseThinkingLevel kiểm tra rồi áp dụng, giá trị vượt cấp xem như rỗng.
 	ReasoningEffort string `json:"reasoning_effort,omitempty"`
 }
 
-// knownRoles 支持的可配置角色名。Arbiter 当前不开放角色级配置，
-// 统一使用顶层默认模型（host.arbiterModel 用 models.Default）。
-// import_* 是导入语义函数的模型档位旋钮（docs/import-pipeline.md §13.1）：
-// 未配置时落 architect，配置后可把机械性更强的函数指到更便宜档位。
+// knownRoles tên vai trò có thể cấu hình được hỗ trợ. Arbiter hiện không mở cấu hình cấp vai trò,
+// thống nhất dùng model mặc định cấp trên cùng (host.arbiterModel dùng models.Default).
+// import_* là núm xoay cấp model của hàm ngữ nghĩa import (docs/import-pipeline.md §13.1):
+// khi chưa cấu hình rơi vào architect, cấu hình xong có thể trỏ các hàm có tính máy móc cao hơn vào cấp rẻ hơn.
 var knownRoles = map[string]bool{
 	"architect":         true,
 	"writer":            true,
@@ -196,60 +196,60 @@ var knownRoles = map[string]bool{
 	"import_synthesize": true,
 }
 
-// Config 小说应用配置。
+// Config cấu hình ứng dụng tiểu thuyết.
 type Config struct {
-	// 运行时字段（不序列化到 JSON）
-	OutputDir string `json:"-"` // 输出根目录
+	// Trường lúc chạy (không serialize vào JSON)
+	OutputDir string `json:"-"` // Thư mục gốc đầu ra
 
-	// 默认 LLM 配置
-	Provider  string `json:"provider"` // 默认 provider（Providers map 中的 key）
-	ModelName string `json:"model"`    // 默认模型名
-	// ReasoningEffort 顶层默认推理强度（off/low/medium/high/xhigh/max），空=不覆盖（沿用模型/provider 默认）。
-	// 角色未单独配置 reasoning_effort 时回落到此值。
+	// Cấu hình LLM mặc định
+	Provider  string `json:"provider"` // provider mặc định (khóa trong map Providers)
+	ModelName string `json:"model"`    // Tên model mặc định
+	// ReasoningEffort Cường độ suy luận mặc định cấp trên cùng (off/low/medium/high/xhigh/max), rỗng = không ghi đè (dùng mặc định của model/provider).
+	// Khi vai trò không cấu hình reasoning_effort riêng thì lùi về giá trị này.
 	ReasoningEffort string `json:"reasoning_effort,omitempty"`
 
-	// Provider 凭证库
+	// Kho chứng chỉ Provider
 	Providers map[string]ProviderConfig `json:"providers,omitempty"`
 
-	// 角色级模型覆盖
+	// Model ghi đè cấp vai trò
 	Roles map[string]RoleConfig `json:"roles,omitempty"`
 
-	// 创作参数
+	// Tham số sáng tác
 	Style string `json:"style,omitempty"`
 
-	// ContextWindow 是旧版全局上下文窗口，保留为模型专属 context_window 之后的
-	// 兼容回退。仅影响压缩阈值，不改变 LLM API 实际请求长度。
+	// ContextWindow là cửa sổ ngữ cảnh toàn cục bản cũ, giữ lại làm
+	// dự phòng tương thích sau context_window đặc thù của model. Chỉ ảnh hưởng ngưỡng nén, không đổi độ dài yêu cầu thực của LLM API.
 	ContextWindow int `json:"context_window,omitempty"`
 
-	// Budget 单本书的成本预算政策；book_usd > 0 才启用。
+	// Budget chính sách ngân sách chi phí cho một cuốn sách; book_usd > 0 mới bật.
 	Budget BudgetConfig `json:"budget,omitzero"`
 
-	// Notify 无人值守告警配置；缺省启用（system 通道兜底）。
+	// Notify cấu hình cảnh báo không người trực; mặc định bật (kênh system làm dự phòng).
 	Notify NotifyConfig `json:"notify,omitzero"`
 }
 
-// BudgetConfig 是用户对单本书钱包的政策声明。越线停机等同于用户在那一刻
-// 手动 Abort——Host 只代为执行，不评估模型行为（架构 §10 合宪边界）。
+// BudgetConfig là tuyên bố chính sách của người dùng đối với ví tiền của một cuốn sách. Dừng máy khi vượt vạch tương đương với việc người dùng
+// Abort thủ công ngay lúc đó——Host chỉ thực thi thay, không đánh giá hành vi model (Kiến trúc §10 Ranh giới hợp hiến).
 type BudgetConfig struct {
-	BookUSD   float64 `json:"book_usd,omitempty"`   // 必填才启用；0/缺省 = 不限
-	WarnRatio float64 `json:"warn_ratio,omitempty"` // 告警水位，默认 0.8
-	HardStop  bool    `json:"hard_stop,omitempty"`  // true=越线立即停；默认等当前子代理任务结束
+	BookUSD   float64 `json:"book_usd,omitempty"`   // Bắt buộc mới bật; 0/mặc định = không giới hạn
+	WarnRatio float64 `json:"warn_ratio,omitempty"` // Mức cảnh báo, mặc định 0.8
+	HardStop  bool    `json:"hard_stop,omitempty"`  // true=vượt vạch dừng ngay; mặc định đợi task subagent hiện tại kết thúc
 }
 
-// Enabled 返回预算政策是否启用。
+// Enabled trả về chính sách ngân sách có đang bật hay không.
 func (b BudgetConfig) Enabled() bool { return b.BookUSD > 0 }
 
-// NotifyConfig 无人值守告警通道配置。
+// NotifyConfig cấu hình kênh cảnh báo không người trực.
 type NotifyConfig struct {
-	Enabled *bool    `json:"enabled,omitempty"` // 缺省 true（system 通道零配置可用）
-	Command string   `json:"command,omitempty"` // 可选，配置后替代 system 通道（手机推送走这里）
-	Events  []string `json:"events,omitempty"`  // 可选，按 notify.Kinds 过滤；缺省全开
+	Enabled *bool    `json:"enabled,omitempty"` // Mặc định true (kênh system không cần cấu hình cũng dùng được)
+	Command string   `json:"command,omitempty"` // Tùy chọn, cấu hình xong sẽ thay thế kênh system (thông báo đẩy lên điện thoại qua đây)
+	Events  []string `json:"events,omitempty"`  // Tùy chọn, lọc theo notify.Kinds; mặc định mở tất cả
 }
 
-// IsEnabled 返回告警是否启用（缺省 true）。
+// IsEnabled trả về cảnh báo có đang bật không (mặc định true).
 func (n NotifyConfig) IsEnabled() bool { return n.Enabled == nil || *n.Enabled }
 
-// ValidateBase 校验基础配置。
+// ValidateBase kiểm tra cấu hình cơ bản.
 func (c *Config) ValidateBase() error {
 	if err := validateConfigText("provider", c.Provider); err != nil {
 		return err
@@ -265,7 +265,7 @@ func (c *Config) ValidateBase() error {
 		return fmt.Errorf("model is required: %w", errs.ErrConfig)
 	}
 
-	// 默认 provider 必须有凭证
+	// provider mặc định phải có chứng chỉ
 	pc, ok := c.Providers[c.Provider]
 	if !ok {
 		return fmt.Errorf("provider %q chưa cấu hình chứng thực trong providers; nếu đã ghi đè provider trong ./.ainovel/config.json, phải đồng thời khai báo providers.%s (gồm api_key/base_url), không thể chỉ sửa provider tầng trên: %w", c.Provider, c.Provider, errs.ErrConfig)
@@ -291,7 +291,7 @@ func (c *Config) ValidateBase() error {
 		}
 	}
 
-	// 校验角色覆盖
+	// Kiểm tra ghi đè vai trò
 	for role, rc := range c.Roles {
 		if err := validateConfigText("role name", role); err != nil {
 			return err
@@ -330,7 +330,7 @@ func (c *Config) ValidateBase() error {
 		}
 	}
 
-	// 校验预算政策
+	// Kiểm tra chính sách ngân sách
 	if c.Budget.BookUSD < 0 {
 		return fmt.Errorf("budget.book_usd must be >= 0: %w", errs.ErrConfig)
 	}
@@ -338,7 +338,7 @@ func (c *Config) ValidateBase() error {
 		return fmt.Errorf("budget.warn_ratio must be in (0, 1): %w", errs.ErrConfig)
 	}
 
-	// 校验告警配置
+	// Kiểm tra cấu hình cảnh báo
 	if err := validateConfigText("notify.command", c.Notify.Command); err != nil {
 		return err
 	}
@@ -401,7 +401,7 @@ func validateConfigText(name, value string) error {
 	return nil
 }
 
-// DefaultProviderConfig 返回默认 provider 的凭证配置。
+// DefaultProviderConfig Trả về cấu hình chứng chỉ của provider mặc định.
 func (c *Config) DefaultProviderConfig() ProviderConfig {
 	if c.Providers == nil {
 		return ProviderConfig{}
@@ -409,7 +409,7 @@ func (c *Config) DefaultProviderConfig() ProviderConfig {
 	return c.Providers[c.Provider]
 }
 
-// FillDefaults 填充默认值。
+// FillDefaults Điền giá trị mặc định.
 func (c *Config) FillDefaults() {
 	if c.OutputDir == "" {
 		c.OutputDir = filepath.Join("output", "novel")
@@ -428,23 +428,23 @@ func (c *Config) FillDefaults() {
 	}
 }
 
-// ContextWindowSource 标记窗口取值的来源，供日志/诊断使用。
+// ContextWindowSource Đánh dấu nguồn gốc lấy giá trị cửa sổ, dùng cho log/chẩn đoán.
 type ContextWindowSource string
 
 const (
-	CtxWindowModelConfig ContextWindowSource = "model_config" // provider 模型项显式指定
-	CtxWindowConfig      ContextWindowSource = "config"       // 旧顶层 context_window 显式指定
-	CtxWindowRegistry    ContextWindowSource = "registry"     // OpenRouter 基线命中
-	CtxWindowDefault     ContextWindowSource = "default"      // 兜底（自定义代理/未知模型）
+	CtxWindowModelConfig ContextWindowSource = "model_config" // chỉ định rõ ràng ở mục model của provider
+	CtxWindowConfig      ContextWindowSource = "config"       // chỉ định rõ ràng ở context_window cấp cao nhất cũ
+	CtxWindowRegistry    ContextWindowSource = "registry"     // hit đường cơ sở OpenRouter
+	CtxWindowDefault     ContextWindowSource = "default"      // Dự phòng (proxy tùy chỉnh/model không nhận diện được)
 )
 
-// ResolveContextWindow 解析上下文压缩使用的有效窗口，按优先级：
+// ResolveContextWindow Phân giải cửa sổ hữu hiệu dùng để nén ngữ cảnh, theo thứ tự ưu tiên:
 //  1. providers.<provider>.models[].context_window
-//  2. 旧顶层 ContextWindow（兼容已有配置）
-//  3. models.DefaultRegistry 按模型名查询（OpenRouter 基线 + 24h 刷新）
-//  4. 兜底 DefaultContextWindow（自定义代理 / 未知模型）
+//  2. ContextWindow cấp cao nhất cũ (tương thích cấu hình có sẵn)
+//  3. models.DefaultRegistry tra cứu theo tên model (cơ sở OpenRouter + làm mới 24h)
+//  4. Dự phòng DefaultContextWindow (proxy tùy chỉnh / model không nhận diện được)
 //
-// 注意：返回值仅用于压缩阈值计算，不会缩小 LLM API 真实可发请求长度。
+// Lưu ý: giá trị trả về chỉ dùng để tính ngưỡng nén, không thu hẹp độ dài yêu cầu thực sự gửi đến LLM API.
 func (c Config) ResolveContextWindow(provider, modelName string) (int, ContextWindowSource) {
 	if pc, ok := c.Providers[strings.TrimSpace(provider)]; ok {
 		if model, found := pc.ModelConfig(modelName); found && model.ContextWindow > 0 {
@@ -460,9 +460,9 @@ func (c Config) ResolveContextWindow(provider, modelName string) (int, ContextWi
 	return DefaultContextWindow, CtxWindowDefault
 }
 
-// ResolveReasoningEffort 返回某角色生效的推理强度原始串（off/low/medium/high/xhigh/max 或空）。
-// 优先级：角色级 Roles[role].ReasoningEffort → 顶层默认 ReasoningEffort → ""（不覆盖，沿用模型/provider 默认）。
-// role 为空或 "default" 时直接取顶层默认。值的合法性由 agents.ParseThinkingLevel 把关。
+// ResolveReasoningEffort Trả về chuỗi gốc của cường độ suy luận có hiệu lực cho vai trò nào đó (off/low/medium/high/xhigh/max hoặc rỗng).
+// Ưu tiên: Roles[role].ReasoningEffort cấp vai trò → ReasoningEffort mặc định cấp trên cùng → "" (không ghi đè, dùng mặc định của model/provider).
+// Khi role rỗng hoặc "default" thì lấy mặc định cấp trên cùng. Tính hợp lệ của giá trị do agents.ParseThinkingLevel kiểm tra.
 func (c Config) ResolveReasoningEffort(role string) string {
 	if role != "" && role != "default" {
 		if rc, ok := c.Roles[role]; ok && rc.ReasoningEffort != "" {
@@ -472,9 +472,9 @@ func (c Config) ResolveReasoningEffort(role string) string {
 	return c.ReasoningEffort
 }
 
-// LogContextWindowChoice 打印某个角色的窗口决策。source=default 时发 Warn 提示
-// 该模型未在 registry 命中（OpenRouter 也未收录），后续上下文压缩会按兜底窗口
-// 触发——若模型实际窗口更大，可在配置文件用 context_window 显式指定，避免被提前压缩、丢史。
+// LogContextWindowChoice In quyết định cửa sổ của vai trò nào đó. Khi source=default thì phát Warn cảnh báo
+// model này chưa hit trong registry (OpenRouter cũng chưa thu thập), sau này nén ngữ cảnh sẽ theo cửa sổ dự phòng
+// ——nếu cửa sổ thực tế của model lớn hơn, có thể chỉ định rõ qua context_window trong file cấu hình để tránh nén sớm, mất lịch sử.
 func LogContextWindowChoice(role, model string, window int, source ContextWindowSource) {
 	attrs := []any{"module", "context", "role", role, "model", model, "window", window, "source", source}
 	switch source {
@@ -489,8 +489,8 @@ func LogContextWindowChoice(role, model string, window int, source ContextWindow
 	}
 }
 
-// CandidateModels 返回某个 provider 下可供切换的模型列表。
-// 优先使用 provider 显式声明的 models；同时补充当前配置中已出现过的该 provider 模型。
+// CandidateModels Trả về danh sách model có thể chuyển đổi dưới một provider nào đó.
+// Ưu tiên dùng models do provider khai báo rõ ràng; đồng thời bổ sung các model provider đó đã xuất hiện trong cấu hình hiện tại.
 func (c Config) CandidateModels(provider string) []string {
 	if provider == "" {
 		return nil

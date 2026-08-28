@@ -10,10 +10,10 @@ import (
 	"strconv"
 )
 
-// ValidateJSON 校验原始 JSON 是否满足直接返回契约使用的 JSON Schema 子集。
-// 该子集覆盖 object/array/string/integer/number/boolean/null、required、enum 和
-// additionalProperties。未声明 additionalProperties 时遵循 JSON Schema 默认语义，
-// 不额外拒绝未知字段。
+// ValidateJSON kiểm tra JSON gốc có thỏa mãn tập con JSON Schema được sử dụng bởi hợp đồng trả về trực tiếp hay không.
+// Tập con này bao phủ object/array/string/integer/number/boolean/null, required, enum và
+// additionalProperties. Khi chưa khai báo additionalProperties thì tuân theo ngữ nghĩa mặc định của JSON Schema,
+// không từ chối thêm các trường không xác định.
 func ValidateJSON(schema map[string]any, raw []byte) error {
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.UseNumber()

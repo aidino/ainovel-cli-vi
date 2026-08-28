@@ -10,16 +10,16 @@ import (
 	"github.com/voocel/ainovel-cli/internal/llmcontract"
 )
 
-// FailureFacts 是 worker_failure / deadlock 两个场景共用的事实包:
-// Engine 已做过确定性分类(重试/参数错等不到这里),送到 Arbiter 的都是
+// FailureFacts là gói sự kiện dùng chung cho hai kịch bản worker_failure / deadlock:
+// Engine đã thực hiện phân loại tất định (retry / lỗi tham số v.v. không đến đây), những gì gửi đến Arbiter là
 // phần sót lại "code tất định không đưa ra được lối thoát".
 type FailureFacts struct {
 	Kind          string   `json:"kind"` // worker_failure | deadlock
 	Agent         string   `json:"agent,omitempty"`
 	Task          string   `json:"task,omitempty"`
-	Error         string   `json:"error,omitempty"` // worker_failure:错误文本
+	Error         string   `json:"error,omitempty"` // worker_failure: văn bản lỗi
 	ErrorKind     string   `json:"error_kind,omitempty"`
-	Repeats       int      `json:"repeats,omitempty"` // deadlock:同指令已派次数
+	Repeats       int      `json:"repeats,omitempty"` // deadlock: số lần lệnh tương tự đã được phái
 	Phase         string   `json:"phase,omitempty"`
 	NextChapter   int      `json:"next_chapter,omitempty"`
 	PendingQueue  []int    `json:"pending_rewrites,omitempty"`
@@ -27,7 +27,7 @@ type FailureFacts struct {
 	FactWarnings  []string `json:"fact_warnings,omitempty"`
 }
 
-// FailureDecision 失败/僵局裁定。
+// FailureDecision phán quyết thất bại/thế bí.
 type FailureDecision struct {
 	Action   string      `json:"action"` // retry | reroute | abort
 	Dispatch *DispatchOp `json:"dispatch,omitempty"`
@@ -54,8 +54,8 @@ func (d *FailureDecision) ValidateAgainst(f FailureFacts) error {
 	}
 }
 
-// failureContract 紧邻 FailureDecision:action 封闭枚举,dispatch 可空对象
-// (仅 reroute 时非 null);跨字段组合仍由 ValidateAgainst 按事实校验。
+// failureContract nằm kề FailureDecision: action là enum đóng, dispatch là object có thể null
+// (chỉ không phải null khi reroute); tổ hợp chéo các field vẫn do ValidateAgainst kiểm tra dựa theo sự kiện.
 var failureContract = llmcontract.Contract{
 	Name:        "arbiter_failure",
 	Description: "Phán quyết thất bại / thế bí: đưa ra lối thoát",
@@ -66,8 +66,8 @@ var failureContract = llmcontract.Contract{
 	),
 }
 
-// DecideFailure 失败/僵局咨询。失败语义:返回 error → Engine 按最保守路径处理
-// (暂停 + notify),绝不无限咨询。
+// DecideFailure tham vấn thất bại/thế bí. Ngữ nghĩa thất bại: trả về error → Engine xử lý theo đường thận trọng nhất
+// (tạm dừng + notify), tuyệt đối không tham vấn vô hạn.
 func DecideFailure(ctx context.Context, model agentcore.ChatModel, systemPrompt string, facts FailureFacts) (FailureDecision, error) {
 	payload, err := marshalPayload(facts)
 	if err != nil {

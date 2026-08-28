@@ -34,8 +34,8 @@ func (s *RevisionStore) ClearPending() error {
 	return s.io.RemoveFile(pendingRevisionPath)
 }
 
-// InvalidateChapterAggregates 删除输入范围包含修订章节的模型派生工件。
-// 章节级投影由 revision.Projector 单独重建。
+// InvalidateChapterAggregates xóa các artifact phái sinh model có phạm vi đầu vào chứa các chương được sửa đổi.
+// Phép chiếu cấp độ chương được xây dựng lại độc lập bởi revision.Projector.
 func (s *Store) InvalidateChapterAggregates(fromChapter int) error {
 	if fromChapter <= 0 {
 		return fmt.Errorf("from chapter must be > 0")

@@ -15,7 +15,7 @@ func TestReadChapterFinal(t *testing.T) {
 	if err := store.Init(); err != nil {
 		t.Fatalf("Init: %v", err)
 	}
-	if err := store.Drafts.SaveFinalChapter(1, "第一章的终稿正文。"); err != nil {
+	if err := store.Drafts.SaveFinalChapter(1, "第一chương 的终稿chính văn。"); err != nil {
 		t.Fatalf("SaveFinalChapter: %v", err)
 	}
 
@@ -48,7 +48,7 @@ func TestReadChapterDraft(t *testing.T) {
 	if err := store.Init(); err != nil {
 		t.Fatalf("Init: %v", err)
 	}
-	if err := store.Drafts.SaveDraft(3, "第三章的草稿内容。"); err != nil {
+	if err := store.Drafts.SaveDraft(3, "第三chương 的bản thảonội dung 。"); err != nil {
 		t.Fatalf("SaveDraft: %v", err)
 	}
 
@@ -76,7 +76,7 @@ func TestReadChapterFinalDoesNotSubstituteDraft(t *testing.T) {
 	if err := st.Init(); err != nil {
 		t.Fatal(err)
 	}
-	if err := st.Drafts.SaveDraft(2, "只有草稿，不是终稿"); err != nil {
+	if err := st.Drafts.SaveDraft(2, "只有bản thảo，不是终稿"); err != nil {
 		t.Fatal(err)
 	}
 
@@ -109,7 +109,7 @@ func TestReadChapterDialogue(t *testing.T) {
 	}); err != nil {
 		t.Fatalf("SaveCharacters: %v", err)
 	}
-	if err := store.Drafts.SaveFinalChapter(1, "张三站起身来。\u201c我不同意这个方案，\u201d张三冷冷地说。"); err != nil {
+	if err := store.Drafts.SaveFinalChapter(1, "张三站起身来。\u201c我khác nhau 意这个方案，\u201d张三冷冷地说。"); err != nil {
 		t.Fatalf("SaveFinalChapter: %v", err)
 	}
 
@@ -139,7 +139,7 @@ func TestReadChapterRange(t *testing.T) {
 		t.Fatalf("Init: %v", err)
 	}
 	for i := 1; i <= 3; i++ {
-		if err := store.Drafts.SaveFinalChapter(i, "这是一段正文内容。"); err != nil {
+		if err := store.Drafts.SaveFinalChapter(i, "这是一段chính vănnội dung 。"); err != nil {
 			t.Fatalf("SaveFinalChapter(%d): %v", i, err)
 		}
 	}
@@ -178,7 +178,7 @@ func TestDraftChapterWrite(t *testing.T) {
 	tool := NewDraftChapterTool(store)
 	args, _ := json.Marshal(map[string]any{
 		"chapter": 1,
-		"content": "这是整章的正文内容，一次写完。",
+		"content": "这是整chương 的chính vănnội dung ，一次写完。",
 		"mode":    "write",
 	})
 	result, err := tool.Execute(context.Background(), args)
@@ -200,7 +200,7 @@ func TestDraftChapterWrite(t *testing.T) {
 		t.Fatal("expected non-zero word count")
 	}
 
-	// 验证能读回来
+	// xác minh能读回来
 	content, err := store.Drafts.LoadDraft(1)
 	if err != nil {
 		t.Fatalf("LoadDraft: %v", err)
@@ -332,14 +332,14 @@ func TestDraftChapterRejectsCompleted(t *testing.T) {
 	if err := s.Progress.Init(10); err != nil {
 		t.Fatalf("InitProgress: %v", err)
 	}
-	_ = s.Drafts.SaveDraft(1, "第一章正文")
+	_ = s.Drafts.SaveDraft(1, "第一chương chính văn")
 	_ = s.Progress.StartChapter(1)
 	_ = s.Progress.MarkChapterComplete(1, 3000, "", "")
 
 	tool := NewDraftChapterTool(s)
 	args, _ := json.Marshal(map[string]any{
 		"chapter": 1,
-		"content": "试图覆盖已提交的章节",
+		"content": "试图ghi đè已提交的chương",
 	})
 	result, err := tool.Execute(context.Background(), args)
 	if err != nil {

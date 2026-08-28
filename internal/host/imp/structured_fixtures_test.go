@@ -42,7 +42,7 @@ func rangeDigestJSON(start, end int, plot string) string {
 
 func synthesisFixtureJSON(endChapter int, status string) string {
 	data, err := json.Marshal(map[string]any{
-		"title":    "测试书",
+		"title":    "kiểm tra 书",
 		"synopsis": "甲踏上旅程，寻找改变命运的答案。",
 		"premise":  "# 故事前提\n前提",
 		"characters": []any{map[string]any{
@@ -51,8 +51,8 @@ func synthesisFixtureJSON(endChapter int, status string) string {
 		}},
 		"world_rules": []any{},
 		"structure": []any{map[string]any{
-			"title": "卷一", "theme": "主题", "arcs": []any{map[string]any{
-				"title": "弧一", "goal": "目标", "start_chapter": 1, "end_chapter": endChapter,
+			"title": "tập一", "theme": "主题", "arcs": []any{map[string]any{
+				"title": "arc 一", "goal": "目标", "start_chapter": 1, "end_chapter": endChapter,
 			}},
 		}},
 		"compass": map[string]any{
@@ -61,7 +61,7 @@ func synthesisFixtureJSON(endChapter int, status string) string {
 		},
 		"planning_tier": "short",
 		"story_status":  status,
-		"status_reason": "根据正文判断",
+		"status_reason": "根据chính vănphán đoán ",
 	})
 	if err != nil {
 		panic(err)

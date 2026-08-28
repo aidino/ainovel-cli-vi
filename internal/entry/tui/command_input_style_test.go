@@ -18,15 +18,15 @@ func TestCommandInputHighlightsOnlyRegisteredCommands(t *testing.T) {
 	m := Model{textarea: textarea.New()}
 	m.textarea.Focus()
 
-	for _, input := range []string{"/config", "/model writer", "/plan"} { // /plan 是 /cocreate 别名
+	for _, input := range []string{"/config", "/model writer", "/plan"} { // /plan là bí danh của /cocreate
 		m.textarea.SetValue(input)
 		m.syncCommandInputHighlight()
 		if m.commandToken == "" {
-			t.Errorf("已注册命令 %q 应被识别", input)
+			t.Errorf("lệnh đã đăng ký %q nên được nhận dạng", input)
 		}
 		plain := m.textarea.View()
 		if colored := highlightCommandToken(plain, input, m.commandToken); colored == plain {
-			t.Errorf("已注册命令 %q 的实际渲染没有变色", input)
+			t.Errorf("lệnh đã đăng ký %q thực tế render không đổi màu", input)
 		}
 	}
 
@@ -53,9 +53,9 @@ func TestCommandInputDoesNotHighlightArguments(t *testing.T) {
 	plainView := m.textarea.View()
 	view := highlightCommandToken(plainView, m.textarea.Value(), m.commandToken)
 	if stripped := ansi.Strip(view); stripped != ansi.Strip(plainView) {
-		t.Fatalf("高亮不应改变输入内容: %q", stripped)
+		t.Fatalf("高亮不应改变输入nội dung : %q", stripped)
 	}
 	if !strings.Contains(view, "/reopen"+resetForeground+" 继续创作") {
-		t.Fatalf("命令后的参数没有恢复正文颜色: %q", view)
+		t.Fatalf("命令后的tham số 没有khôi phục chính văn颜色: %q", view)
 	}
 }

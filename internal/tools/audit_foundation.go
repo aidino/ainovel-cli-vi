@@ -13,8 +13,8 @@ import (
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
-// AuditFoundationTool 接收 Architect 对已落盘基础设定的语义审查结论。
-// 文学与跨文件语义由模型判断；工具只保证审查版本、结论和状态迁移一致。
+// AuditFoundationTool Nhận kết luận kiểm tra ngữ nghĩa của Architect đối với thiết lập cơ bản đã lưu.
+// Ngữ nghĩa văn học và xuyên file do mô hình phán đoán; công cụ chỉ đảm bảo phiên bản kiểm tra, kết luận và di chuyển trạng thái nhất quán.
 type AuditFoundationTool struct {
 	store *store.Store
 }

@@ -22,7 +22,7 @@ func EnsureChapterExpanded(st *store.Store, chapter int) error {
 		return fmt.Errorf("load progress: %w: %w", errs.ErrStoreRead, err)
 	}
 	if progress == nil {
-		return fmt.Errorf("progress 未初始化: %w", errs.ErrToolPrecondition)
+		return fmt.Errorf("progress chưa khởi tạo: %w", errs.ErrToolPrecondition)
 	}
 	if progress.Phase != domain.PhaseWriting {
 		return fmt.Errorf("viết chương chỉ được phép ở giai đoạn writing (phase=%s hiện tại): %w", progress.Phase, errs.ErrToolPrecondition)

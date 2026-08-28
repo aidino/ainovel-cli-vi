@@ -9,8 +9,8 @@ import (
 	"github.com/voocel/ainovel-cli/internal/stylestat"
 )
 
-// StyleStatsIndex 把 Store 中的已完成章节同步到增量统计器。
-// 首次 Snapshot 全量恢复一次；之后只加载新增章节，重写由 commit_chapter 主动刷新。
+// StyleStatsIndex Đồng bộ chương đã hoàn thành trong Store vào bộ đếm thống kê tăng cường.
+// Lần đầu Snapshot khôi phục toàn lượng một lần; sau đó chỉ tải chương mới thêm, làm lại do commit_chapter chủ động làm mới.
 type StyleStatsIndex struct {
 	store *store.Store
 
@@ -78,8 +78,8 @@ func (s *StyleStatsIndex) Snapshot(
 	return s.tracker.Snapshot(titles, stopwords), nil
 }
 
-// ChapterCommitted 在提交 Saga 完整成功后刷新一章。索引尚未初始化时，
-// 下一次 Snapshot 会从 Progress 事实一次性恢复。
+// ChapterCommitted Làm mới một chương sau khi Saga gửi thành công hoàn chỉnh. Khi chỉ mục chưa khởi tạo,
+// Snapshot lần tới sẽ khôi phục một lần từ sự thật Progress.
 func (s *StyleStatsIndex) ChapterCommitted(chapter int, text string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

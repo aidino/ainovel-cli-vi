@@ -13,13 +13,13 @@ import (
 	"github.com/voocel/agentcore"
 )
 
-// sessionRecord 是 meta/sessions/*.jsonl 单条记录的轻量解析形态——只取
-// 累计 usage 需要的字段。Content 等大字段跳过解析，节省启动期 IO。
+// sessionRecord là dạng phân tích cú pháp nhẹ cho bản ghi đơn lẻ trong meta/sessions/*.jsonl — chỉ lấy các trường cần thiết cho việc tích lũy usage.
+// Các trường lớn như Content được bỏ qua để tiết kiệm IO trong giai đoạn khởi động.
 //
-// 模型归属三级降级：
-//  1. Usage.Provider/Model — agentcore/litellm 透传的真实响应模型（首选）
-//  2. Meta(_meta)          — 上游未透传时，写入侧由 ModelLookup 补的"当时生效"模型
-//  3. 都没有                — replay 退回 effectiveModel 用当前 ModelSet 反推（精度受损）
+// Phân cấp dự phòng cho mô hình:
+//  1. Usage.Provider/Model — Mô hình phản hồi thực tế được truyền qua từ agentcore/litellm (ưu tiên).
+//  2. Meta(_meta)          — Mô hình "có hiệu lực tại thời điểm đó" do ModelLookup bổ sung khi ghi vào nếu phía thượng nguồn không truyền qua.
+//  3. Không có gì cả        — Khi replay, quay về effectiveModel, dùng ModelSet hiện tại để suy ngược lại (độ chính xác bị giảm).
 type sessionRecord struct {
 	Role  agentcore.Role     `json:"role"`
 	Usage *agentcore.Usage   `json:"usage,omitempty"`
@@ -31,14 +31,17 @@ type sessionRecordMeta struct {
 	Model    string `json:"model,omitempty"`
 }
 
-// ReplaySessions 扫 meta/sessions/agents/*.jsonl，
-// 把每条 assistant 消息的 usage 重新累加到 tracker。返回回填条数。
+// UsageReplay khôi phục lượng dùng của phiên (Token và chi phí) từ bản ghi phiên JSONL đã được lưu trữ bền vững.
+// Do cấu hình model có thể bị cập nhật nóng (ví dụ đổi sang model đắt hơn), để đảm bảo sau khi khôi phục từ điểm dừng
+// "chi phí đã dùng" hiển thị trên giao diện khớp với hóa đơn, bắt buộc phải áp dụng nguyên tắc "ghi lại chi phí lúc đó, không tính lại theo giá hiện tại".
 //
-// 调用约束：仅在 meta/usage.json 缺失时调用一次回填。
-// 日常持久化走 SaveNow / autoSaveLoop。
+// Ràng buộc gọi: Chỉ gọi một lần để khôi phục khi tệp meta/usage.json bị thiếu.
+// Việc duy trì dữ liệu hàng ngày được quản lý độc lập với việc ghi log, chúng ta chỉ cần phát lại cộng dồn, cuối cùng SaveNow đè lên state.json của store.
+// Chỉ khi thực sự xảy ra quá trình nạp lại (đọc được bản ghi token hợp lệ từ phiên) mới ghi đĩa, tránh trường hợp chạy mới hoàn toàn
+// và phiên rỗng thì lại cưỡng chế đè số 0 (mặc dù không sao nhưng tiết kiệm một lần IO).
 //
-// 精度依赖见 sessionRecord 注释的三级降级——第 3 级（Usage 和 _meta 都缺）
-// 在更老日志或上游异常时才会触发。
+// Độ chính xác phụ thuộc vào phân cấp trong chú thích sessionRecord—cấp 3 (thiếu cả Usage và _meta)
+// sẽ chỉ kích hoạt trong các nhật ký cũ hơn hoặc khi thượng nguồn xảy ra lỗi.
 func (t *UsageTracker) ReplaySessions(rootDir string) (int, error) {
 	if t == nil {
 		return 0, nil
@@ -89,8 +92,8 @@ func (t *UsageTracker) ReplaySessions(rootDir string) (int, error) {
 	return total, nil
 }
 
-// replayFile 扫单个 jsonl 文件，把所有带 Usage 的 assistant 消息喂给 accumulate。
-// agentName 由调用方从 Worker 会话文件名解析。
+// replayFile quét một tệp jsonl duy nhất, đưa tất cả các tin nhắn assistant có chứa Usage vào accumulate.
+// agentName được bên gọi phân tích cú pháp từ tên tệp phiên Worker.
 func (t *UsageTracker) replayFile(path, agentName string) (int, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -104,7 +107,7 @@ func (t *UsageTracker) replayFile(path, agentName string) (int, error) {
 	role := agentRoleName(agentName)
 	count := 0
 	scanner := bufio.NewScanner(f)
-	// 单行可能很长（assistant 消息 + tool args 等都打平了），放宽到 4MB。
+	// Một dòng có thể rất dài (tin nhắn assistant + tool args v.v. đều được làm phẳng), nới lỏng lên 4MB.
 	scanner.Buffer(make([]byte, 0, 64*1024), 4*1024*1024)
 	for scanner.Scan() {
 		line := scanner.Bytes()
@@ -136,9 +139,9 @@ func (t *UsageTracker) replayFile(path, agentName string) (int, error) {
 	return count, nil
 }
 
-// parseAgentNameFromFile 从 "writer-ch01.jsonl" / "architect_short-001.jsonl" 提取
-// agent 名（"-" 之前部分）。命名约定见 store/session.go::subAgentPath：
-// agentName 不含 dash，suffix 是 ch<n> 或递增序号。
+// parseAgentNameFromFile trích xuất tên agent từ "writer-ch01.jsonl" / "architect_short-001.jsonl"
+// (phần trước dấu "-"). Quy ước đặt tên xem tại store/session.go::subAgentPath:
+// agentName không chứa dấu gạch ngang, hậu tố là ch<n> hoặc số thứ tự tăng dần.
 func parseAgentNameFromFile(name string) string {
 	base := strings.TrimSuffix(name, ".jsonl")
 	if i := strings.Index(base, "-"); i > 0 {

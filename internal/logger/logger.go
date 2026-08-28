@@ -82,12 +82,12 @@ func SetupFile(outputDir, filename string, alsoStderr bool, sessionAttrs ...slog
 func openLogFile(outputDir, filename string) (*os.File, error) {
 	logPath := filepath.Join(outputDir, "logs", filename)
 	if err := os.MkdirAll(filepath.Dir(logPath), 0o755); err != nil {
-		return nil, fmt.Errorf("create log directory %q: %w", filepath.Dir(logPath), err)
+		return nil, fmt.Errorf("tạo thư mục log %q: %w", filepath.Dir(logPath), err)
 	}
 
 	f, err := os.OpenFile(logPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o644)
 	if err != nil {
-		return nil, fmt.Errorf("open log file %q: %w", logPath, err)
+		return nil, fmt.Errorf("mở file log %q: %w", logPath, err)
 	}
 	return f, nil
 }

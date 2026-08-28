@@ -13,7 +13,7 @@ import (
 	"github.com/voocel/ainovel-cli/internal/rules"
 )
 
-// WorldStore 管理时间线、伏笔、人物关系、状态变化、世界规则、风格规则、审阅和交接。
+// WorldStore quản lý dòng thời gian, chi tiết gieo mầm, quan hệ nhân vật, thay đổi trạng thái, quy tắc thế giới, quy tắc phong cách, đọc kiểm và bàn giao.
 type WorldStore struct {
 	io *IO
 
@@ -40,9 +40,9 @@ func NewWorldStore(io *IO) *WorldStore {
 	}
 }
 
-// ── 时间线 ──
+// ── Dòng thời gian ──
 
-// SaveTimeline 全量替换时间线事实与人类可读投影。
+// SaveTimeline thay thế toàn bộ dữ kiện dòng thời gian và phép chiếu có thể đọc bởi con người.
 func (s *WorldStore) SaveTimeline(events []domain.TimelineEvent) error {
 	return s.io.WithWriteLock(func() error {
 		if err := s.timeline.replaceUnlocked(s.io, events); err != nil {
@@ -58,15 +58,15 @@ func (s *WorldStore) SaveTimeline(events []domain.TimelineEvent) error {
 	})
 }
 
-// LoadTimeline 读取时间线。
+// LoadTimeline đọc dòng thời gian.
 func (s *WorldStore) LoadTimeline() ([]domain.TimelineEvent, error) {
 	s.io.mu.Lock()
 	defer s.io.mu.Unlock()
 	return s.timeline.allUnlocked(s.io)
 }
 
-// AppendTimelineEvents 追加时间线事件。同一事件重复提交时按稳定 key 去重，保证
-// commit_chapter 崩溃后重跑不会污染时间线。
+// AppendTimelineEvents nối thêm sự kiện dòng thời gian. Khi sự kiện giống nhau được cam kết lặp lại, khử trùng lặp theo khóa ổn định, đảm bảo
+// chạy lại sau khi commit_chapter gặp sự cố sẽ không làm ô nhiễm dòng thời gian.
 func (s *WorldStore) AppendTimelineEvents(newEvents []domain.TimelineEvent) error {
 	return s.io.WithWriteLock(func() error {
 		if !s.timelineProjectionReady {
@@ -81,8 +81,8 @@ func (s *WorldStore) AppendTimelineEvents(newEvents []domain.TimelineEvent) erro
 
 		added, err := s.timeline.appendUnlocked(s.io, newEvents)
 		if err != nil {
-			// 追加错误时磁盘上可能已有部分完整记录，重放前必须
-			// 从事实日志重建投影，不能仅依赖 added 的返回值。
+			// Khi nối thêm bị lỗi, trên đĩa có thể đã có một phần bản ghi hoàn chỉnh, trước khi phát lại phải
+			// xây dựng lại phép chiếu từ nhật ký dữ kiện, không thể chỉ dựa vào giá trị trả về của added.
 			s.timelineProjectionReady = false
 			return err
 		}
@@ -97,8 +97,8 @@ func (s *WorldStore) AppendTimelineEvents(newEvents []domain.TimelineEvent) erro
 	})
 }
 
-// ensureTimelineProjectionUnlocked 在进程首次追加或上次投影失败后核对 timeline.md。
-// 正常路径只执行一次全量核对，之后每章与 JSONL 同步追加；投影不参与事实读取。
+// ensureTimelineProjectionUnlocked đối chiếu timeline.md sau lần nối thêm đầu tiên của tiến trình hoặc sau khi phép chiếu trước thất bại.
+// Đường dẫn bình thường chỉ thực hiện đối chiếu toàn bộ một lần, sau đó mỗi chương nối thêm đồng bộ với JSONL; phép chiếu không tham gia đọc dữ kiện.
 func (s *WorldStore) ensureTimelineProjectionUnlocked(events []domain.TimelineEvent) error {
 	if s.timelineProjectionReady {
 		return nil
@@ -117,7 +117,7 @@ func (s *WorldStore) ensureTimelineProjectionUnlocked(events []domain.TimelineEv
 	return nil
 }
 
-// LoadRecentTimeline 返回最近 window 章内的时间线事件。
+// LoadRecentTimeline trả về sự kiện dòng thời gian trong window chương gần nhất.
 func (s *WorldStore) LoadRecentTimeline(current, window int) ([]domain.TimelineEvent, error) {
 	all, err := s.LoadTimeline()
 	if err != nil {
@@ -133,9 +133,9 @@ func (s *WorldStore) LoadRecentTimeline(current, window int) ([]domain.TimelineE
 	return filtered, nil
 }
 
-// ── 伏笔 ──
+// ── Chi tiết gieo mầm ──
 
-// SaveForeshadowLedger 全量写入 foreshadow_ledger.json + foreshadow_ledger.md（原子写入）。
+// SaveForeshadowLedger ghi toàn bộ foreshadow_ledger.json + foreshadow_ledger.md (ghi nguyên tử).
 func (s *WorldStore) SaveForeshadowLedger(entries []domain.ForeshadowEntry) error {
 	return s.io.WithWriteLock(func() error {
 		if err := s.io.WriteJSONUnlocked("foreshadow_ledger.json", entries); err != nil {
@@ -145,7 +145,7 @@ func (s *WorldStore) SaveForeshadowLedger(entries []domain.ForeshadowEntry) erro
 	})
 }
 
-// LoadForeshadowLedger 读取伏笔账本。
+// LoadForeshadowLedger đọc sổ chi tiết gieo mầm.
 func (s *WorldStore) LoadForeshadowLedger() ([]domain.ForeshadowEntry, error) {
 	var entries []domain.ForeshadowEntry
 	if err := s.io.ReadJSON("foreshadow_ledger.json", &entries); err != nil {
@@ -157,7 +157,7 @@ func (s *WorldStore) LoadForeshadowLedger() ([]domain.ForeshadowEntry, error) {
 	return entries, nil
 }
 
-// UpdateForeshadow 批量应用伏笔增量操作。
+// UpdateForeshadow áp dụng hàng loạt thao tác gia tăng chi tiết gieo mầm.
 func (s *WorldStore) UpdateForeshadow(chapter int, updates []domain.ForeshadowUpdate) error {
 	return s.io.WithWriteLock(func() error {
 		var entries []domain.ForeshadowEntry
@@ -222,7 +222,7 @@ func (s *WorldStore) UpdateForeshadow(chapter int, updates []domain.ForeshadowUp
 	})
 }
 
-// LoadActiveForeshadow 返回未回收的伏笔条目。
+// LoadActiveForeshadow trả về các mục chi tiết gieo mầm chưa thu hồi.
 func (s *WorldStore) LoadActiveForeshadow() ([]domain.ForeshadowEntry, error) {
 	all, err := s.LoadForeshadowLedger()
 	if err != nil {
@@ -237,9 +237,9 @@ func (s *WorldStore) LoadActiveForeshadow() ([]domain.ForeshadowEntry, error) {
 	return active, nil
 }
 
-// ── 人物关系 ──
+// ── Quan hệ nhân vật ──
 
-// SaveRelationships 全量写入 relationship_state.json + relationship_state.md（原子写入）。
+// SaveRelationships ghi toàn bộ relationship_state.json + relationship_state.md (ghi nguyên tử).
 func (s *WorldStore) SaveRelationships(entries []domain.RelationshipEntry) error {
 	return s.io.WithWriteLock(func() error {
 		if err := s.io.WriteJSONUnlocked("relationship_state.json", entries); err != nil {
@@ -249,7 +249,7 @@ func (s *WorldStore) SaveRelationships(entries []domain.RelationshipEntry) error
 	})
 }
 
-// LoadRelationships 读取人物关系状态。
+// LoadRelationships đọc trạng thái quan hệ nhân vật.
 func (s *WorldStore) LoadRelationships() ([]domain.RelationshipEntry, error) {
 	var entries []domain.RelationshipEntry
 	if err := s.io.ReadJSON("relationship_state.json", &entries); err != nil {
@@ -261,7 +261,7 @@ func (s *WorldStore) LoadRelationships() ([]domain.RelationshipEntry, error) {
 	return entries, nil
 }
 
-// UpdateRelationships 合并关系变化。
+// UpdateRelationships hợp nhất các thay đổi quan hệ.
 func (s *WorldStore) UpdateRelationships(changes []domain.RelationshipEntry) error {
 	return s.io.WithWriteLock(func() error {
 		var existing []domain.RelationshipEntry
@@ -291,9 +291,9 @@ func (s *WorldStore) UpdateRelationships(changes []domain.RelationshipEntry) err
 	})
 }
 
-// ── 状态变化 ──
+// ── Thay đổi trạng thái ──
 
-// AppendStateChanges 追加角色状态变化。同一状态变化重复提交时按稳定 key 去重。
+// AppendStateChanges nối thêm thay đổi trạng thái nhân vật. Khi cùng một thay đổi trạng thái được cam kết lặp lại, khử trùng lặp theo khóa ổn định.
 func (s *WorldStore) AppendStateChanges(changes []domain.StateChange) error {
 	return s.io.WithWriteLock(func() error {
 		_, err := s.stateChanges.appendUnlocked(s.io, changes)
@@ -301,23 +301,23 @@ func (s *WorldStore) AppendStateChanges(changes []domain.StateChange) error {
 	})
 }
 
-// LoadStateChanges 读取全部状态变化记录。
+// LoadStateChanges đọc toàn bộ bản ghi thay đổi trạng thái.
 func (s *WorldStore) LoadStateChanges() ([]domain.StateChange, error) {
 	s.io.mu.Lock()
 	defer s.io.mu.Unlock()
 	return s.stateChanges.allUnlocked(s.io)
 }
 
-// SaveStateChanges 全量替换状态变化事实，供章节修订后重建投影。
+// SaveStateChanges thay thế toàn bộ dữ kiện thay đổi trạng thái, để xây dựng lại phép chiếu sau khi sửa đổi chương.
 func (s *WorldStore) SaveStateChanges(changes []domain.StateChange) error {
 	return s.io.WithWriteLock(func() error {
 		return s.stateChanges.replaceUnlocked(s.io, changes)
 	})
 }
 
-// ── 世界规则 ──
+// ── Quy tắc thế giới ──
 
-// SaveWorldRules 全量写入 world_rules.json + world_rules.md（原子写入）。
+// SaveWorldRules ghi toàn bộ world_rules.json + world_rules.md (ghi nguyên tử).
 func (s *WorldStore) SaveWorldRules(rules []domain.WorldRule) error {
 	return s.io.WithWriteLock(func() error {
 		if err := s.io.WriteJSONUnlocked("world_rules.json", rules); err != nil {
@@ -327,7 +327,7 @@ func (s *WorldStore) SaveWorldRules(rules []domain.WorldRule) error {
 	})
 }
 
-// LoadWorldRules 读取世界规则。
+// LoadWorldRules đọc quy tắc thế giới.
 func (s *WorldStore) LoadWorldRules() ([]domain.WorldRule, error) {
 	var rules []domain.WorldRule
 	if err := s.io.ReadJSON("world_rules.json", &rules); err != nil {
@@ -339,14 +339,14 @@ func (s *WorldStore) LoadWorldRules() ([]domain.WorldRule, error) {
 	return rules, nil
 }
 
-// ── 风格规则 ──
+// ── Quy tắc phong cách ──
 
-// SaveStyleRules 保存写作风格规则。
+// SaveStyleRules lưu quy tắc phong cách sáng tác.
 func (s *WorldStore) SaveStyleRules(rules domain.WritingStyleRules) error {
 	return s.io.WriteJSON("meta/style_rules.json", rules)
 }
 
-// LoadStyleRules 读取写作风格规则。
+// LoadStyleRules đọc quy tắc phong cách sáng tác.
 func (s *WorldStore) LoadStyleRules() (*domain.WritingStyleRules, error) {
 	var rules domain.WritingStyleRules
 	if err := s.io.ReadJSON("meta/style_rules.json", &rules); err != nil {
@@ -373,9 +373,9 @@ func (s *WorldStore) LoadAuthorRevisionStyle() (*domain.AuthorRevisionStyle, err
 	return &style, nil
 }
 
-// ── 审阅 ──
+// ── Đọc kiểm ──
 
-// SaveReview 保存审阅结果。
+// SaveReview lưu kết quả đọc kiểm.
 func (s *WorldStore) SaveReview(r domain.ReviewEntry) error {
 	rel := fmt.Sprintf("reviews/%02d.json", r.Chapter)
 	if r.Scope == "global" {
@@ -384,7 +384,7 @@ func (s *WorldStore) SaveReview(r domain.ReviewEntry) error {
 	return s.io.WriteJSON(rel, r)
 }
 
-// HasArcReview 检查指定章节（弧末章）是否已保存 scope=arc 的评审。
+// HasArcReview kiểm tra chương chỉ định (chương cuối arc) đã lưu đánh giá scope=arc chưa.
 func (s *WorldStore) HasArcReview(chapter int) (bool, error) {
 	rv, err := s.LoadReview(chapter)
 	if err != nil {
@@ -393,8 +393,8 @@ func (s *WorldStore) HasArcReview(chapter int) (bool, error) {
 	return rv != nil && rv.Scope == "arc", nil
 }
 
-// HasGlobalReview 检查指定章节是否已保存 scope=global 的全局审阅
-// (save_review 落盘为 reviews/%02d-global.json;非分层书按 ReviewInterval 触发)。
+// HasGlobalReview kiểm tra chương chỉ định đã lưu đọc kiểm toàn cục scope=global chưa
+// (save_review ghi đĩa thành reviews/%02d-global.json; sách không phân tầng kích hoạt theo ReviewInterval).
 func (s *WorldStore) HasGlobalReview(chapter int) (bool, error) {
 	r, err := s.LoadGlobalReview(chapter)
 	if err != nil {
@@ -403,7 +403,7 @@ func (s *WorldStore) HasGlobalReview(chapter int) (bool, error) {
 	return r != nil && r.Scope == "global", nil
 }
 
-// LoadGlobalReview 读取指定截止章节的全局审阅。
+// LoadGlobalReview đọc đọc kiểm toàn cục của chương kết thúc chỉ định.
 func (s *WorldStore) LoadGlobalReview(chapter int) (*domain.ReviewEntry, error) {
 	var r domain.ReviewEntry
 	if err := s.io.ReadJSON(fmt.Sprintf("reviews/%02d-global.json", chapter), &r); err != nil {
@@ -415,7 +415,7 @@ func (s *WorldStore) LoadGlobalReview(chapter int) (*domain.ReviewEntry, error) 
 	return &r, nil
 }
 
-// LoadReview 读取章节审阅结果。
+// LoadReview đọc kết quả đọc kiểm chương.
 func (s *WorldStore) LoadReview(chapter int) (*domain.ReviewEntry, error) {
 	var r domain.ReviewEntry
 	if err := s.io.ReadJSON(fmt.Sprintf("reviews/%02d.json", chapter), &r); err != nil {
@@ -427,7 +427,7 @@ func (s *WorldStore) LoadReview(chapter int) (*domain.ReviewEntry, error) {
 	return &r, nil
 }
 
-// LoadLastReview 读取最近一次全局审阅。
+// LoadLastReview đọc đọc kiểm toàn cục gần nhất.
 func (s *WorldStore) LoadLastReview(fromChapter int) (*domain.ReviewEntry, error) {
 	for ch := fromChapter; ch >= 1; ch-- {
 		var r domain.ReviewEntry
@@ -442,8 +442,8 @@ func (s *WorldStore) LoadLastReview(fromChapter int) (*domain.ReviewEntry, error
 	return nil, nil
 }
 
-// LoadReviewsAffectingChapter 返回所有明确把 chapter 纳入返工队列的评审，
-// 新到旧排列。弧/全局评审存放在评审终点，不能再按目标章节文件名查找。
+// LoadReviewsAffectingChapter trả về tất cả các đánh giá đưa rõ ràng chapter vào hàng đợi làm lại,
+// sắp xếp mới đến cũ. Đánh giá arc/toàn cục lưu ở điểm cuối đánh giá, không thể tìm theo tên tệp chương mục tiêu nữa.
 func (s *WorldStore) LoadReviewsAffectingChapter(chapter int) ([]domain.ReviewEntry, error) {
 	entries, err := os.ReadDir(s.io.path("reviews"))
 	if os.IsNotExist(err) {
@@ -503,7 +503,7 @@ func stateChangeKey(c domain.StateChange) string {
 	return stableRecordKey(c.Chapter, c.Entity, c.Field, c.OldValue, c.NewValue)
 }
 
-// stableRecordKey 使用长度前缀编码可变文本，避免内容中的分隔符导致去重碰撞。
+// stableRecordKey sử dụng tiền tố độ dài mã hóa văn bản khả biến, tránh dấu phân cách trong nội dung dẫn đến va chạm khử trùng lặp.
 func stableRecordKey(chapter int, parts ...string) string {
 	var b strings.Builder
 	b.WriteString(strconv.Itoa(chapter))
@@ -588,13 +588,13 @@ func renderWorldRules(rules []domain.WorldRule) string {
 	return b.String()
 }
 
-// ── 章节机械违规事实 ──
+// ── Dữ kiện vi phạm cơ học của chương ──
 //
-// commit_chapter 的 rule_violations(user_rules 机械检查的 warning 级结果)持久化,
-// editor 评审该章时经 novel_context(chapter=N) 读取并映射进七维评审
-// (editor.md §机械检查映射)。writer 返工该章时同样可见。追加式,同章最新一条为准。
+// Sự bền bỉ hóa rule_violations (kết quả cấp độ warning của kiểm tra cơ học user_rules) của commit_chapter,
+// khi editor đánh giá chương đó sẽ đọc qua novel_context(chapter=N) và ánh xạ vào đánh giá bảy chiều
+// (editor.md §ánh xạ kiểm tra cơ học). Khi writer làm lại chương đó cũng có thể thấy. Dạng nối thêm, lấy bản ghi mới nhất của cùng chương làm chuẩn.
 
-// ChapterViolations 一章的机械违规记录。
+// ChapterViolations bản ghi vi phạm cơ học của một chương.
 type ChapterViolations struct {
 	Chapter    int               `json:"chapter"`
 	Violations []rules.Violation `json:"violations"`
@@ -603,7 +603,7 @@ type ChapterViolations struct {
 
 const ruleViolationsFile = "meta/rule_violations.jsonl"
 
-// SaveRuleViolations 追加一章的机械违规(空列表也追加——覆盖旧记录,表示重写后已清)。
+// SaveRuleViolations nối thêm vi phạm cơ học của một chương (danh sách rỗng cũng nối thêm——ghi đè bản ghi cũ, biểu thị đã dọn sạch sau khi viết lại).
 func (s *WorldStore) SaveRuleViolations(chapter int, violations []rules.Violation) error {
 	rec := ChapterViolations{Chapter: chapter, Violations: violations, At: time.Now().Format(time.RFC3339)}
 	data, err := json.Marshal(rec)
@@ -613,7 +613,7 @@ func (s *WorldStore) SaveRuleViolations(chapter int, violations []rules.Violatio
 	return s.io.AppendLine(ruleViolationsFile, append(data, '\n'))
 }
 
-// LoadRuleViolations 读取某章最新一条机械违规记录;无记录返回 nil。
+// LoadRuleViolations đọc bản ghi vi phạm cơ học mới nhất của một chương; trả về nil nếu không có bản ghi.
 func (s *WorldStore) LoadRuleViolations(chapter int) []rules.Violation {
 	s.io.mu.RLock()
 	defer s.io.mu.RUnlock()

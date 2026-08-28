@@ -14,7 +14,7 @@ func TestStartCommandLoadsPromptFile(t *testing.T) {
 		t.Fatal(err)
 	}
 	path := filepath.Join(dir, "story outline.md")
-	want := "世界设定\n\n第一卷大纲"
+	want := "世界thiết lập \n\n第一tậpđại cương"
 	if err := os.WriteFile(path, []byte("  "+want+"  "), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -56,7 +56,7 @@ func TestEnterStartingSwitchesToWorkbenchImmediately(t *testing.T) {
 	if !m.snapshot.IsRunning {
 		t.Fatal("snapshot should render as running during local startup")
 	}
-	if got := m.textarea.Placeholder; got != "正在初始化创作..." {
+	if got := m.textarea.Placeholder; got != "正在khởi tạo 创作..." {
 		t.Fatalf("placeholder = %q", got)
 	}
 	if len(m.events) != 2 {
@@ -76,22 +76,22 @@ func TestStartupFailureStaysInWorkbench(t *testing.T) {
 
 	m.enterStarting("写一本东方玄幻长篇")
 
-	next, _ := m.handleStartResultMsg(startResultMsg{err: errors.New("模型账户未激活")})
+	next, _ := m.handleStartResultMsg(startResultMsg{err: errors.New("model 账户chưa kích hoạt")})
 	got := next.(Model)
 	if got.mode != modeRunning {
-		t.Fatalf("启动失败后 mode = %v, want modeRunning", got.mode)
+		t.Fatalf("khởi động thất bại后 mode = %v, want modeRunning", got.mode)
 	}
 	if got.starting {
-		t.Fatal("启动失败后 starting 应复位")
+		t.Fatal("khởi động thất bại后 starting 应复位")
 	}
 	if got.snapshot.IsRunning {
-		t.Fatal("启动失败后 snapshot 不应仍显示运行中")
+		t.Fatal("khởi động thất bại后 snapshot 不应仍hiển thị đang chạy ")
 	}
-	if !strings.Contains(got.textarea.Placeholder, "启动失败") {
+	if !strings.Contains(got.textarea.Placeholder, "khởi động thất bại") {
 		t.Fatalf("placeholder = %q", got.textarea.Placeholder)
 	}
 	if len(got.events) == 0 || got.events[len(got.events)-1].Category != "ERROR" {
-		t.Fatalf("工作台应保留启动错误事件: %+v", got.events)
+		t.Fatalf("bảng làm việc 应giữ lại khởi động lỗi 事件: %+v", got.events)
 	}
 }
 
@@ -119,9 +119,9 @@ func TestApplyStartupPromptEventTruncatesSummaryButKeepsDetail(t *testing.T) {
 
 func TestStreamFlushTimerRunsOnlyForPendingData(t *testing.T) {
 	m := NewModel(nil, "")
-	next, cmd, handled := m.handleRuntimeMsg(streamDeltaMsg("正文"))
+	next, cmd, handled := m.handleRuntimeMsg(streamDeltaMsg("chính văn"))
 	if !handled || cmd == nil {
-		t.Fatal("流式增量应启动一次刷新")
+		t.Fatal("流式增量应khởi động 一次刷新")
 	}
 	got := next.(Model)
 	if !got.streamDirty || !got.flushPending {
@@ -130,6 +130,6 @@ func TestStreamFlushTimerRunsOnlyForPendingData(t *testing.T) {
 	next, cmd, handled = got.handleRuntimeMsg(streamFlushTickMsg{})
 	got = next.(Model)
 	if !handled || cmd != nil || got.streamDirty || got.flushPending {
-		t.Fatal("刷新完成后 timer 应停止")
+		t.Fatal("刷新完成后 timer 应dừng ")
 	}
 }

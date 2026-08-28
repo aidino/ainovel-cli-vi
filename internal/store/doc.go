@@ -1,23 +1,23 @@
-// Package store 提供基于文件系统的持久化存储。
+// Package store cung cấp lưu trữ bền bỉ dựa trên hệ thống tệp.
 //
-// 架构：1 个 IO 基座 + 多个子存储 + 1 个组合根。
-// 每个子存储持有独立的 IO 实例和独立的 sync.RWMutex。
-// 主要领域（Progress、Outline、Drafts、Summaries 等）的读写互不阻塞；
-// WorldStore 将多个低频小领域合并共享一把锁。
+// Kiến trúc: 1 cơ sở IO + nhiều sub-store + 1 root kết hợp.
+// Mỗi sub-store giữ một phiên bản IO độc lập và sync.RWMutex độc lập.
+// Việc đọc ghi của các miền chính (Progress, Outline, Drafts, Summaries...) không chặn lẫn nhau;
+// WorldStore kết hợp nhiều miền nhỏ tần suất thấp dùng chung một khóa.
 //
-// 组合根 Store 持有所有子存储的引用，并串行协调跨域操作
-// （ExpandArc、AppendVolume、ClearHandledSteer）；多个文件不构成事务原子提交，
-// 调用依靠安全写入顺序、显式错误与同参数幂等重放恢复。
+// Root kết hợp Store giữ tham chiếu của tất cả các sub-store, và điều phối nối tiếp các hoạt động chéo miền
+// (ExpandArc, AppendVolume, ClearHandledSteer); nhiều tệp không tạo thành cam kết nguyên tử của giao dịch,
+// Lời gọi dựa vào thứ tự ghi an toàn, lỗi rõ ràng và phục hồi phát lại lũy đẳng với cùng tham số.
 //
-// 子存储划分：
-//   - ProgressStore: 进度主状态（meta/progress.json）
-//   - OutlineStore: 前提、大纲（扁平/分层）、指南针
-//   - DraftStore: 章节构思、草稿、终稿
-//   - SummaryStore: 章/弧/卷摘要
-//   - RunMetaStore: 运行元数据（模型、干预历史）
-//   - SignalStore: 一次性信号文件（PendingCommit 恢复）
-//   - CheckpointStore: step 级 checkpoint（meta/checkpoints.jsonl）
-//   - RuntimeStore: 运行时事件队列（meta/runtime/*.jsonl）
-//   - CharacterStore: 角色档案、状态快照
-//   - WorldStore: 时间线、伏笔、关系、状态变化、世界规则、风格规则、审阅
+// Phân chia sub-store:
+//   - ProgressStore: Trạng thái chính của tiến độ (meta/progress.json)
+//   - OutlineStore: Tiền đề, đại cương (phẳng/phân tầng), la bàn
+//   - DraftStore: Cấu tứ chương, bản thảo, bản cuối
+//   - SummaryStore: Tóm tắt chương/arc/tập
+//   - RunMetaStore: Siêu dữ liệu chạy (model, lịch sử can thiệp)
+//   - SignalStore: Tệp tín hiệu một lần (phục hồi PendingCommit)
+//   - CheckpointStore: Checkpoint cấp độ step (meta/checkpoints.jsonl)
+//   - RuntimeStore: Hàng đợi sự kiện thời gian chạy (meta/runtime/*.jsonl)
+//   - CharacterStore: Hồ sơ nhân vật, ảnh chụp trạng thái
+//   - WorldStore: Dòng thời gian, chi tiết gieo mầm, quan hệ, thay đổi trạng thái, quy tắc thế giới, quy tắc phong cách, đọc kiểm
 package store

@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// GhostCharacter 检测 core/important 角色长期未出现。
+// GhostCharacter phát hiện nhân vật core/important lâu không xuất hiện.
 func GhostCharacter(snap *Snapshot) []Finding {
 	if snap.Progress == nil || len(snap.Characters) == 0 || len(snap.Summaries) == 0 {
 		return nil
@@ -15,7 +15,7 @@ func GhostCharacter(snap *Snapshot) []Finding {
 		return nil
 	}
 
-	// 计算每个角色最后出现的章节号
+	// Tính số chương xuất hiện cuối cùng của mỗi nhân vật
 	lastSeen := make(map[string]int)
 	for ch, s := range snap.Summaries {
 		for _, name := range s.Characters {
@@ -38,7 +38,7 @@ func GhostCharacter(snap *Snapshot) []Finding {
 		}
 		seen, ok := lastSeen[c.Name]
 		if !ok {
-			// 也检查别名
+			// Cũng kiểm tra bí danh
 			for _, alias := range c.Aliases {
 				if s, exists := lastSeen[alias]; exists && s > seen {
 					seen = s
@@ -69,7 +69,7 @@ func GhostCharacter(snap *Snapshot) []Finding {
 	}}
 }
 
-// TimelineGaps 检测已完成章节缺少时间线事件。
+// TimelineGaps phát hiện chương đã hoàn thành thiếu sự kiện dòng thời gian.
 func TimelineGaps(snap *Snapshot) []Finding {
 	if snap.Progress == nil || len(snap.Progress.CompletedChapters) == 0 {
 		return nil
@@ -88,7 +88,7 @@ func TimelineGaps(snap *Snapshot) []Finding {
 		}}
 	}
 
-	// 建立章节→事件映射
+	// Tạo ánh xạ chương → sự kiện
 	chaptersWithEvents := make(map[int]bool)
 	for _, e := range snap.Timeline {
 		chaptersWithEvents[e.Chapter] = true
@@ -100,7 +100,7 @@ func TimelineGaps(snap *Snapshot) []Finding {
 			missing = append(missing, ch)
 		}
 	}
-	// 允许少量缺失（某些过渡章可能确实无重大事件）
+	// Cho phép thiếu số lượng nhỏ (một số chương chuyển tiếp có thể thực sự không có sự kiện lớn)
 	if len(missing) == 0 || float64(len(missing))/float64(snap.CompletedCount()) < ThresholdTimelineGapRate {
 		return nil
 	}
@@ -117,7 +117,7 @@ func TimelineGaps(snap *Snapshot) []Finding {
 	}}
 }
 
-// RelationshipStagnation 检测关系数据停止更新。
+// RelationshipStagnation phát hiện dữ liệu quan hệ ngừng cập nhật.
 func RelationshipStagnation(snap *Snapshot) []Finding {
 	if snap.Progress == nil || len(snap.Relationships) == 0 {
 		return nil
@@ -127,7 +127,7 @@ func RelationshipStagnation(snap *Snapshot) []Finding {
 		return nil
 	}
 
-	// 找到关系数据的最新章节
+	// Tìm chương mới nhất của dữ liệu quan hệ
 	latestRelCh := 0
 	for _, r := range snap.Relationships {
 		if r.Chapter > latestRelCh {
@@ -135,7 +135,7 @@ func RelationshipStagnation(snap *Snapshot) []Finding {
 		}
 	}
 
-	// 如果最新关系数据在前 1/3，判定为停滞
+	// Nếu dữ liệu quan hệ mới nhất nằm ở 1/3 trước, đánh giá là đình trệ
 	cutoff := snap.LatestCompleted() - completed/3
 	if latestRelCh >= cutoff {
 		return nil

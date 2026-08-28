@@ -10,17 +10,17 @@ import (
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
-// ChapterCommitter 是发布章节所需的最小接口，由 tools.CommitChapterTool 满足。
-// 复用其 PendingCommit saga、checkpoint 与完成章节幂等检查，不复制第二套提交逻辑（RFC §12.3）。
+// ChapterCommitter là giao diện tối thiểu cần thiết để xuất bản chương, được tools.CommitChapterTool đáp ứng.
+// Tái sử dụng saga PendingCommit, checkpoint và kiểm tra tính lũy đẳng của chương hoàn thành, không sao chép bộ logic gửi thứ hai (RFC §12.3).
 type ChapterCommitter interface {
 	Execute(ctx context.Context, args json.RawMessage) (json.RawMessage, error)
 }
 
-// publishFoundation 按正式依赖顺序发布 Foundation，与 Architect 长篇落盘顺序一致（RFC §12.2）。
-// 重复发布相同内容是幂等的（Store 覆盖同内容 + checkpoint 去重）。
+// publishFoundation xuất bản Foundation theo trình tự phụ thuộc chính thức, thống nhất với trình tự ghi đĩa tiểu thuyết dài của Architect (RFC §12.2).
+// Việc xuất bản lại cùng một nội dung là lũy đẳng (Store ghi đè cùng nội dung + checkpoint xóa trùng lặp).
 func publishFoundation(st *store.Store, f *Foundation) error {
-	// 发布前冲突对账：已存在且不同的正式工件拒绝覆盖（§12.2 / 不变量 6）。
-	// 相同内容按幂等继续写（Store 覆盖同内容 + checkpoint 去重）。
+	// Đối soát xung đột trước khi xuất bản: công cụ chính thức đã tồn tại và khác biệt sẽ bị từ chối ghi đè (§12.2 / bất biến 6).
+	// Cùng một nội dung sẽ được viết tiếp theo tính lũy đẳng (Store ghi đè cùng nội dung + checkpoint xóa trùng lặp).
 	if err := checkFoundationConflicts(st, f); err != nil {
 		return err
 	}
@@ -57,12 +57,12 @@ func publishFoundation(st *store.Store, f *Foundation) error {
 	if _, err := st.Checkpoints.AppendArtifact(domain.GlobalScope(), "world_rules", "world_rules.json"); err != nil {
 		return fmt.Errorf("checkpoint world_rules：%w", err)
 	}
-	// layered outline 是唯一来源，Store 同步重建 flat outline。
+	// layered outline là nguồn duy nhất, Store đồng bộ hóa tái tạo flat outline.
 	if err := st.Outline.SaveLayeredOutline(f.Volumes); err != nil {
 		return fmt.Errorf("layered outline：%w", err)
 	}
-	// 大纲阶段的进度是引擎重算路由的依据（章节容量/分层/当前卷弧），写入失败会留下不一致的
-	// 已发布状态，必须暴露而非吞掉（RFC §12.2）。
+	// Tiến độ của giai đoạn đại cương là cơ sở để Engine tính toán lại định tuyến (dung lượng chương/phân tầng/tập arc hiện tại), ghi đĩa thất bại sẽ để lại trạng thái xuất bản
+	// không nhất quán, phải phơi bày chứ không được nuốt trọn (RFC §12.2).
 	if err := st.Progress.UpdatePhase(domain.PhaseOutline); err != nil {
 		return fmt.Errorf("phase outline：%w", err)
 	}
@@ -87,15 +87,15 @@ func publishFoundation(st *store.Store, f *Foundation) error {
 	if _, err := st.Checkpoints.AppendArtifact(domain.GlobalScope(), "compass", "meta/compass.json"); err != nil {
 		return fmt.Errorf("checkpoint compass：%w", err)
 	}
-	// 导入 Foundation 的全部正式写入均已成功，可以显式进入 writing。
-	// 不能复用普通创作流程的 FoundationMissing：导入允许 world_rules 为空，
-	// 把“合法空值”当成缺失会令进度永远停在 outline，随后 StartChapter 被阶段门禁拒绝。
+	// Toàn bộ thao tác ghi chính thức khi nạp Foundation đều đã thành công, có thể hiển thị bước vào writing.
+	// Không thể tái sử dụng FoundationMissing của quy trình sáng tác thông thường: việc nạp cho phép world_rules để trống,
+	// việc coi "giá trị trống hợp pháp" là thiếu sót sẽ làm cho tiến độ mãi mãi dừng ở outline, sau đó StartChapter bị cổng bảo vệ giai đoạn từ chối.
 	p, err := st.Progress.Load()
 	if err != nil {
 		return fmt.Errorf("load progress：%w", err)
 	}
 	if p == nil {
-		return fmt.Errorf("load progress：progress 未初始化")
+		return fmt.Errorf("load progress: progress chưa được khởi tạo")
 	}
 	if p.Phase != domain.PhaseWriting && p.Phase != domain.PhaseComplete {
 		if err := st.Progress.UpdatePhase(domain.PhaseWriting); err != nil {
@@ -105,69 +105,69 @@ func publishFoundation(st *store.Store, f *Foundation) error {
 	return nil
 }
 
-// checkFoundationConflicts 校验待发布 Foundation 与既有正式工件的一致性：
-// 既有为空视为首次发布；相同视为幂等；不同则报冲突不覆盖（RFC §12.2 / 不变量 6）。
-// compass 与扁平大纲由分层大纲派生，分层一致即派生一致，故不单独检查派生工件。
-// 读错误不得吞成"文件不存在"：store 加载器对缺失返回 (零值, nil)，故任何非 nil 都是真实错误
-// （损坏/权限/JSON 非法），若当作空值继续会覆盖无法读取的正式工件（RFC §12.2）。
+// checkFoundationConflicts kiểm tra tính nhất quán giữa Foundation chờ xuất bản và công cụ chính thức đã có:
+// Đã có là rỗng thì coi là xuất bản lần đầu; giống nhau coi là lũy đẳng; khác biệt thì báo xung đột không ghi đè (RFC §12.2 / bất biến 6).
+// compass và flat outline dẫn xuất từ layered outline, layered nhất quán tức là dẫn xuất nhất quán, vì vậy không kiểm tra riêng lẻ công cụ dẫn xuất.
+// Không được nuốt lỗi đọc thành "file không tồn tại": loader của store trả về (giá trị không, nil) đối với trường hợp bị thiếu, do đó bất kỳ giá trị khác nil nào đều là lỗi thực sự
+// (hỏng/quyền/JSON không hợp lệ), nếu tiếp tục coi như giá trị rỗng thì sẽ ghi đè lên các công cụ chính thức không thể đọc được (RFC §12.2).
 func checkFoundationConflicts(st *store.Store, f *Foundation) error {
 	wantBook := f.Book.Normalized()
 	book, err := st.Book.Load()
 	if err != nil {
-		return fmt.Errorf("读取正式 book：%w", err)
+		return fmt.Errorf("đọc book chính thức: %w", err)
 	}
 	if book != nil && !jsonEqual(book, wantBook) {
-		return fmt.Errorf("正式 book 与导入综合冲突（已存在不同版本），拒绝覆盖")
+		return fmt.Errorf("book chính thức và tổng hợp nạp vào xung đột (đã tồn tại phiên bản khác), từ chối ghi đè")
 	}
 	cur, err := st.Outline.LoadPremise()
 	if err != nil {
-		return fmt.Errorf("读取正式 premise：%w", err)
+		return fmt.Errorf("Đọc premise chính thức: %w", err)
 	}
 	if cur != "" && cur != f.Premise {
-		return fmt.Errorf("正式 premise 与导入综合冲突（已存在不同版本），拒绝覆盖")
+		return fmt.Errorf("premise chính thức và tổng hợp nạp vào xung đột (đã tồn tại phiên bản khác), từ chối ghi đè")
 	}
 	chars, err := st.Characters.Load()
 	if err != nil {
-		return fmt.Errorf("读取正式 characters：%w", err)
+		return fmt.Errorf("Đọc characters chính thức: %w", err)
 	}
 	if len(chars) > 0 && !jsonEqual(chars, f.Characters) {
-		return fmt.Errorf("正式 characters 与导入综合冲突（已存在不同版本），拒绝覆盖")
+		return fmt.Errorf("characters chính thức và tổng hợp nạp vào xung đột (đã tồn tại phiên bản khác), từ chối ghi đè")
 	}
 	rules, err := st.World.LoadWorldRules()
 	if err != nil {
-		return fmt.Errorf("读取正式 world_rules：%w", err)
+		return fmt.Errorf("Đọc world_rules chính thức: %w", err)
 	}
 	if len(rules) > 0 && !jsonEqual(rules, f.WorldRules) {
-		return fmt.Errorf("正式 world_rules 与导入综合冲突（已存在不同版本），拒绝覆盖")
+		return fmt.Errorf("world_rules chính thức và tổng hợp nạp vào xung đột (đã tồn tại phiên bản khác), từ chối ghi đè")
 	}
 	layered, err := st.Outline.LoadLayeredOutline()
 	if err != nil {
-		return fmt.Errorf("读取正式 layered_outline：%w", err)
+		return fmt.Errorf("Đọc layered_outline chính thức: %w", err)
 	}
 	if len(layered) > 0 && !jsonEqual(layered, f.Volumes) {
-		return fmt.Errorf("正式 layered_outline 与导入综合冲突（已存在不同版本），拒绝覆盖")
+		return fmt.Errorf("layered_outline chính thức và tổng hợp nạp vào xung đột (đã tồn tại phiên bản khác), từ chối ghi đè")
 	}
 	return nil
 }
 
-// jsonEqual 按规范化 JSON 字节比较两个值是否等价。
+// jsonEqual so sánh hai giá trị có tương đương không bằng byte JSON được chuẩn hóa.
 func jsonEqual(a, b any) bool {
 	ab, _ := json.Marshal(a)
 	bb, _ := json.Marshal(b)
 	return bytes.Equal(ab, bb)
 }
 
-// publishChapter 复用 commit_chapter 发布单章；已完成章节由其幂等检查跳过（RFC §12.3）。
+// publishChapter tái sử dụng commit_chapter để xuất bản chương đơn; chương đã hoàn thành bị kiểm tra lũy đẳng bỏ qua (RFC §12.3).
 func publishChapter(ctx context.Context, st *store.Store, commit ChapterCommitter, chapter int, content string, f ImportedChapterFacts) error {
 	completed, err := st.Progress.IsChapterCompleted(chapter)
 	if err != nil {
 		return fmt.Errorf("load progress ch%d：%w", chapter, err)
 	}
 	if completed {
-		// 崩溃可能落在 MarkChapterComplete 与 ClearPendingCommit 之间：pending_commit 残留
-		// 指向本章。直接跳过会绕开 commit 工具专为此窗口准备的清理分支（补 checkpoint+清残留），
-		// 下一章 Execute 将以「存在未恢复的章节提交」拒绝，导入每次重跑都死在同一处且
-		// 需手工删 meta/pending_commit.json 才能解锁。命中残留时仍走工具幂等路径完成清理。
+		// Sự cố có thể rơi vào khoảng giữa MarkChapterComplete và ClearPendingCommit: tàn dư pending_commit
+		// trỏ đến chương này. Việc trực tiếp bỏ qua sẽ bỏ qua nhánh dọn dẹp (bổ sung checkpoint + dọn tàn dư) mà công cụ commit chuẩn bị riêng cho cửa sổ này,
+		// chương tiếp theo Execute sẽ từ chối bằng "tồn tại thao tác gửi chương chưa được khôi phục", mỗi lần chạy lại nạp vào đều chết tại một chỗ và
+		// cần xóa thủ công meta/pending_commit.json mới có thể mở khóa. Khi chạm phải tàn dư, hãy vẫn đi theo đường dẫn lũy đẳng của công cụ để hoàn thành dọn dẹp.
 		pending, err := st.Signals.LoadPendingCommit()
 		if err != nil {
 			return fmt.Errorf("load pending commit ch%d：%w", chapter, err)
@@ -199,11 +199,11 @@ func publishChapter(ctx context.Context, st *store.Store, commit ChapterCommitte
 	return nil
 }
 
-// commitArgs 把逐章事实映射为 commit_chapter 入参。
+// commitArgs ánh xạ sự thật từng chương vào tham số đầu vào của commit_chapter.
 func commitArgs(chapter int, f ImportedChapterFacts) map[string]any {
 	keyEvents := f.KeyEvents
 	if len(keyEvents) == 0 {
-		keyEvents = []string{f.CoreEvent} // core_event 已校验非空
+		keyEvents = []string{f.CoreEvent} // core_event đã được xác minh không rỗng
 	}
 	args := map[string]any{
 		"chapter":         chapter,
@@ -229,38 +229,38 @@ func commitArgs(chapter int, f ImportedChapterFacts) map[string]any {
 	return args
 }
 
-// isPublished 判断正式状态是否已反映完整导入：Foundation 已落盘且已完成章节达到预期。
-// 只对账导入真正产出的工件——book、premise、覆盖全章的扁平大纲、完成章节——而不复用
-// FoundationMissing()：后者是普通创作流程的“可写作”门禁，会把合法为空的 world_rules
-// 误判为未完成，导致发布对账永不收敛（RFC §12.3）。
+// isPublished đánh giá xem trạng thái chính thức có phản ánh việc nạp hoàn chỉnh không: Foundation đã ghi vào đĩa và số chương đã hoàn thành đạt kỳ vọng.
+// Chỉ đối soát những công cụ do việc nạp tạo ra thực sự——book, premise, flat outline phủ toàn bộ chương, chương hoàn thành——chứ không tái sử dụng
+// FoundationMissing(): cái sau là cổng bảo vệ "có thể sáng tác" của quy trình sáng tác thông thường, sẽ đánh giá nhầm việc world_rules hợp pháp để trống
+// thành không hoàn chỉnh, dẫn đến đối soát xuất bản mãi không hội tụ (RFC §12.3).
 func isPublished(st *store.Store, expected int) (bool, error) {
 	if expected == 0 {
 		return false, nil
 	}
 	book, err := st.Book.Load()
 	if err != nil {
-		return false, fmt.Errorf("读取正式 book: %w", err)
+		return false, fmt.Errorf("đọc book chính thức: %w", err)
 	}
 	if book == nil {
 		return false, nil
 	}
 	p, err := st.Outline.LoadPremise()
 	if err != nil {
-		return false, fmt.Errorf("读取正式 premise: %w", err)
+		return false, fmt.Errorf("đọc premise chính thức: %w", err)
 	}
 	if p == "" {
 		return false, nil
 	}
 	o, err := st.Outline.LoadOutline()
 	if err != nil {
-		return false, fmt.Errorf("读取正式 outline: %w", err)
+		return false, fmt.Errorf("đọc outline chính thức: %w", err)
 	}
 	if len(o) < expected {
 		return false, nil
 	}
 	prog, err := st.Progress.Load()
 	if err != nil {
-		return false, fmt.Errorf("读取正式 progress: %w", err)
+		return false, fmt.Errorf("đọc progress chính thức: %w", err)
 	}
 	return prog != nil && len(prog.CompletedChapters) >= expected, nil
 }

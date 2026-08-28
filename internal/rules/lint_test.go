@@ -6,13 +6,13 @@ import (
 )
 
 func TestLint_CleanText(t *testing.T) {
-	if vs := Lint("# 第一章 风起\n他迈步向前。\n夜色渐深。"); len(vs) != 0 {
+	if vs := Lint("# 第一chương  风起\n他迈步向前。\n夜色渐深。"); len(vs) != 0 {
 		t.Errorf("clean text should pass: %+v", vs)
 	}
 }
 
 func TestLint_MarkdownResidue(t *testing.T) {
-	text := "# 第一章\n这是**重点**内容。\n## 小标题\n正文。"
+	text := "# 第一chương \n这是**重点**nội dung 。\n## 小tiêu đề \nchính văn。"
 	vs := Lint(text)
 	bold := findViolation(vs, "markdown_residue", "**")
 	if bold == nil || bold.Actual != 2 {
@@ -25,7 +25,7 @@ func TestLint_MarkdownResidue(t *testing.T) {
 }
 
 func TestLint_NonCJKFragments(t *testing.T) {
-	text := "# 第一章\n他发现了一个pattern，这个pattern像DNA一样规律。"
+	text := "# 第一chương \n他发现了一个pattern，这个pattern像DNA一样规律。"
 	vs := Lint(text)
 	var v *Violation
 	for i := range vs {

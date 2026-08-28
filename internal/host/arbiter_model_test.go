@@ -58,8 +58,8 @@ type overrideCapableTestModel struct {
 
 func (m *overrideCapableTestModel) JSONSchemaOverride() *bool { return m.override }
 
-// usage 包装器必须透传 config json_schema 覆盖值；inner 未携带时返回 nil
-// （"未配置"），不伪造能力。
+// usage 包装器phải 透传 config json_schema ghi đè值；inner 未携带时trả về  nil
+// （"chưa cấu hình置"），不伪造能力。
 func TestUsageTrackedModelForwardsJSONSchemaOverride(t *testing.T) {
 	tr := true
 	inner := &overrideCapableTestModel{
@@ -81,6 +81,6 @@ func TestUsageTrackedModelForwardsJSONSchemaOverride(t *testing.T) {
 		t.Fatal("capability wrapper should expose JSONSchemaOverride")
 	}
 	if v := o.JSONSchemaOverride(); v != nil {
-		t.Fatalf("inner 无覆盖时应为 nil: %v", v)
+		t.Fatalf("inner 无ghi đè时nên là nil: %v", v)
 	}
 }

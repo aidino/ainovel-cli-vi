@@ -13,15 +13,15 @@ import (
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
-// EditChapterTool 对章节草稿做定点字符串替换，适用于打磨场景。
-// 相比 draft_chapter 整章重写，token 节省 10x+。
+// EditChapterTool Thực hiện thay thế chuỗi định điểm cho bản thảo chương, thích hợp kịch bản làm bóng.
+// So với draft_chapter làm lại toàn chương, token tiết kiệm 10x+.
 //
-// 落盘契约：只改 drafts/{ch:02d}.draft.md，禁止直接改 chapters/（终稿由 commit_chapter 独占）。
-// Seed 语义：drafts 不存在但 chapters 有 → 自动把 chapters 复制到 drafts 作为起点。
-// 归属检查：仅允许编辑已完成且位于 PendingRewrites 队列中的章节。
+// Giao ước lưu: chỉ sửa drafts/{ch:02d}.draft.md, cấm sửa trực tiếp chapters/ (bản cuối do commit_chapter độc chiếm).
+// Seed Ngữ nghĩa: drafts không tồn tại nhưng chapters có → tự động copy chapters vào drafts làm điểm bắt đầu.
+// Kiểm tra sở hữu: chỉ cho phép chỉnh sửa chương đã hoàn thành và ở trong hàng đợi PendingRewrites.
 //
-// 本工具是 agentcore.EditTool 的薄封装，找-换逻辑（多级容错匹配、diff 输出、行尾/BOM 保留）
-// 全部复用上游实现。
+// Công cụ này là bao bọc mỏng của agentcore.EditTool, logic tìm-đổi (khớp chịu lỗi nhiều cấp, xuất diff, giữ cuối dòng/BOM)
+// Tất cả tái sử dụng triển khai thượng nguồn.
 type EditChapterTool struct {
 	store *store.Store
 	edit  *agentcoretools.EditTool
@@ -37,14 +37,14 @@ func NewEditChapterTool(s *store.Store) *EditChapterTool {
 func (t *EditChapterTool) Name() string  { return "edit_chapter" }
 func (t *EditChapterTool) Label() string { return "sửa chương" }
 
-// ReadOnly 明确声明写工具（配合 ConcurrencySafeTool 防止被并发调度）。
+// ReadOnly Khai báo rõ công cụ ghi (kết hợp ConcurrencySafeTool phòng ngừa bị lập lịch đồng thời).
 func (t *EditChapterTool) ReadOnly(_ json.RawMessage) bool { return false }
 
-// ConcurrencySafe 显式禁止并发：同章节多次 edit_chapter 并行会读-改-写竞态，
-// 即使不同章节并行也会穿插 checkpoint 顺序。统一串行最稳。
+// ConcurrencySafe Cấm đồng thời rõ ràng: cùng chương edit_chapter nhiều lần song song sẽ cạnh tranh đọc-sửa-ghi,
+// cho dù chương khác nhau song song cũng sẽ xen kẽ thứ tự checkpoint. Tuần tự thống nhất là ổn định nhất.
 func (t *EditChapterTool) ConcurrencySafe(_ json.RawMessage) bool { return false }
 
-// ActivityDescription 供 UI/日志展示当前工具的活动描述。
+// ActivityDescription Dùng cho UI/log hiển thị mô tả hoạt động của công cụ hiện tại.
 func (t *EditChapterTool) ActivityDescription(_ json.RawMessage) string { return "sửa bản thảo chương" }
 
 func (t *EditChapterTool) Description() string {
@@ -90,8 +90,8 @@ func (t *EditChapterTool) Execute(ctx context.Context, args json.RawMessage) (js
 		return nil, err
 	}
 
-	// 归属检查：机械落实 writer 协议。新章初稿只能整章覆盖，不能依赖
-	// 模型自行遵守提示词后仍把脆弱的精确编辑暴露为可执行路径。
+	// Kiểm tra sở hữu: triển khai cơ học giao thức writer. Bản thảo đầu chương mới chỉ có thể đè toàn chương, không thể phụ thuộc
+	// mô hình tự tuân thủ từ gợi ý rồi vẫn phơi bày chỉnh sửa chính xác dễ vỡ thành đường dẫn có thể thực thi.
 	completed, err := t.store.Progress.IsChapterCompleted(a.Chapter)
 	if err != nil {
 		return nil, fmt.Errorf("load progress: %w: %w", errs.ErrStoreRead, err)
@@ -110,12 +110,12 @@ func (t *EditChapterTool) Execute(ctx context.Context, args json.RawMessage) (js
 		return nil, err
 	}
 
-	// Seed：drafts 不存在时从 chapters 复制一份作为起点
+	// Seed：drafts khi không tồn tại từ chapters copy một bản làm điểm bắt đầu
 	if err := t.ensureDraft(a.Chapter); err != nil {
 		return nil, err
 	}
 
-	// 委托 agentcore.EditTool 完成找-换
+	// Ủy thác agentcore.EditTool hoàn thành tìm-đổi
 	subArgs, _ := json.Marshal(map[string]any{
 		"path":        fmt.Sprintf("drafts/%02d.draft.md", a.Chapter),
 		"file_path":   fmt.Sprintf("drafts/%02d.draft.md", a.Chapter),
@@ -137,7 +137,7 @@ func (t *EditChapterTool) Execute(ctx context.Context, args json.RawMessage) (js
 		return nil, fmt.Errorf("checkpoint edit: %w: %w", errs.ErrStoreWrite, err)
 	}
 
-	// 附加指引：让 writer 知道后续步骤，避免遗漏 check_consistency / commit_chapter
+	// Hướng dẫn bổ sung: cho writer biết bước tiếp theo, tránh bỏ sót check_consistency / commit_chapter
 	var passthrough map[string]any
 	if err := json.Unmarshal(result, &passthrough); err != nil {
 		return result, nil
@@ -147,10 +147,10 @@ func (t *EditChapterTool) Execute(ctx context.Context, args json.RawMessage) (js
 	return json.Marshal(passthrough)
 }
 
-// ensureDraft 保证 drafts/{ch}.draft.md 存在：
-//   - 已有草稿 → 直接返回
-//   - 无草稿但有终稿 → 把终稿复制到 drafts 作为修改起点（常见于打磨场景）
-//   - 都没有 → 报错，提示先用 draft_chapter 创建初稿
+// ensureDraft Đảm bảo drafts/{ch}.draft.md tồn tại:
+//   - Đã có bản thảo → trả về trực tiếp
+//   - Không bản thảo nhưng có bản cuối → copy bản cuối vào drafts làm điểm bắt đầu sửa (thường thấy trong kịch bản làm bóng)
+//   - Đều không có → báo lỗi, gợi ý dùng draft_chapter tạo bản thảo đầu tiên trước
 func (t *EditChapterTool) ensureDraft(chapter int) error {
 	draft, err := t.store.Drafts.LoadDraft(chapter)
 	if err != nil {

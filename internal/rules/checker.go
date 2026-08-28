@@ -4,16 +4,16 @@ import (
 	"strings"
 )
 
-// Check 对章节正文按结构化规则进行机械检查，返回违规事实列表。
+// Check kiểm tra máy móc chính văn chương theo quy tắc cấu trúc, trả về danh sách sự thật vi phạm.
 //
-// 设计契约：
-//   - 仅返事实，不下指令（铁律一）
-//   - 不阻断任何调用方流程
-//   - severity 按规则类型固定映射（参见 types.go 注释表）
+// Hợp đồng thiết kế:
+//   - Chỉ trả về sự thật, không ra lệnh (luật thép 1)
+//   - Không cản trở luồng của bất kỳ bên gọi nào
+//   - severity ánh xạ cố định theo loại quy tắc (xem bảng chú thích ở types.go)
 //
-// 参数：
-//   - text：章节正文（终稿或草稿都可）
-//   - s：合并后的结构化规则；IsEmpty 时直接返回 nil。
+// Tham số:
+//   - text: chính văn chương (bản thảo hoặc bản cuối đều được)
+//   - s: quy tắc cấu trúc sau khi gộp; khi IsEmpty sẽ trực tiếp trả về nil.
 func Check(text string, s Structured) []Violation {
 	if s.IsEmpty() {
 		return nil
@@ -26,8 +26,8 @@ func Check(text string, s Structured) []Violation {
 	return violations
 }
 
-// forbidden_chars：出现 ≥1 次即 error。
-// 同一条规则只产生一条 violation，actual 是出现次数。
+// forbidden_chars: xuất hiện ≥1 lần là error.
+// Cùng một quy tắc chỉ tạo ra một violation, actual là số lần xuất hiện.
 func appendForbiddenChars(vs []Violation, text string, list []string) []Violation {
 	for _, ch := range list {
 		if ch == "" {
@@ -47,7 +47,7 @@ func appendForbiddenChars(vs []Violation, text string, list []string) []Violatio
 	return vs
 }
 
-// forbidden_phrases：出现 ≥1 次即 error；行为与 forbidden_chars 一致，仅 rule 名区分。
+// forbidden_phrases: xuất hiện ≥1 lần là error; hành vi giống với forbidden_chars, chỉ khác tên rule.
 func appendForbiddenPhrases(vs []Violation, text string, list []string) []Violation {
 	for _, ph := range list {
 		if ph == "" {
@@ -67,8 +67,8 @@ func appendForbiddenPhrases(vs []Violation, text string, list []string) []Violat
 	return vs
 }
 
-// fatigue_words：本章出现次数超过阈值才违规，warning 级。
-// 不跨章累计——跨章问题后续交诊断。
+// fatigue_words: số lần xuất hiện trong chương này vượt quá ngưỡng mới vi phạm, cấp warning.
+// Không cộng dồn xuyên chương —— vấn đề xuyên chương để sau cho chẩn đoán.
 func appendFatigueWords(vs []Violation, text string, m map[string]int) []Violation {
 	for word, limit := range m {
 		if word == "" || limit <= 0 {

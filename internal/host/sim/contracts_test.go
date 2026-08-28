@@ -44,12 +44,12 @@ func (m *nativeSimulationModel) Generate(_ context.Context, messages []agentcore
 
 func TestAnalyzeSourceUsesNativeSchema(t *testing.T) {
 	model := &nativeSimulationModel{response: validSourceReportJSON("清晰摘要")}
-	report, err := AnalyzeSource(t.Context(), model, "只分析写作方法。", scannedSource{})
+	report, err := AnalyzeSource(t.Context(), model, "只分析sáng tác 方法。", scannedSource{})
 	if err != nil {
 		t.Fatalf("AnalyzeSource: %v", err)
 	}
 	if report.Summary == "" {
-		t.Fatal("summary 为空")
+		t.Fatal("summary trống")
 	}
 	format := model.config.ResponseFormat
 	if format == nil || format.JSONSchema == nil || format.JSONSchema.Name != sourceReportContract.Name {
@@ -65,12 +65,12 @@ func TestAnalyzeSourcePromptModeRepairsMissingRequiredFields(t *testing.T) {
 		`{}`,
 		validSourceReportJSON("修正后的摘要"),
 	}}
-	report, err := AnalyzeSource(t.Context(), model, "只分析写作方法。", scannedSource{})
+	report, err := AnalyzeSource(t.Context(), model, "只分析sáng tác 方法。", scannedSource{})
 	if err != nil {
 		t.Fatalf("AnalyzeSource: %v", err)
 	}
 	if report.Summary != "修正后的摘要" || model.calls.Load() != 2 {
-		t.Fatalf("缺字段后应反馈自愈: report=%+v calls=%d", report, model.calls.Load())
+		t.Fatalf("缺chữ 段后应反馈自愈: report=%+v calls=%d", report, model.calls.Load())
 	}
 }
 

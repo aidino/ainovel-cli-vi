@@ -24,45 +24,45 @@ var stylesFS embed.FS
 //go:embed voice.md
 var voiceFS embed.FS
 
-// Prompts 表示嵌入的提示词集合。
+// Prompts biểu thị tập hợp prompt nhúng.
 type Prompts struct {
 	ArchitectShort   string
 	ArchitectLong    string
-	Writer           string // 协议模板,含 {{VOICE}} 占位符;终稿经 BuildWriterPrompt 组装
+	Writer           string // Mẫu hợp đồng, chứa placeholder {{VOICE}}; bản cuối được BuildWriterPrompt lắp ráp
 	Editor           string
-	ImportSegment    string // 语义切分：识别章节/卷/附属文本边界
-	ImportAnalyze    string // 连续批次逐章事实提取
-	ImportSynthesize string // 分层综合与卷弧划分（全书 BookSynthesis）
-	ImportRange      string // 长书 Map 阶段连续区间摘要（RangeDigest）
+	ImportSegment    string // Cắt phân ngữ nghĩa: nhận diện ranh giới chương/tập/văn bản phụ
+	ImportAnalyze    string // Trích xuất sự thật từng chương theo lô liên tục
+	ImportSynthesize string // Tổng hợp phân tầng và chia phân đoạn/tập (Toàn thư BookSynthesis)
+	ImportRange      string // Tóm tắt khoảng liên tục giai đoạn Map của sách dài (RangeDigest)
 	SimulationSource string
 	SimulationMerge  string
 	RevisionAnalyze  string
 
-	// Arbiter 裁定提示词(LLM-as-function,无 simulation guidance 包装)。
+	// Prompt phán quyết của Trọng tài (LLM-as-function, không có bọc simulation guidance).
 	ArbiterPlanStart    string
 	ArbiterIntervention string
 	ArbiterFailure      string
 }
 
-// Bundle 表示运行所需的静态资源集合。
+// Bundle biểu thị tập hợp tài nguyên tĩnh cần thiết để chạy.
 type Bundle struct {
 	References tools.References
 	Prompts    Prompts
 	Styles     map[string]string
-	Voice      string // 写作标准(文风层),已按三层覆盖组装;见 docs/voice-layer.md
+	Voice      string // Tiêu chuẩn viết (lớp văn phong), đã lắp ráp theo ba lớp ghi đè; xem docs/voice-layer.md
 }
 
-// LoadOptions 声明文风层的覆盖来源。空目录 = 跳过该层(eval 传零值以获得
-// 纯内置的确定性 baseline,不受使用者本机覆盖污染)。
+// LoadOptions khai báo nguồn ghi đè của lớp văn phong. Thư mục rỗng = bỏ qua lớp đó (eval truyền giá trị 0 để lấy
+// baseline xác định thuần tích hợp, không bị ô nhiễm bởi ghi đè trên máy người dùng).
 //
-// 路径语义:BookStyleDir 绑定书目录(outputDir)而非 cwd——文风随书走,换目录
-// 恢复同一本书加载同一份文风。注意与 rules 层不同(rules 的项目级绑定 cwd)。
+// Ngữ nghĩa đường dẫn: BookStyleDir liên kết với thư mục sách (outputDir) chứ không phải cwd —— văn phong đi theo sách, đổi thư mục
+// khôi phục cùng một sách vẫn tải cùng một văn phong. Chú ý khác với lớp rules (cấp độ dự án của rules liên kết với cwd).
 type LoadOptions struct {
 	BookStyleDir string // <outputDir>/style
 	HomeStyleDir string // ~/.ainovel/style
 }
 
-// DefaultLoadOptions 根据书目录构造生产环境的覆盖来源。
+// DefaultLoadOptions cấu trúc nguồn ghi đè môi trường sản xuất dựa trên thư mục sách.
 func DefaultLoadOptions(outputDir string) LoadOptions {
 	var opts LoadOptions
 	if outputDir != "" {
@@ -74,8 +74,8 @@ func DefaultLoadOptions(outputDir string) LoadOptions {
 	return opts
 }
 
-// Load 返回指定风格对应的资源集合。文风资产(voice / anti-ai-tone / styles /
-// 题材 style-references)按 opts 做三层覆盖:内置 < 全局 < 本书。
+// Load trả về tập hợp tài nguyên tương ứng với phong cách chỉ định. Tài sản văn phong (voice / anti-ai-tone / styles /
+// style-references đề tài) ghi đè 3 lớp theo opts: tích hợp < toàn cục < sách này.
 func Load(style string, opts LoadOptions) Bundle {
 	return Bundle{
 		References: loadReferences(style, opts),
@@ -85,13 +85,13 @@ func Load(style string, opts LoadOptions) Bundle {
 	}
 }
 
-// voicePlaceholder 是 writer 协议模板中文风段的原位插入点。
+// voicePlaceholder là điểm chèn tại chỗ của đoạn văn phong trong mẫu hợp đồng writer.
 const voicePlaceholder = "{{VOICE}}"
 
-// BuildWriterPrompt 是 writer 系统提示词的唯一组装入口,生产 / eval / 测试共用,
-// 保证 A/B 两臂走同一路径(先例教训见 WithSimulationGuidance)。
-// writerPrompt 为含占位符的协议模板(可以已带 simulation guidance 后缀,占位符在
-// 前缀内,替换不受影响);style 为空时不追加。
+// BuildWriterPrompt là lối vào duy nhất lắp ráp prompt hệ thống của writer, dùng chung cho sản xuất / eval / test,
+// đảm bảo hai nhánh A/B đi cùng một đường (bài học tiền lệ xem WithSimulationGuidance).
+// writerPrompt là mẫu hợp đồng chứa placeholder (có thể đã mang hậu tố simulation guidance, placeholder nằm trong
+// tiền tố, thay thế không bị ảnh hưởng); không nối thêm nếu style rỗng.
 func BuildWriterPrompt(writerPrompt, voice, style string) string {
 	out := strings.Replace(writerPrompt, voicePlaceholder, strings.TrimSpace(voice), 1)
 	if style != "" {
@@ -100,27 +100,27 @@ func BuildWriterPrompt(writerPrompt, voice, style string) string {
 	return out
 }
 
-// OverrideVoice 用 raw 整体替换已组装的文风段(eval 做 voice A/B 用)。
-// variant 与 baseline 仍经 BuildWriterPrompt 同一路径组装。
+// OverrideVoice dùng raw thay thế toàn bộ đoạn văn phong đã lắp ráp (dùng cho eval làm voice A/B).
+// variant và baseline vẫn đi qua cùng đường lắp ráp BuildWriterPrompt.
 func (b *Bundle) OverrideVoice(raw string) {
 	b.Voice = raw
 }
 
-// resolveAppendable 追加语义的三层组装:内置保留,全局/本书作为标记段追加。
-// 无覆盖时返回内置原文(逐字节不变——文风层验收标准之一)。
-// "后者优先"是给 LLM 的优先级指示而非机械保证;需要机械保证的约束走 rules 层。
+// resolveAppendable lắp ráp 3 lớp nối thêm ngữ nghĩa: giữ nguyên tích hợp, toàn cục/sách này nối thêm làm đoạn đánh dấu.
+// Khi không có ghi đè trả về nguyên văn tích hợp (từng byte không đổi —— một trong các tiêu chuẩn nghiệm thu lớp văn phong).
+// "Cái sau ưu tiên" là chỉ thị ưu tiên cho LLM chứ không phải bảo đảm bằng máy; ràng buộc cần máy móc bảo đảm thì đi theo lớp rules.
 func resolveAppendable(builtin, name string, opts LoadOptions) string {
 	out := builtin
 	if s := readOverride(opts.HomeStyleDir, name); s != "" {
-		out += "\n\n## 用户全局文风覆盖（以下要求优先于项目默认）\n\n" + s
+		out += "\n\n## Ghi đè văn phong toàn cục người dùng (yêu cầu dưới đây ưu tiên hơn mặc định dự án)\n\n" + s
 	}
 	if s := readOverride(opts.BookStyleDir, name); s != "" {
-		out += "\n\n## 本书文风覆盖（以下要求优先于以上全部）\n\n" + s
+		out += "\n\n## Ghi đè văn phong sách này (yêu cầu dưới đây ưu tiên hơn tất cả những thứ trên)\n\n" + s
 	}
 	return out
 }
 
-// readOverride 读取覆盖目录下的单个文件;目录为空、文件不存在或为空白一律返回 ""。
+// readOverride đọc một file trong thư mục ghi đè; thư mục rỗng, file không tồn tại hoặc trắng đều trả về "".
 func readOverride(dir, name string) string {
 	if dir == "" {
 		return ""
@@ -132,7 +132,7 @@ func readOverride(dir, name string) string {
 	return strings.TrimSpace(string(data))
 }
 
-// styleNameRe 校验用户自定义 style 文件名(不含扩展名),拒绝路径字符。
+// styleNameRe kiểm tra tên file style tự định nghĩa của người dùng (không gồm đuôi), từ chối ký tự đường dẫn.
 var styleNameRe = regexp.MustCompile(`^[a-z0-9-]+$`)
 
 func loadReferences(style string, opts LoadOptions) tools.References {
@@ -161,8 +161,8 @@ func loadReferences(style string, opts LoadOptions) tools.References {
 		if data, err := referencesFS.ReadFile(genreDir + "arc-templates.md"); err == nil {
 			refs.ArcTemplates = string(data)
 		}
-		// 题材风格参考:同名整文件替换(本书 > 全局);自定义 style 无内置参考时
-		// 允许仅由覆盖提供,不回退 default(错误的参照比没有更糟)。
+		// Tham khảo phong cách đề tài: thay thế toàn bộ file cùng tên (sách này > toàn cục); khi style tự định nghĩa không có tham khảo tích hợp
+		// cho phép chỉ cung cấp bằng ghi đè, không lùi về default (tham chiếu sai còn tệ hơn không có).
 		relPath := filepath.Join("genres", style, "style-references.md")
 		for _, dir := range []string{opts.HomeStyleDir, opts.BookStyleDir} {
 			if s := readOverride(dir, relPath); s != "" {
@@ -193,21 +193,21 @@ func loadPrompts() Prompts {
 	}
 }
 
-// WithSimulationGuidance 给核心 prompt 追加仿写画像指引。导出供 eval 等外部场景做
-// variant 覆盖时复用，保证覆盖后的 prompt 与 Load 产出的 baseline 等价（同一包装路径）。
+// WithSimulationGuidance nối thêm chỉ dẫn chân dung mô phỏng viết vào prompt cốt lõi. Xuất ra cho eval và các tình huống bên ngoài
+// tái sử dụng khi ghi đè variant, đảm bảo prompt sau ghi đè tương đương với baseline mà Load tạo ra (cùng một đường dẫn bọc).
 func WithSimulationGuidance(prompt, role string) string {
 	return prompt + "\n\n" + strings.ReplaceAll(simulationGuidance, "{{role}}", role)
 }
 
-// OverridePrompt 用 raw 覆盖 bundle 中指定 prompt 文件对应的角色提示词，并走与 Load
-// 完全相同的 WithSimulationGuidance 包装——eval 做 A/B 时只需调它，不必复制包装逻辑，
-// 否则 baseline 带仿写画像后缀、variant 不带，A/B 不等价。file 为 prompt 文件名。
-// 注意:覆盖 writer.md 时 raw 须自带 {{VOICE}} 占位符(协议模板语义);只想 A/B 文风
-// 用 OverrideVoice。
+// OverridePrompt dùng raw ghi đè prompt vai trò tương ứng với file prompt chỉ định trong bundle, và đi cùng đường bọc WithSimulationGuidance
+// giống hệt Load —— khi eval làm A/B chỉ cần gọi nó, không cần sao chép logic bọc,
+// nếu không baseline mang hậu tố chân dung mô phỏng viết, variant không mang, A/B không tương đương. file là tên file prompt.
+// Chú ý: khi ghi đè writer.md thì raw phải mang theo placeholder {{VOICE}} (ngữ nghĩa mẫu hợp đồng); nếu chỉ muốn A/B văn phong
+// thì dùng OverrideVoice.
 func (b *Bundle) OverridePrompt(file, raw string) error {
 	role, ok := promptRole[file]
 	if !ok {
-		return fmt.Errorf("不支持覆盖的 prompt 文件: %s（仅核心提示词可覆盖）", file)
+		return fmt.Errorf("Không hỗ trợ ghi đè file prompt: %s (chỉ prompt cốt lõi mới có thể ghi đè)", file)
 	}
 	wrapped := WithSimulationGuidance(raw, role)
 	switch file {
@@ -223,7 +223,7 @@ func (b *Bundle) OverridePrompt(file, raw string) error {
 	return nil
 }
 
-// promptRole 把核心 prompt 文件名映射到 simulation guidance 的角色占位符。
+// promptRole ánh xạ tên file prompt cốt lõi với placeholder vai trò của simulation guidance.
 var promptRole = map[string]string{
 	"architect-short.md": "architect",
 	"architect-long.md":  "architect",
@@ -231,14 +231,14 @@ var promptRole = map[string]string{
 	"editor.md":          "editor",
 }
 
-const simulationGuidance = `## 仿写画像
+const simulationGuidance = `## Chân dung mô phỏng viết
 
-当 novel_context 的 planning_memory 或 working_memory 中存在 simulation_profile 时，必须把它视为当前作品的仿写方向约束。{{role}} 应读取其中的 style、lexicon、plot_design、hook_design、pacing_density、reader_engagement 和 role_guidance。
+Khi planning_memory hoặc working_memory của novel_context tồn tại simulation_profile, phải coi nó là ràng buộc hướng mô phỏng viết của tác phẩm hiện tại. {{role}} nên đọc style, lexicon, plot_design, hook_design, pacing_density, reader_engagement và role_guidance trong đó.
 
-使用原则：借鉴结构、节奏、钩子、信息释放和吸引读者的手法；不要复制原文句子、人物、地名、专有设定或固定桥段。若 simulation_profile 与用户显式要求冲突，优先服从用户要求。`
+Nguyên tắc sử dụng: tham khảo kết cấu, nhịp điệu, móc câu, cách nhả thông tin và thủ pháp thu hút người đọc; không sao chép nguyên văn câu, nhân vật, địa danh, thiết lập độc quyền hay phân đoạn cố định. Nếu simulation_profile xung đột với yêu cầu rõ ràng của người dùng, ưu tiên tuân theo yêu cầu của người dùng.`
 
-// loadStyles 枚举内置风格预设,再按 全局 → 本书 顺序叠加覆盖目录下 styles/*.md
-// (同名整文件替换,新文件名即新增风格;风格是整体声音,不做合并)。
+// loadStyles liệt kê cài đặt trước phong cách tích hợp, sau đó theo thứ tự toàn cục → sách này ghi đè styles/*.md trong thư mục ghi đè
+// (thay thế toàn bộ file cùng tên, tên file mới tức là phong cách mới; phong cách là âm thanh tổng thể, không gộp).
 func loadStyles(opts LoadOptions) map[string]string {
 	styles := make(map[string]string)
 	entries, err := stylesFS.ReadDir("styles")
@@ -262,7 +262,7 @@ func loadStyles(opts LoadOptions) map[string]string {
 	return styles
 }
 
-// overlayStyles 把 <dir>/styles/*.md 叠进 styles 集合;非法文件名跳过并告警。
+// overlayStyles chồng <dir>/styles/*.md vào tập hợp styles; tên file không hợp lệ thì bỏ qua và cảnh báo.
 func overlayStyles(styles map[string]string, dir string) {
 	if dir == "" {
 		return
@@ -277,7 +277,7 @@ func overlayStyles(styles map[string]string, dir string) {
 		}
 		name := strings.TrimSuffix(e.Name(), ".md")
 		if !styleNameRe.MatchString(name) {
-			slog.Warn("忽略非法风格文件名", "module", "assets", "dir", dir, "file", e.Name())
+			slog.Warn("Bỏ qua tên file phong cách không hợp lệ", "module", "assets", "dir", dir, "file", e.Name())
 			continue
 		}
 		data, err := os.ReadFile(filepath.Join(dir, "styles", e.Name()))

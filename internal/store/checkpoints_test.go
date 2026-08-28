@@ -61,7 +61,7 @@ func TestCheckpointStore_Idempotent(t *testing.T) {
 		t.Fatalf("cache should hold 1 entry, got %d", len(all))
 	}
 
-	// 磁盘上也应只有一行
+	// 磁盘上也应只有一dòng 
 	data, _ := os.ReadFile(filepath.Join(dir, checkpointsFile))
 	if got := countLines(data); got != 1 {
 		t.Fatalf("disk should have 1 line, got %d", got)
@@ -70,10 +70,10 @@ func TestCheckpointStore_Idempotent(t *testing.T) {
 
 func TestCheckpointStore_AppendArtifactsTracksEveryArtifact(t *testing.T) {
 	cs, dir := newTestCheckpointStore(t)
-	if err := os.WriteFile(filepath.Join(dir, "chapter.md"), []byte("正文"), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "chapter.md"), []byte("chính văn"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(dir, "summary.json"), []byte(`{"title":"旧标题"}`), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "summary.json"), []byte(`{"title":"旧tiêu đề "}`), 0o644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -89,7 +89,7 @@ func TestCheckpointStore_AppendArtifactsTracksEveryArtifact(t *testing.T) {
 		t.Fatalf("same artifact set should be idempotent: first=%d replay=%d", first.Seq, replayed.Seq)
 	}
 
-	if err := os.WriteFile(filepath.Join(dir, "summary.json"), []byte(`{"title":"新标题"}`), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "summary.json"), []byte(`{"title":"新tiêu đề "}`), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	changed, err := cs.AppendArtifacts(domain.ChapterScope(1), "commit", "chapter.md", "summary.json")
@@ -104,7 +104,7 @@ func TestCheckpointStore_AppendArtifactsTracksEveryArtifact(t *testing.T) {
 func TestCheckpointStore_EmptyDigestNotIdempotent(t *testing.T) {
 	cs, _ := newTestCheckpointStore(t)
 
-	// 空 digest 不参与幂等去重
+	// trống digest 不参与幂等去重
 	cs.Append(domain.GlobalScope(), "note", "", "")
 	cs.Append(domain.GlobalScope(), "note", "", "")
 	if all := cs.All(); len(all) != 2 {
@@ -130,7 +130,7 @@ func TestCheckpointStore_Reset(t *testing.T) {
 		t.Fatalf("file should be removed, err=%v", err)
 	}
 
-	// Reset 后 seq 重置：下次追加从 1 开始
+	// Reset 后 seq đặt lại ：下次thêm vào 从 1 bắt đầu 
 	cp, _ := cs.Append(domain.ChapterScope(1), "plan", "p", "sha256:1")
 	if cp.Seq != 1 {
 		t.Fatalf("seq after reset should restart at 1, got %d", cp.Seq)
@@ -145,7 +145,7 @@ func TestCheckpointStore_RestoreFromDisk(t *testing.T) {
 	cs1.Append(domain.ChapterScope(1), "draft", "d", "sha256:2")
 	cs1.Append(domain.ChapterScope(2), "plan", "p2", "sha256:3")
 
-	// 模拟重启：新实例从同一目录加载
+	// mô phỏng重启：新实例从同一thư mụctải 
 	io2 := newIO(dir)
 	cs2 := NewCheckpointStore(io2)
 
@@ -156,7 +156,7 @@ func TestCheckpointStore_RestoreFromDisk(t *testing.T) {
 		t.Fatalf("restored latestGlobal seq want 3 got %+v", got)
 	}
 
-	// seq 应从 4 续接，且幂等仍生效
+	// seq 应从 4 续接，và幂等仍生效
 	cp, _ := cs2.Append(domain.ChapterScope(2), "draft", "d2", "sha256:4")
 	if cp.Seq != 4 {
 		t.Fatalf("restored seq continuation want 4 got %d", cp.Seq)
@@ -176,7 +176,7 @@ func TestStoreInitRejectsCorruptCheckpointLog(t *testing.T) {
 		t.Fatal(err)
 	}
 	if err := NewStore(dir).Init(); err == nil {
-		t.Fatal("损坏的 checkpoint 日志必须阻止 Store 初始化")
+		t.Fatal("bị hỏng checkpoint 日志phải ngăn chặn  Store khởi tạo ")
 	}
 }
 
@@ -215,7 +215,7 @@ func TestCheckpointStore_ConcurrentAppend(t *testing.T) {
 		t.Fatalf("concurrent append lost data: want %d got %d", goroutines*perGoroutine, len(all))
 	}
 
-	// seq 应为 1..N，无重复
+	// seq nên là 1..N，无lặp lại 
 	seen := make(map[int64]bool, len(all))
 	for _, cp := range all {
 		if seen[cp.Seq] {
@@ -236,7 +236,7 @@ func TestCheckpointStore_SeqNotConsumedOnWriteFailure(t *testing.T) {
 		t.Fatalf("seed append: %v", err)
 	}
 
-	// 把 jsonl 文件本身改为只读，使下一次 OpenFile 写入失败
+	// 把 jsonl tệp本身改为只读，使下一次 OpenFile ghi thất bại
 	jsonlPath := filepath.Join(dir, checkpointsFile)
 	if err := os.Chmod(jsonlPath, 0o444); err != nil {
 		t.Skipf("chmod readonly not supported: %v", err)
@@ -247,12 +247,12 @@ func TestCheckpointStore_SeqNotConsumedOnWriteFailure(t *testing.T) {
 		t.Fatal("expected write failure on readonly file")
 	}
 
-	// cache 不应被污染
+	// cache không nên bị ô nhiễm
 	if all := cs.All(); len(all) != 1 {
 		t.Fatalf("cache leaked failed entry, len=%d", len(all))
 	}
 
-	// 恢复写权限，重试应得 seq=2 而不是 seq=3
+	// khôi phục 写权限，thử lại 应得 seq=2 而不是 seq=3
 	if err := os.Chmod(jsonlPath, 0o644); err != nil {
 		t.Fatalf("restore chmod: %v", err)
 	}

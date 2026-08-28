@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// ChronicLowDimension 检测某评审维度跨多章持续低分。
+// ChronicLowDimension phát hiện một chiều đánh giá có điểm thấp liên tục qua nhiều chương.
 func ChronicLowDimension(snap *Snapshot) []Finding {
 	if len(snap.Reviews) < 2 {
 		return nil
@@ -47,7 +47,7 @@ func ChronicLowDimension(snap *Snapshot) []Finding {
 	return findings
 }
 
-// ContractMissPattern 检测合同履约率过低。
+// ContractMissPattern phát hiện tỷ lệ thực hiện hợp đồng quá thấp.
 func ContractMissPattern(snap *Snapshot) []Finding {
 	if len(snap.Reviews) == 0 {
 		return nil
@@ -82,7 +82,7 @@ func ContractMissPattern(snap *Snapshot) []Finding {
 	}}
 }
 
-// HookWeakChain 检测章节 hook 评分连续偏弱。
+// HookWeakChain phát hiện điểm hook của chương khá yếu liên tiếp.
 func HookWeakChain(snap *Snapshot) []Finding {
 	if len(snap.Reviews) < ThresholdHookWeakChain {
 		return nil
@@ -128,7 +128,7 @@ func HookWeakChain(snap *Snapshot) []Finding {
 	}}
 }
 
-// PayoffMissPattern 检测带 payoff_points 的章节长期未兑现。
+// PayoffMissPattern phát hiện chương có payoff_points lâu không thực hiện.
 func PayoffMissPattern(snap *Snapshot) []Finding {
 	var total, missed int
 	var details []string
@@ -167,7 +167,7 @@ func PayoffMissPattern(snap *Snapshot) []Finding {
 	}}
 }
 
-// ExcessiveRewrites 检测改写率过高。
+// ExcessiveRewrites phát hiện tỷ lệ làm lại quá cao.
 func ExcessiveRewrites(snap *Snapshot) []Finding {
 	if len(snap.Reviews) < 2 {
 		return nil
@@ -200,7 +200,7 @@ func ExcessiveRewrites(snap *Snapshot) []Finding {
 	}}
 }
 
-// WordCountAnomaly 检测章节字数异常。
+// WordCountAnomaly phát hiện số từ trong chương bất thường.
 func WordCountAnomaly(snap *Snapshot) []Finding {
 	if snap.Progress == nil || len(snap.Progress.ChapterWordCounts) < 3 {
 		return nil
@@ -222,7 +222,7 @@ func WordCountAnomaly(snap *Snapshot) []Finding {
 		if ratio < ThresholdWordShortRatio {
 			anomalies = append(anomalies, fmt.Sprintf("ch%d(%d từ,%.0f%%)", ch, w, ratio*100))
 		} else if ratio > ThresholdWordLongRatio {
-			anomalies = append(anomalies, fmt.Sprintf("ch%d(%d字,%.0f%%)", ch, w, ratio*100))
+			anomalies = append(anomalies, fmt.Sprintf("ch%d(%d từ,%.0f%%)", ch, w, ratio*100))
 		}
 	}
 	if len(anomalies) == 0 {

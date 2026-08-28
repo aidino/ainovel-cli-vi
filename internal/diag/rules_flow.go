@@ -9,7 +9,7 @@ import (
 	"github.com/voocel/ainovel-cli/internal/domain"
 )
 
-// InvalidPendingRewrites 检测返工队列里混入未完成章节。
+// InvalidPendingRewrites phát hiện hàng đợi làm lại lẫn chương chưa hoàn thành.
 func InvalidPendingRewrites(snap *Snapshot) []Finding {
 	if snap.Progress == nil || len(snap.Progress.PendingRewrites) == 0 {
 		return nil
@@ -41,7 +41,7 @@ func InvalidPendingRewrites(snap *Snapshot) []Finding {
 	}}
 }
 
-// RewritePendingPressure 检测存在待改写章节（当前仅检测状态存在，不判定停滞）。
+// RewritePendingPressure phát hiện tồn tại chương chờ làm lại (hiện chỉ phát hiện tồn tại trạng thái, không đánh giá đình trệ).
 func RewritePendingPressure(snap *Snapshot) []Finding {
 	if snap.Progress == nil {
 		return nil
@@ -63,18 +63,18 @@ func RewritePendingPressure(snap *Snapshot) []Finding {
 		Target:     "runtime.flow",
 		Title:      fmt.Sprintf("Chương chờ viết lại: [%s]", chapters),
 		Evidence:   fmt.Sprintf("flow=%s, pending_rewrites=[%s]", p.Flow, chapters),
-		Suggestion: "Kiểm tra tiêu chuẩn đọc kiểm của Editor có quá khắt khe không, hoặc prompt viết lại của Writer có hiệu quả không." +
+		Suggestion: "Kiểm tra tiêu chuẩn đọc kiểm của Editor có quá khắt khe không, hoặc prompt viết lại của Writer có hiệu quả không. " +
 			"Khi một chương làm lại thất bại lặp lại, engine sẽ tự động đưa nó ra khỏi hàng chờ và tiếp tục sáng tác phần sau, không cần dọn bằng tay.",
 	}}
 }
 
-// OrphanedSteer 检测未消费的用户转向指令。
+// OrphanedSteer phát hiện chỉ lệnh chuyển hướng của người dùng chưa tiêu thụ.
 func OrphanedSteer(snap *Snapshot) []Finding {
 	if snap.RunMeta == nil || snap.RunMeta.PendingSteer == "" {
 		return nil
 	}
 	if snap.Progress != nil && snap.Progress.Flow == domain.FlowSteering {
-		return nil // 正在处理中，不算孤立
+		return nil // Đang xử lý, không tính là mồ côi
 	}
 	return []Finding{{
 		Rule:       "OrphanedSteer",
@@ -89,7 +89,7 @@ func OrphanedSteer(snap *Snapshot) []Finding {
 	}}
 }
 
-// PhaseFlowMismatch 检测阶段与流程状态不匹配。
+// PhaseFlowMismatch phát hiện giai đoạn không khớp với trạng thái luồng.
 func PhaseFlowMismatch(snap *Snapshot) []Finding {
 	if snap.Progress == nil {
 		return nil
@@ -109,12 +109,12 @@ func PhaseFlowMismatch(snap *Snapshot) []Finding {
 		AutoLevel:  AutoSafe,
 		Target:     "runtime.flow",
 		Title:      fmt.Sprintf("Giai đoạn / trạng thái flow không khớp: phase=%s, flow=%s", p.Phase, p.Flow),
-		Evidence:   fmt.Sprintf("phase=%s không được xuất hiện flow=%s không khởi đầu", p.Phase, p.Flow),
+		Evidence:   fmt.Sprintf("khi phase=%s, không được xuất hiện flow=%s (không phải trạng thái khởi đầu)", p.Phase, p.Flow),
 		Suggestion: "Máy trạng thái có thể hư hỏng, cần kiểm tra thủ công các trường phase và flow trong meta/progress.json.",
 	}}
 }
 
-// ChapterGaps 检测已完成章节列表中的跳号。
+// ChapterGaps phát hiện nhảy số trong danh sách chương đã hoàn thành.
 func ChapterGaps(snap *Snapshot) []Finding {
 	if snap.Progress == nil || len(snap.Progress.CompletedChapters) < 2 {
 		return nil

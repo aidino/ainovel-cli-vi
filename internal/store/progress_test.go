@@ -127,7 +127,7 @@ func TestSetPendingRewrites(t *testing.T) {
 	_ = store.Progress.MarkChapterComplete(7, 3000, "", "")
 
 	chapters := []int{3, 5, 7}
-	if err := store.Progress.SetPendingRewrites(chapters, "角色动机不连贯"); err != nil {
+	if err := store.Progress.SetPendingRewrites(chapters, "nhân vật动机不连贯"); err != nil {
 		t.Fatalf("SetPendingRewrites: %v", err)
 	}
 
@@ -135,7 +135,7 @@ func TestSetPendingRewrites(t *testing.T) {
 	if len(p.PendingRewrites) != 3 {
 		t.Fatalf("expected 3 pending, got %d", len(p.PendingRewrites))
 	}
-	if p.RewriteReason != "角色动机不连贯" {
+	if p.RewriteReason != "nhân vật动机不连贯" {
 		t.Errorf("reason mismatch: %s", p.RewriteReason)
 	}
 }
@@ -146,7 +146,7 @@ func TestSetPendingRewritesRejectsUnfinishedChapters(t *testing.T) {
 	_ = store.Progress.Init(10)
 	_ = store.Progress.MarkChapterComplete(3, 3000, "", "")
 
-	if err := store.Progress.SetPendingRewrites([]int{3, 5}, "测试"); err == nil {
+	if err := store.Progress.SetPendingRewrites([]int{3, 5}, "kiểm tra "); err == nil {
 		t.Fatal("expected unfinished chapter to be rejected")
 	}
 
@@ -183,10 +183,10 @@ func TestCompleteRewrite(t *testing.T) {
 	_ = store.Progress.MarkChapterComplete(3, 3000, "", "")
 	_ = store.Progress.MarkChapterComplete(5, 3000, "", "")
 	_ = store.Progress.MarkChapterComplete(7, 3000, "", "")
-	_ = store.Progress.SetPendingRewrites([]int{3, 5, 7}, "测试重写")
+	_ = store.Progress.SetPendingRewrites([]int{3, 5, 7}, "kiểm tra 重写")
 	_ = store.Progress.SetFlow(domain.FlowRewriting)
 
-	// 完成第 5 章
+	// 完成第 5 chương 
 	if err := store.Progress.CompleteRewrite(5); err != nil {
 		t.Fatalf("CompleteRewrite(5): %v", err)
 	}
@@ -198,14 +198,14 @@ func TestCompleteRewrite(t *testing.T) {
 		t.Errorf("flow should still be rewriting, got %s", p.Flow)
 	}
 
-	// 完成第 3 章
+	// 完成第 3 chương 
 	_ = store.Progress.CompleteRewrite(3)
 	p, _ = store.Progress.Load()
 	if len(p.PendingRewrites) != 1 {
 		t.Fatalf("expected 1 pending, got %d", len(p.PendingRewrites))
 	}
 
-	// 完成最后一章 → 自动重置 Flow
+	// 完成最后一chương  → 自动đặt lại  Flow
 	_ = store.Progress.CompleteRewrite(7)
 	p, _ = store.Progress.Load()
 	if len(p.PendingRewrites) != 0 {
@@ -225,15 +225,15 @@ func TestApplyReviewOutcomePreservesExistingRewriteQueue(t *testing.T) {
 	for _, ch := range []int{1, 2} {
 		_ = s.Progress.MarkChapterComplete(ch, 3000, "", "")
 	}
-	_ = s.Progress.SetPendingRewrites([]int{1, 2}, "已有返工")
+	_ = s.Progress.SetPendingRewrites([]int{1, 2}, "đã có làm lại ")
 	_ = s.Progress.SetFlow(domain.FlowRewriting)
 
-	p, err := s.Progress.ApplyReviewOutcome(domain.FlowWriting, nil, "本次审阅通过")
+	p, err := s.Progress.ApplyReviewOutcome(domain.FlowWriting, nil, "本次đọc kiểm 通过")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if p.Flow != domain.FlowRewriting || len(p.PendingRewrites) != 2 {
-		t.Fatalf("新审阅通过不能遗弃既有返工队列: flow=%s queue=%v", p.Flow, p.PendingRewrites)
+		t.Fatalf("新đọc kiểm 通过不能遗弃既有làm lại hàng đợi : flow=%s queue=%v", p.Flow, p.PendingRewrites)
 	}
 }
 
@@ -243,9 +243,9 @@ func TestCompleteRewrite_NotInQueue(t *testing.T) {
 	_ = store.Progress.Init(10)
 	_ = store.Progress.MarkChapterComplete(3, 3000, "", "")
 	_ = store.Progress.MarkChapterComplete(5, 3000, "", "")
-	_ = store.Progress.SetPendingRewrites([]int{3, 5}, "测试")
+	_ = store.Progress.SetPendingRewrites([]int{3, 5}, "kiểm tra ")
 
-	// 完成不在队列中的章节不应报错
+	// 完成不在hàng đợi 中的chương不nên báo lỗi
 	if err := store.Progress.CompleteRewrite(99); err != nil {
 		t.Fatalf("CompleteRewrite(99): %v", err)
 	}
@@ -262,7 +262,7 @@ func TestClearPendingRewrites(t *testing.T) {
 	_ = store.Progress.MarkChapterComplete(1, 3000, "", "")
 	_ = store.Progress.MarkChapterComplete(2, 3000, "", "")
 	_ = store.Progress.MarkChapterComplete(3, 3000, "", "")
-	_ = store.Progress.SetPendingRewrites([]int{1, 2, 3}, "测试")
+	_ = store.Progress.SetPendingRewrites([]int{1, 2, 3}, "kiểm tra ")
 	_ = store.Progress.SetFlow(domain.FlowRewriting)
 
 	if err := store.Progress.ClearPendingRewrites(); err != nil {

@@ -32,7 +32,7 @@ func TestBookStorePersistsCanonicalDataAndReadableProjection(t *testing.T) {
 	if text := string(projection); !strings.Contains(text, "# 长夜将明") || !strings.Contains(text, "少年守住最后一盏灯。") {
 		t.Fatalf("unexpected book projection: %s", text)
 	}
-	if err := s.Book.Save(domain.BookMetadata{Title: "空简介"}); err == nil {
+	if err := s.Book.Save(domain.BookMetadata{Title: "空tóm tắt "}); err == nil {
 		t.Fatal("empty synopsis must be rejected")
 	}
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/voocel/ainovel-cli/internal/llmretry"
 )
 
-// FailureKind 区分不可由同一次结构化反馈修复的失败边界。
+// FailureKind phân biệt các ranh giới thất bại không thể phục hồi bằng phản hồi có cấu trúc trong cùng một lần gọi.
 type FailureKind string
 
 const (
@@ -22,7 +22,7 @@ const (
 	FailureContract FailureKind = "contract"
 )
 
-// Failure 保留失败类别和模型原始输出，供调用方决定日志、工件和 UI 表达。
+// Failure giữ lại loại lỗi và đầu ra gốc của model, để phía gọi quyết định cách log, tạo sản phẩm và hiển thị UI.
 type Failure struct {
 	Kind     FailureKind
 	Contract string
@@ -45,7 +45,7 @@ func (e *Failure) Error() string {
 
 func (e *Failure) Unwrap() error { return e.Err }
 
-// Correction 描述一次模型可修复的输出错误。Attempt 是刚失败的调用序号。
+// Correction mô tả một lỗi đầu ra của model có thể phục hồi được. Attempt là số thứ tự của lần gọi vừa thất bại.
 type Correction struct {
 	Attempt int
 	Layer   string
@@ -54,15 +54,15 @@ type Correction struct {
 	Err     error
 }
 
-// Hooks 只负责可观测性，不改变执行语义。
+// Hooks chỉ chịu trách nhiệm quan sát, không thay đổi ngữ nghĩa thực thi.
 type Hooks struct {
 	Resolved     func(Resolution)
 	RequestRetry func(llmretry.Event)
 	Correction   func(Correction)
 }
 
-// Request 定义一次直接结构化返回。Contract 是结构的单一来源，Validate 只处理
-// JSON Schema 无法表达的业务约束。
+// Request định nghĩa một lần trả về có cấu trúc trực tiếp. Contract là nguồn duy nhất của cấu trúc, Validate chỉ xử lý
+// các ràng buộc nghiệp vụ mà JSON Schema không thể biểu đạt.
 type Request[T any] struct {
 	Contract     Contract
 	SystemPrompt string
@@ -76,9 +76,9 @@ type Request[T any] struct {
 const promptCorrection = "Đầu ra ở trên không đúng JSON Schema. Hãy sửa theo lỗi, và chỉ xuất đối tượng JSON hoàn chỉnh, không giải thích hay khối Markdown."
 const semanticCorrection = "JSON ở trên hợp lệ về cấu trúc nhưng giá trị trường chưa qua kiểm tra nghiệp vụ. Hãy sửa theo lỗi, và xuất lại đối tượng JSON hoàn chỉnh."
 
-// Execute 统一完成协议选择、提示词准备、请求重试、停止原因分类、Schema/DTO
-// 解码和业务反馈自愈。prompt 模式的格式/Schema 错误以及两种模式的业务错误会
-// 持续反馈给模型，直到成功或 context 结束；原生契约违约会立即暴露。
+// Execute thống nhất thực hiện chọn giao thức, chuẩn bị prompt, thử lại yêu cầu, phân loại lý do dừng,
+// giải mã Schema/DTO và tự phục hồi phản hồi nghiệp vụ. Các lỗi định dạng/Schema ở chế độ prompt cũng như lỗi nghiệp vụ ở cả hai chế độ sẽ
+// liên tục được phản hồi lại cho model, cho đến khi thành công hoặc context kết thúc; vi phạm hợp đồng native sẽ bộc lộ ngay lập tức.
 func Execute[T any](ctx context.Context, model llmretry.Generator, req Request[T]) (T, error) {
 	var zero T
 	if model == nil {
@@ -122,21 +122,21 @@ func Execute[T any](ctx context.Context, model llmretry.Generator, req Request[T
 		raw := resp.Message.TextContent()
 		switch resp.Message.StopReason {
 		case agentcore.StopReasonLength:
-			return zero, &Failure{Kind: FailureLength, Contract: req.Contract.Name, Raw: raw, Err: errors.New("模型输出被长度截断(stop_reason=length)")}
+			return zero, &Failure{Kind: FailureLength, Contract: req.Contract.Name, Raw: raw, Err: errors.New("đầu ra của model bị cắt do vượt quá độ dài (stop_reason=length)")}
 		case agentcore.StopReasonSafety:
-			return zero, &Failure{Kind: FailureSafety, Contract: req.Contract.Name, Raw: raw, Err: errors.New("模型拒答或触发内容过滤(stop_reason=safety)")}
+			return zero, &Failure{Kind: FailureSafety, Contract: req.Contract.Name, Raw: raw, Err: errors.New("model từ chối trả lời hoặc kích hoạt bộ lọc nội dung (stop_reason=safety)")}
 		case agentcore.StopReasonError:
-			return zero, &Failure{Kind: FailureProtocol, Contract: req.Contract.Name, Raw: raw, Err: errors.New("模型以错误状态结束(stop_reason=error)")}
+			return zero, &Failure{Kind: FailureProtocol, Contract: req.Contract.Name, Raw: raw, Err: errors.New("model kết thúc với trạng thái lỗi (stop_reason=error)")}
 		case agentcore.StopReasonToolUse:
-			return zero, &Failure{Kind: FailureProtocol, Contract: req.Contract.Name, Raw: raw, Err: errors.New("结构化调用意外返回工具调用(stop_reason=tool_use)")}
+			return zero, &Failure{Kind: FailureProtocol, Contract: req.Contract.Name, Raw: raw, Err: errors.New("lệnh gọi có cấu trúc bất ngờ trả về lời gọi công cụ (stop_reason=tool_use)")}
 		case agentcore.StopReasonAborted:
-			return zero, &Failure{Kind: FailureProtocol, Contract: req.Contract.Name, Raw: raw, Err: errors.New("模型调用被中止(stop_reason=aborted)")}
+			return zero, &Failure{Kind: FailureProtocol, Contract: req.Contract.Name, Raw: raw, Err: errors.New("lệnh gọi model bị hủy bỏ (stop_reason=aborted)")}
 		}
 
 		body := strings.TrimSpace(raw)
 		if native {
 			if body == "" {
-				return zero, &Failure{Kind: FailureContract, Contract: req.Contract.Name, Raw: raw, Err: errors.New("原生 schema 返回空内容")}
+				return zero, &Failure{Kind: FailureContract, Contract: req.Contract.Name, Raw: raw, Err: errors.New("schema gốc trả về nội dung rỗng")}
 			}
 		} else {
 			body = ExtractJSONObject(raw)
@@ -145,15 +145,15 @@ func Execute[T any](ctx context.Context, model llmretry.Generator, req Request[T
 		layer := "schema"
 		var cause error
 		if body == "" {
-			layer, cause = "decode", errors.New("输出中未找到 JSON 对象")
+			layer, cause = "decode", errors.New("không tìm thấy đối tượng JSON trong đầu ra")
 		} else if err := ValidateJSON(req.Contract.Schema, []byte(body)); err != nil {
 			cause = err
 		} else {
 			var out T
 			if err := json.Unmarshal([]byte(body), &out); err != nil {
-				// Schema 已通过而 DTO 无法解码，说明静态契约与 Go 类型不一致，
-				// 继续要求模型重写无法修复代码缺陷。
-				return zero, &Failure{Kind: FailureContract, Contract: req.Contract.Name, Raw: raw, Err: fmt.Errorf("schema 与 DTO 不一致: %w", err)}
+				// Schema đã qua nhưng DTO không thể giải mã — cho thấy hợp đồng tĩnh và kiểu Go không nhất quán;
+				// yêu cầu model viết lại không thể sửa lỗi code.
+				return zero, &Failure{Kind: FailureContract, Contract: req.Contract.Name, Raw: raw, Err: fmt.Errorf("schema và DTO không nhất quán: %w", err)}
 			}
 			if req.Validate == nil {
 				return out, nil
@@ -166,7 +166,7 @@ func Execute[T any](ctx context.Context, model llmretry.Generator, req Request[T
 		}
 
 		if native && layer != "semantic" {
-			return zero, &Failure{Kind: FailureContract, Contract: req.Contract.Name, Raw: raw, Err: fmt.Errorf("原生 schema 契约违约: %w", cause)}
+			return zero, &Failure{Kind: FailureContract, Contract: req.Contract.Name, Raw: raw, Err: fmt.Errorf("schema gốc vi phạm hợp đồng: %w", cause)}
 		}
 		correction := Correction{Attempt: attempt, Layer: layer, Mode: resolution.Mode, Raw: raw, Err: cause}
 		if req.Hooks.Correction != nil {
@@ -178,12 +178,12 @@ func Execute[T any](ctx context.Context, model llmretry.Generator, req Request[T
 		}
 		messages = append(messages,
 			agentcore.Message{Role: agentcore.RoleAssistant, Content: []agentcore.ContentBlock{agentcore.TextBlock(raw)}},
-			agentcore.UserMsg(hint+"\n错误："+cause.Error()),
+			agentcore.UserMsg(hint+"\nLỗi: "+cause.Error()),
 		)
 	}
 }
 
-// ExtractJSONObject 返回文本中的第一个平衡 JSON 对象，字符串中的花括号不计入层级。
+// ExtractJSONObject trả về đối tượng JSON cân bằng đầu tiên trong văn bản, dấu ngoặc nhọn trong chuỗi không được tính vào phân cấp.
 func ExtractJSONObject(raw string) string {
 	start := strings.IndexByte(raw, '{')
 	if start < 0 {

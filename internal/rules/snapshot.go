@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-// Snapshot 是本书归一化后的用户规则快照（meta/user_rules.json）。
+// Snapshot là điểm khôi phục quy tắc người dùng của cuốn sách này sau khi chuẩn hóa (meta/user_rules.json).
 //
-// 它是运行时唯一事实源：开书/导入/刷新时由各来源归一化合并而成，之后 novel_context
-// 注入与 commit_chapter 检查都只读这一份，不再反复读 rules 文件（避免漂移与双读者发散）。
+// Nó là nguồn sự thật duy nhất lúc chạy: khi mở sách/nhập/làm mới được gộp chuẩn hóa từ các nguồn, sau đó novel_context
+// tiêm vào và commit_chapter kiểm tra đều chỉ đọc bản này, không đọc đi đọc lại file rules nữa (tránh trôi dạt và hai đầu đọc phân kỳ).
 //
-// 注入给模型的只有 Structured + Preferences（见 Payload）；Version / Status / Sources /
-// Uncertain 是运维与诊断元数据，不进 working_memory.user_rules。
+// Chỉ Structured + Preferences được tiêm cho model (xem Payload); Version / Status / Sources /
+// Uncertain là siêu dữ liệu vận hành và chẩn đoán, không vào working_memory.user_rules.
 type Snapshot struct {
 	Version     int        `json:"version"`
 	Status      Status     `json:"status"`
@@ -22,36 +22,36 @@ type Snapshot struct {
 	Uncertain   []string   `json:"uncertain"`
 }
 
-// Status 标记快照归一化是否完整成功。
+// Status đánh dấu điểm khôi phục chuẩn hóa thành công trọn vẹn hay không.
 type Status string
 
 const (
-	// StatusReady 所有来源都成功归一化。
+	// StatusReady mọi nguồn đều chuẩn hóa thành công.
 	StatusReady Status = "ready"
-	// StatusDegraded 至少一个来源归一化失败，已降级为 raw preferences（详见 Uncertain / 日志）。
+	// StatusDegraded ít nhất một nguồn chuẩn hóa thất bại, đã hạ cấp thành raw preferences (xem chi tiết ở Uncertain / nhật ký).
 	StatusDegraded Status = "degraded"
 )
 
-// SnapshotVersion 是当前快照 schema 版本，便于未来迁移。
-// v2：chapter_words 退出 structured（字数是语义软约束，走 preferences）。
-// v1 快照直接加载兼容：未知字段被反序列化忽略，下次叠加保存时自然收敛为 v2；
-// 刻意不做"版本不符即重建"——那会丢掉 AddRuntimeRule 运行中追加的不可再生规则。
+// SnapshotVersion là phiên bản schema của điểm khôi phục hiện tại, tiện cho việc di chuyển trong tương lai.
+// v2: chapter_words rút khỏi structured (số từ là ràng buộc mềm ngữ nghĩa, đi qua preferences).
+// Tương thích tải trực tiếp điểm khôi phục v1: các trường không xác định bị bỏ qua khi deserialize, lần gộp lưu tiếp theo sẽ tự động hội tụ về v2;
+// Cố tình không làm "phiên bản không khớp thì xây dựng lại" —— như vậy sẽ làm mất các quy tắc không thể tái tạo được thêm vào lúc chạy bằng AddRuntimeRule.
 const SnapshotVersion = 2
 
-// Candidate 是单个来源归一化后的候选结果。
+// Candidate là kết quả ứng viên của một nguồn sau khi chuẩn hóa.
 //
-// 来源按优先级低→高排列后交给 BuildSnapshot 确定性合并。LLM 只负责把单一来源的
-// 自然语言变成候选 Structured/Preferences；优先级与字段覆盖由 BuildSnapshot（Go）裁定。
+// Nguồn được sắp xếp theo độ ưu tiên thấp→cao rồi giao cho BuildSnapshot gộp xác định. LLM chỉ chịu trách nhiệm biến
+// ngôn ngữ tự nhiên của một nguồn thành Structured/Preferences ứng viên; độ ưu tiên và ghi đè trường do BuildSnapshot (Go) phán quyết.
 type Candidate struct {
-	Source      string     // 可读来源标签，进入 Snapshot.Sources（如 system_defaults / startup_prompt / global:my.md）
-	Structured  Structured // 该来源候选结构化字段
-	Preferences string     // 该来源的自然语言偏好正文
-	Uncertain   []string   // 该来源故意未提升到 structured 的项 + 原因（诊断）
-	Degraded    bool       // 该来源归一化失败、已降级为 raw preferences
+	Source      string     // Nhãn nguồn dễ đọc, đi vào Snapshot.Sources (ví dụ system_defaults / startup_prompt / global:my.md)
+	Structured  Structured // Các trường cấu trúc ứng viên của nguồn này
+	Preferences string     // Chính văn sở thích ngôn ngữ tự nhiên của nguồn này
+	Uncertain   []string   // Các mục của nguồn này cố tình không nâng lên structured + lý do (chẩn đoán)
+	Degraded    bool       // Nguồn này chuẩn hóa thất bại, đã hạ cấp thành raw preferences
 }
 
-// Payload 返回注入 working_memory.user_rules 的形态：只暴露 structured + preferences。
-// 即便都为空也返回稳定结构，避免 LLM 看到 user_rules=null 走异常分支。
+// Payload trả về hình thái tiêm vào working_memory.user_rules: chỉ bộc lộ structured + preferences.
+// Ngay cả khi đều rỗng vẫn trả về cấu trúc ổn định, tránh việc LLM thấy user_rules=null đi vào nhánh bất thường.
 func (s Snapshot) Payload() map[string]any {
 	return map[string]any{
 		"structured":  s.Structured,
@@ -59,13 +59,13 @@ func (s Snapshot) Payload() map[string]any {
 	}
 }
 
-// BuildSnapshot 把按优先级（低→高）排好的候选确定性合并成快照。
+// BuildSnapshot gộp xác định các ứng viên đã được xếp theo độ ưu tiên (thấp→cao) thành điểm khôi phục.
 //
-// 合并规则（全部 Go 侧确定性，不交给 LLM）：
-//   - structured：按字段覆盖，高优先级来源覆盖低优先级；fatigue_words 按词叠加
-//   - preferences：不覆盖，按来源顺序拼接（高优先级在后），带来源标题
-//   - 空值/零值视为字段缺失，不覆盖已有值（sanitizeStructured）
-//   - 任一来源 Degraded → 快照 status=degraded
+// Quy tắc gộp (tất cả tính xác định bên phía Go, không giao cho LLM):
+//   - structured: ghi đè theo trường, nguồn ưu tiên cao ghi đè ưu tiên thấp; fatigue_words cộng dồn theo từ
+//   - preferences: không ghi đè, nối theo thứ tự nguồn (ưu tiên cao ở sau), kèm tiêu đề nguồn
+//   - giá trị rỗng/giá trị 0 được coi là thiếu trường, không ghi đè giá trị đã có (sanitizeStructured)
+//   - Bất kỳ nguồn nào Degraded → status điểm khôi phục = degraded
 func BuildSnapshot(cands []Candidate) Snapshot {
 	snap := Snapshot{
 		Version: SnapshotVersion,
@@ -107,10 +107,10 @@ func BuildSnapshot(cands []Candidate) Snapshot {
 	return snap
 }
 
-// OverlaySnapshot 把一个高优先级候选叠加到已有快照上（候选胜出）。
+// OverlaySnapshot gộp một ứng viên ưu tiên cao đè lên điểm khôi phục hiện có (ứng viên thắng).
 //
-// 用于运行中 Arbiter rules 动作：不重新归一化所有来源，只把新规则覆盖进当前快照——
-// structured 按字段覆盖、preferences 追加一段、sources/uncertain 累加、降级传播。
+// Dùng cho hành động rules của Trọng tài lúc chạy: không chuẩn hóa lại mọi nguồn, chỉ ghi đè quy tắc mới vào điểm khôi phục hiện tại ——
+// structured ghi đè theo trường, preferences nối thêm một đoạn, sources/uncertain cộng dồn, lan truyền hạ cấp.
 func OverlaySnapshot(base Snapshot, cand Candidate) Snapshot {
 	out := base
 	out.Version = SnapshotVersion
@@ -150,8 +150,8 @@ func OverlaySnapshot(base Snapshot, cand Candidate) Snapshot {
 	return out
 }
 
-// mergeFatigueWords 按词叠加疲劳词阈值，src 覆盖 dst 中的同词阈值（就近优先）。
-// 让用户只需新增少量疲劳词，而不必重列内置基线。
+// mergeFatigueWords cộng dồn ngưỡng từ mệt mỏi theo từ, src ghi đè ngưỡng cùng từ trong dst (ưu tiên cái gần hơn).
+// Giúp người dùng chỉ cần thêm một lượng nhỏ từ mệt mỏi, mà không cần liệt kê lại đường cơ sở tích hợp sẵn.
 func mergeFatigueWords(dst, src map[string]int) map[string]int {
 	if len(src) == 0 {
 		return dst
@@ -172,7 +172,7 @@ func cloneFatigue(m map[string]int) map[string]int {
 	return out
 }
 
-// SystemDefaults 是代码内置的机械基线（最低优先级来源），不走 LLM 归一化。
+// SystemDefaults là đường cơ sở máy móc tích hợp sẵn trong mã nguồn (nguồn ưu tiên thấp nhất), không qua LLM chuẩn hóa.
 //
 // Giá trị gốc chuyển từ front matter của assets/rules/default.md cũ, đã bản địa hóa sang tiếng Việt.
 // Căn cứ ngưỡng giữ nguyên: từ mệt mỏi đoạn sau (như một / im lặng / không nói gì / X nhịp hơi) đến từ
@@ -183,7 +183,7 @@ func SystemDefaults() Candidate {
 	return Candidate{
 		Source: "system_defaults",
 		Structured: Structured{
-			// 定长固定串的 AI 套句；checker 字面子串匹配，带变量的模式（不是X而是Y）归语义层。
+			// Câu AI rập khuôn có độ dài cố định; checker khớp chuỗi con theo nghĩa đen, các mẫu có biến (không phải X mà là Y) thuộc về lớp ngữ nghĩa.
 			ForbiddenPhrases: []string{"một mức độ nào đó", "đáng chú ý là", "không hiểu vì sao", "trăm mối cảm xúc"},
 			FatigueWords: map[string]int{
 				"không khỏi": 1, "như lại": 1, "tựa hồ": 2, "ngoài ra": 1, "tuy nhiên": 2,
@@ -194,8 +194,8 @@ func SystemDefaults() Candidate {
 	}
 }
 
-// sanitizeStructured 落实"空值/零值=字段缺失"：归一化器可能吐 genre:"" 这类占位
-// （原型实测），必须当作未声明，避免污染合并与机械检查。
+// sanitizeStructured thực hiện "giá trị rỗng/giá trị 0 = thiếu trường": bộ chuẩn hóa có thể nhả ra placeholder kiểu genre:"" 
+// (thực chứng nguyên mẫu), phải coi như chưa khai báo, tránh làm ô nhiễm việc gộp và kiểm tra máy móc.
 func sanitizeStructured(s Structured) Structured {
 	out := Structured{}
 	if g := strings.TrimSpace(s.Genre); g != "" {

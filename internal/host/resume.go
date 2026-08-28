@@ -16,28 +16,28 @@ import (
 func upgradeProject(st *storepkg.Store) error {
 	version, err := st.LoadProjectFormatVersion()
 	if err != nil {
-		return fmt.Errorf("读取项目格式版本: %w", err)
+		return fmt.Errorf("đọc phiên bản định dạng dự án: %w", err)
 	}
 	if version > storepkg.CurrentProjectFormatVersion {
-		return fmt.Errorf("项目格式版本 v%d 高于当前程序支持的 v%d，请升级 ainovel-cli", version, storepkg.CurrentProjectFormatVersion)
+		return fmt.Errorf("phiên bản định dạng dự án v%d cao hơn v%d mà chương trình hiện tại hỗ trợ, vui lòng nâng cấp ainovel-cli", version, storepkg.CurrentProjectFormatVersion)
 	}
 	for version < storepkg.CurrentProjectFormatVersion {
 		next := version + 1
 		switch version {
 		case storepkg.LegacyProjectFormatVersion:
 			if err := migrateLegacyBook(st); err != nil {
-				return fmt.Errorf("升级项目数据 v%d→v%d: %w", version, next, err)
+				return fmt.Errorf("nâng cấp dữ liệu dự án v%d→v%d: %w", version, next, err)
 			}
 			if err := revision.MigrateLegacyBaseline(st); err != nil {
-				return fmt.Errorf("升级项目数据 v%d→v%d: %w", version, next, err)
+				return fmt.Errorf("nâng cấp dữ liệu dự án v%d→v%d: %w", version, next, err)
 			}
 		default:
-			return fmt.Errorf("不支持从项目格式 v%d 升级", version)
+			return fmt.Errorf("không hỗ trợ nâng cấp từ định dạng dự án v%d", version)
 		}
 		if err := st.SaveProjectFormatVersion(next); err != nil {
-			return fmt.Errorf("保存项目格式版本 v%d: %w", next, err)
+			return fmt.Errorf("lưu phiên bản định dạng dự án v%d: %w", next, err)
 		}
-		slog.Info("项目数据升级完成", "module", "migration", "from", version, "to", next)
+		slog.Info("hoàn tất nâng cấp dữ liệu dự án", "module", "migration", "from", version, "to", next)
 		version = next
 	}
 	return nil
@@ -55,10 +55,10 @@ func migrateLegacyBook(st *storepkg.Store) error {
 		}
 	}
 	if err := st.Book.Save(*book); err != nil {
-		return fmt.Errorf("保存旧作品信息: %w", err)
+		return fmt.Errorf("lưu thông tin tác phẩm cũ: %w", err)
 	}
 	if _, err := st.Checkpoints.AppendArtifact(domain.GlobalScope(), "book", "meta/book.json"); err != nil {
-		return fmt.Errorf("记录旧作品信息: %w", err)
+		return fmt.Errorf("ghi lại thông tin tác phẩm cũ: %w", err)
 	}
 	return nil
 }
@@ -69,13 +69,13 @@ func loadLegacyBook(st *storepkg.Store) (*domain.BookMetadata, error) {
 		return nil, nil
 	}
 	if err != nil {
-		return nil, fmt.Errorf("读取旧作品进度: %w", err)
+		return nil, fmt.Errorf("đọc tiến độ tác phẩm cũ: %w", err)
 	}
 	var legacy struct {
 		NovelName string `json:"novel_name"`
 	}
 	if err := json.Unmarshal(data, &legacy); err != nil {
-		return nil, fmt.Errorf("解析旧作品进度: %w", err)
+		return nil, fmt.Errorf("phân tích tiến độ tác phẩm cũ: %w", err)
 	}
 	legacy.NovelName = strings.TrimSpace(legacy.NovelName)
 	if legacy.NovelName == "" {
@@ -83,21 +83,18 @@ func loadLegacyBook(st *storepkg.Store) (*domain.BookMetadata, error) {
 	}
 	premise, err := st.Outline.LoadPremise()
 	if err != nil {
-		return nil, fmt.Errorf("读取旧故事前提: %w", err)
+		return nil, fmt.Errorf("đọc tiền đề câu chuyện cũ: %w", err)
 	}
 	title := legacyPremiseTitle(premise)
 	if title == "" {
-		return nil, fmt.Errorf("旧故事前提缺少书名标题")
+		return nil, fmt.Errorf("tiền đề câu chuyện cũ thiếu tiêu đề sách")
 	}
 	if title != legacy.NovelName {
-		return nil, fmt.Errorf("旧作品书名冲突: progress=%q, premise=%q", legacy.NovelName, title)
+		return nil, fmt.Errorf("trùng lặp tên sách tác phẩm cũ: progress=%q, premise=%q", legacy.NovelName, title)
 	}
 	synopsis := legacyPremiseSection(premise, "Xung đột cốt lõi")
 	if synopsis == "" {
-		synopsis = legacyPremiseSection(premise, "核心冲突") // premise tiếng Trung của bản gốc
-	}
-	if synopsis == "" {
-		return nil, fmt.Errorf("旧故事前提缺少“核心冲突”，无法生成作品简介")
+		return nil, fmt.Errorf("tiền đề câu chuyện cũ thiếu \"Xung đột cốt lõi\", không thể tạo tóm tắt tác phẩm")
 	}
 	return &domain.BookMetadata{Title: title, Synopsis: synopsis}, nil
 }
@@ -131,9 +128,9 @@ func legacyPremiseSection(premise, heading string) string {
 	return strings.TrimSpace(strings.Join(body, "\n"))
 }
 
-// resumeLabel 基于事实生成 Resume 的 UI 标签。
-// label 为空表示无可恢复状态（应走新建）。恢复本身不需要任何 prompt——
-// Engine 只恢复事实：从 store 重算路由续跑（docs/engine-rfc.md §6）。
+// resumeLabel dựa trên thực tế để sinh ra nhãn UI cho Resume.
+// label rỗng biểu thị không có trạng thái có thể khôi phục (nên đi theo tạo mới). Bản thân việc khôi phục không cần bất kỳ prompt nào——
+// Engine chỉ khôi phục thực tế: từ store tính toán lại định tuyến để chạy tiếp (docs/engine-rfc.md §6).
 func resumeLabel(store *storepkg.Store) (string, error) {
 	progress, err := store.Progress.Load()
 	if err != nil && !os.IsNotExist(err) {
@@ -145,33 +142,33 @@ func resumeLabel(store *storepkg.Store) (string, error) {
 	return describeResume(store, progress)
 }
 
-// describeResume 生成人类可读的恢复标签；不影响 Engine 路由。
-// 所有执行路由由 Flow Router 按事实推导；这里仅面向 UI 的 "恢复：xxx"。
+// describeResume sinh ra nhãn khôi phục mà con người có thể đọc; không ảnh hưởng đến định tuyến của Engine.
+// Mọi định tuyến thực thi đều do Flow Router suy luận dựa trên thực tế; ở đây chỉ hướng tới UI "Khôi phục: xxx".
 func describeResume(store *storepkg.Store, progress *domain.Progress) (string, error) {
 	switch progress.Phase {
 	case domain.PhasePremise, domain.PhaseOutline:
-		return fmt.Sprintf("恢复：规划阶段（%s）", progress.Phase), nil
+		return fmt.Sprintf("Khôi phục: Giai đoạn quy hoạch (%s)", progress.Phase), nil
 	case domain.PhaseWriting:
-		// 优先级与 Router 的决策优先级对齐，让 label 与即将派发的指令一致。
+		// Độ ưu tiên khớp với độ ưu tiên quyết định của Router, để label đồng bộ với chỉ thị sắp phân phối.
 		pending, err := store.Signals.LoadPendingCommit()
 		if err != nil {
-			return "", fmt.Errorf("读取待恢复提交: %w", err)
+			return "", fmt.Errorf("đọc commit đợi khôi phục: %w", err)
 		}
 		if pending != nil {
-			return fmt.Sprintf("恢复：第 %d 章提交中断", pending.Chapter), nil
+			return fmt.Sprintf("Khôi phục: Chương %d commit bị gián đoạn", pending.Chapter), nil
 		}
 		if len(progress.PendingRewrites) > 0 {
-			verb := "重写"
+			verb := "Làm lại"
 			if progress.Flow == domain.FlowPolishing {
-				verb = "打磨"
+				verb = "Đánh bóng"
 			}
-			return fmt.Sprintf("%s恢复：%d 章待处理", verb, len(progress.PendingRewrites)), nil
+			return fmt.Sprintf("Khôi phục %s: %d chương đang chờ xử lý", verb, len(progress.PendingRewrites)), nil
 		}
 		if progress.Flow == domain.FlowReviewing {
-			return "恢复：审阅中断", nil
+			return "Khôi phục: Đọc kiểm gián đoạn", nil
 		}
 		if progress.InProgressChapter > 0 {
-			return fmt.Sprintf("恢复：第 %d 章进行中", progress.InProgressChapter), nil
+			return fmt.Sprintf("Khôi phục: Chương %d đang tiến hành", progress.InProgressChapter), nil
 		}
 		label, err := describeArcEndLabel(store, progress)
 		if err != nil {
@@ -180,13 +177,13 @@ func describeResume(store *storepkg.Store, progress *domain.Progress) (string, e
 		if label != "" {
 			return label, nil
 		}
-		return fmt.Sprintf("恢复：从第 %d 章继续", progress.NextChapter()), nil
+		return fmt.Sprintf("Khôi phục: Tiếp tục từ chương %d", progress.NextChapter()), nil
 	}
-	return "恢复", nil
+	return "Khôi phục", nil
 }
 
-// describeArcEndLabel 为弧末/卷末的多种中间状态生成贴合 UI 的标签。
-// 与 flow.Route 的弧末分支保持同序，保证 label 与 Router 首条指令对齐。
+// describeArcEndLabel tạo nhãn thân thiện với UI cho nhiều trạng thái trung gian ở cuối arc/cuối tập.
+// Giữ nguyên thứ tự nhánh cuối arc của flow.Route, đảm bảo label khớp với chỉ thị đầu tiên của Router.
 func describeArcEndLabel(store *storepkg.Store, progress *domain.Progress) (string, error) {
 	if !progress.Layered || len(progress.CompletedChapters) == 0 {
 		return "", nil
@@ -194,7 +191,7 @@ func describeArcEndLabel(store *storepkg.Store, progress *domain.Progress) (stri
 	lastCh := progress.CompletedChapters[len(progress.CompletedChapters)-1]
 	boundary, err := store.Outline.CheckArcBoundary(lastCh)
 	if err != nil {
-		return "", fmt.Errorf("检查弧边界: %w", err)
+		return "", fmt.Errorf("kiểm tra ranh giới arc: %w", err)
 	}
 	if boundary == nil || !boundary.IsArcEnd {
 		return "", nil
@@ -202,30 +199,30 @@ func describeArcEndLabel(store *storepkg.Store, progress *domain.Progress) (stri
 	vol, arc := boundary.Volume, boundary.Arc
 	hasArcReview, err := store.World.HasArcReview(lastCh)
 	if err != nil {
-		return "", fmt.Errorf("读取弧评审: %w", err)
+		return "", fmt.Errorf("đọc review arc: %w", err)
 	}
 	hasArcSummary, err := store.Summaries.HasArcSummary(vol, arc)
 	if err != nil {
-		return "", fmt.Errorf("读取弧摘要: %w", err)
+		return "", fmt.Errorf("đọc tóm tắt arc: %w", err)
 	}
 	hasVolumeSummary := false
 	if boundary.IsVolumeEnd {
 		hasVolumeSummary, err = store.Summaries.HasVolumeSummary(vol)
 		if err != nil {
-			return "", fmt.Errorf("读取卷摘要: %w", err)
+			return "", fmt.Errorf("đọc tóm tắt tập: %w", err)
 		}
 	}
 	switch {
 	case !hasArcReview:
-		return fmt.Sprintf("恢复：弧末评审待处理（V%d A%d）", vol, arc), nil
+		return fmt.Sprintf("Khôi phục: Đợi review cuối arc (V%d A%d)", vol, arc), nil
 	case !hasArcSummary:
-		return fmt.Sprintf("恢复：弧摘要待生成（V%d A%d）", vol, arc), nil
+		return fmt.Sprintf("Khôi phục: Đợi tạo tóm tắt arc (V%d A%d)", vol, arc), nil
 	case boundary.IsVolumeEnd && !hasVolumeSummary:
-		return fmt.Sprintf("恢复：卷摘要待生成（V%d）", vol), nil
+		return fmt.Sprintf("Khôi phục: Đợi tạo tóm tắt tập (V%d)", vol), nil
 	case boundary.NeedsExpansion && boundary.NextArc > 0:
-		return fmt.Sprintf("恢复：待展开下一弧（V%d A%d）", boundary.NextVolume, boundary.NextArc), nil
+		return fmt.Sprintf("Khôi phục: Đợi mở rộng arc tiếp theo (V%d A%d)", boundary.NextVolume, boundary.NextArc), nil
 	case boundary.NeedsNewVolume:
-		return fmt.Sprintf("恢复：待决策下一卷（V%d 末）", vol), nil
+		return fmt.Sprintf("Khôi phục: Đợi quyết định tập tiếp theo (Cuối V%d)", vol), nil
 	}
 	return "", nil
 }

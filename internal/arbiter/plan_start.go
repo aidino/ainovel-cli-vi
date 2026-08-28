@@ -10,10 +10,10 @@ import (
 	"github.com/voocel/ainovel-cli/internal/llmcontract"
 )
 
-// PlanStartDecision 启动裁定:选规划师并产出(必要时扩充过的)任务文本。
+// PlanStartDecision quyết định khởi động: chọn quy hoạch sư và tạo ra văn bản nhiệm vụ (đã được mở rộng nếu cần).
 type PlanStartDecision struct {
 	Planner string `json:"planner"` // architect_long | architect_short
-	Task    string `json:"task"`    // 交给规划师的完整任务(含扩充后的需求)
+	Task    string `json:"task"`    // nhiệm vụ hoàn chỉnh giao cho quy hoạch sư (bao gồm yêu cầu đã được mở rộng)
 	Reason  string `json:"reason"`
 }
 
@@ -30,7 +30,7 @@ func (d *PlanStartDecision) Validate() error {
 	return nil
 }
 
-// planStartContract 紧邻 PlanStartDecision:字段全 required,planner 是封闭枚举。
+// planStartContract nằm kề PlanStartDecision: các trường đều required, planner là enum đóng.
 var planStartContract = llmcontract.Contract{
 	Name:        "arbiter_plan_start",
 	Description: "Phán quyết khởi động: chọn quy hoạch sư và sinh văn bản nhiệm vụ đầy đủ",
@@ -41,15 +41,15 @@ var planStartContract = llmcontract.Contract{
 	),
 }
 
-// planStartPayload 是 plan_start 的用户负载(事实即输入,无 store 状态——新书)。
+// planStartPayload là tải trọng người dùng của plan_start (sự kiện là đầu vào, không có trạng thái store——sách mới).
 type planStartPayload struct {
 	Requirement string `json:"requirement"`
 	Style       string `json:"style,omitempty"`
 }
 
-// DecidePlanStart 启动裁定:根据用户需求选规划师;需求过短(<20 字)时在 task 里
-// 自主补充差异化方向、目标读者与核心消费点、至少一个非常规钩子。
-// 失败语义:返回 error → 调用方显式报错中止启动(启动期用户在场,报错优于猜测)。
+// DecidePlanStart phán quyết khởi động: dựa vào nhu cầu của người dùng để chọn quy hoạch sư; khi nhu cầu quá ngắn (< 20 chữ),
+// sẽ tự động bổ sung phương hướng dị biệt hóa, độc giả mục tiêu, điểm tiêu thụ cốt lõi, và ít nhất một cái móc phi truyền thống vào task.
+// Ngữ nghĩa thất bại: trả về error → caller báo lỗi rõ ràng và dừng khởi động (giai đoạn khởi động có người dùng tại chỗ, báo lỗi tốt hơn là đoán).
 func DecidePlanStart(ctx context.Context, model agentcore.ChatModel, systemPrompt, requirement, style string) (PlanStartDecision, error) {
 	payload, err := marshalPayload(planStartPayload{Requirement: requirement, Style: style})
 	if err != nil {

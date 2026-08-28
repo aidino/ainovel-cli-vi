@@ -8,9 +8,9 @@ import (
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
-// requireAggregateTarget 将 Editor 的新聚合写入绑定到 Router 当前唯一待补的工件。
-// 目标完全由已落盘事实推导，不依赖任务文案，也不信任模型自填的章节/卷弧号；
-// 已落盘同内容的幂等收尾由各工具在调用本函数前识别。
+// requireAggregateTarget Ràng buộc ghi mới tổng hợp của Editor vào công cụ chờ bù duy nhất hiện tại của Router.
+// Mục tiêu hoàn toàn suy ra từ sự thật đã lưu, không phụ thuộc vào văn bản nhiệm vụ, cũng không tin số chương/tập arc do mô hình tự điền;
+// Kết thúc idempotent có cùng nội dung đã lưu được các công cụ nhận diện trước khi gọi hàm này.
 func requireAggregateTarget(st *store.Store, kind flow.AggregateKind, volume, arc, endChapter int) error {
 	state, err := flow.LoadState(st)
 	if err != nil {
@@ -27,7 +27,7 @@ func requireAggregateTarget(st *store.Store, kind flow.AggregateKind, volume, ar
 	case flow.AggregateVolumeSummary:
 		targetMismatch = targetMismatch || due.Volume != volume
 	case flow.AggregateGlobalReview:
-		// 全局评审没有卷弧坐标，只由 kind 和截止章节定位。
+		// Đọc kiểm toàn cục không có tọa độ tập arc, chỉ định vị bởi kind và chương kết thúc.
 	}
 	endMismatch := endChapter > 0 && due.EndChapter != endChapter
 	if targetMismatch || endMismatch {

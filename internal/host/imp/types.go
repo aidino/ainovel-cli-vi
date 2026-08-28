@@ -1,25 +1,25 @@
-// Package imp 实现外部小说的分阶段语义导入管线（docs/import-pipeline.md）。
+// Package imp cài đặt đường ống import ngữ nghĩa phân giai đoạn của tiểu thuyết bên ngoài (docs/import-pipeline.md).
 //
-// 模型负责理解开放语义，代码负责坐标、覆盖、类型、哈希、顺序和幂等；全部语义产物在
-// 独立工作区（meta/import/）验证完成后，才发布到正式书籍状态。下一动作只从工件推导
-// （NextAction），不存会漂移的阶段枚举，恢复不依赖 from=N。
+// Model chịu trách nhiệm hiểu ngữ nghĩa mở, code chịu trách nhiệm tọa độ, phủ, kiểu, băm, thứ tự và lũy đẳng; tất cả sản phẩm ngữ nghĩa sau khi
+// được xác minh trong không gian làm việc độc lập (meta/import/) mới đăng lên trạng thái sách chính thức. Hành động tiếp theo chỉ được suy ra từ công kiện
+// (NextAction), không lưu enum giai đoạn sẽ bị trôi dạt, việc khôi phục không phụ thuộc from=N.
 package imp
 
 import "time"
 
-// Options 控制一次导入。恢复时字段可空，直接从活动工作区与已保存 Intent 推导。
+// Options kiểm soát một lần import. Khi khôi phục các trường có thể rỗng, suy ra trực tiếp từ không gian làm việc hoạt động và Intent đã lưu.
 type Options struct {
-	SourcePath      string // 新导入必填；恢复时可空
-	AutoConfirm     bool   // --yes：覆盖校验通过后自动接受切分
-	StoryResolution string // --story=open|closed：仅 synthesis 返回 uncertain 时预选
-	ContinueAfter   bool   // --continue：不创建导入完成 Hold
-	Guidance        string // --guide：自然语言切分指导，落盘工作区后自然使旧切分失配重识别
-	// AcceptSegmentation：TUI 预览后的显式人工确认（y）。一次性放行当前切分，不写 intent；
-	// 与 --yes 的区别：--yes 是未看预览的盲授权，不放行带容错说明（Notes）的切分，y 是看过预览的裁定。
+	SourcePath      string // bắt buộc điền cho import mới; khi khôi phục có thể rỗng
+	AutoConfirm     bool   // --yes: tự động chấp nhận cắt sau khi qua xác minh phủ
+	StoryResolution string // --story=open|closed: chọn trước chỉ khi synthesis trả về uncertain
+	ContinueAfter   bool   // --continue: không tạo Hold import hoàn thành
+	Guidance        string // --guide: Hướng dẫn cắt bằng ngôn ngữ tự nhiên, sau khi lưu vào không gian làm việc sẽ tự nhiên làm cho việc cắt cũ không khớp để nhận diện lại
+	// AcceptSegmentation: Xác nhận thủ công rõ ràng sau khi xem trước ở TUI (y). Cho qua lần cắt hiện tại một lần, không ghi intent;
+	// Sự khác biệt với --yes: --yes là ủy quyền mù quáng không xem trước, không cho qua các bản cắt có chú thích dung sai (Notes), y là phán quyết sau khi xem trước.
 	AcceptSegmentation bool
 }
 
-// intent 从 Options 抽取需持久化的用户授权。
+// intent trích xuất quyền của người dùng cần lưu trữ từ Options.
 func (o Options) intent() Intent {
 	return Intent{
 		Version:             workspaceSchemaVersion,
@@ -29,7 +29,7 @@ func (o Options) intent() Intent {
 	}
 }
 
-// Stage 表示导入流程的当前阶段，仅用于 UI 展示，不是恢复事实源（RFC §14.1）。
+// Stage biểu thị giai đoạn hiện tại của quy trình import, chỉ dùng để hiển thị UI, không phải nguồn sự thật khôi phục (RFC §14.1).
 type Stage string
 
 const (
@@ -45,16 +45,16 @@ const (
 	StageError                Stage = "error"
 )
 
-// Event 是导入流程对外发出的进度事件。Event 是投影，不参与恢复。
+// Event là sự kiện tiến độ mà quy trình import phát ra ngoài. Event là hình chiếu, không tham gia khôi phục.
 type Event struct {
 	Time      time.Time
 	Stage     Stage
-	Current   int       // 章节/区间进度
-	Total     int       // 总数
-	Message   string    // 人类可读描述
-	Level     string    // ""=普通进度；"warn"=退避重试/校验重问等警示状态
-	Key       string    // 非空时 UI 对同 Key 连续事件原地更新（如 7 次退避在一行变动），对齐事件面板 ID 机制
-	RetryAt   time.Time // 非零 = 下次重试的截止时刻；UI 据此逐秒倒计时渲染，到点即清（请求已在途）
-	Err       error     // StageError 时携带
-	Continued bool      // StageDone 时由 Host 置位：是否已自动接力启动 Engine（--continue × auto）
+	Current   int       // tiến độ chương/khoảng
+	Total     int       // tổng số
+	Message   string    // mô tả có thể đọc được bằng người
+	Level     string    // ""=tiến độ bình thường; "warn"=trạng thái cảnh báo như thử lại lùi bước/hỏi lại xác minh
+	Key       string    // Khi không rỗng UI sẽ cập nhật tại chỗ các sự kiện liên tiếp có cùng Key (ví dụ 7 lần thử lại biến động trên một dòng), căn chỉnh cơ chế ID của bảng sự kiện
+	RetryAt   time.Time // khác không = thời điểm kết thúc thử lại lần sau; UI dựa vào đây để render đếm ngược từng giây, đến giờ thì xóa (yêu cầu đang trên đường)
+	Err       error     // mang theo khi StageError
+	Continued bool      // Được Host đặt khi StageDone: Có tự động tiếp sức khởi động Engine chưa (--continue × auto)
 }

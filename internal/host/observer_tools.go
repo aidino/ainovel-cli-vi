@@ -9,8 +9,8 @@ import (
 	"github.com/voocel/agentcore"
 )
 
-// handleToolUpdate 处理 Worker 的进度中继(ProgressPayload):TOOL 行、流式正文、
-// thinking、retry、context。Engine 经 observer.workerProgress 喂入。
+// handleToolUpdate xử lý chuyển tiếp tiến độ của Worker (ProgressPayload): dòng TOOL, chính văn stream,
+// thinking, retry, context. Engine được observer.workerProgress nạp vào.
 func (o *observer) handleToolUpdate(ev agentcore.Event) {
 	if ev.Progress == nil {
 		return
@@ -21,9 +21,9 @@ func (o *observer) handleToolUpdate(ev agentcore.Event) {
 			o.handleSubagentDelta(ev.Progress)
 		}
 	case agentcore.ProgressToolStart:
-		// Worker 内部的工具调用（如 writer → draft_chapter）。
-		// 注意：TOOL 行可能已经在流式识别阶段被 handleSubagentDelta 提前发出。
-		// 此处：若已发 → 只更新 summary（args 此时完整，能显示 "tool(第N章)"）；否则正常发。
+		// Lệnh gọi công cụ bên trong Worker (như writer → draft_chapter).
+		// Lưu ý: Dòng TOOL có thể đã được handleSubagentDelta phát trước trong giai đoạn nhận diện stream.
+		// Ở đây: nếu đã phát → chỉ cập nhật summary (args lúc này đã đầy đủ, có thể hiển thị "tool(chương N)"); nếu không phát bình thường.
 		if ev.Progress.Agent == "" || ev.Progress.Tool == "" {
 			break
 		}
@@ -37,10 +37,10 @@ func (o *observer) handleToolUpdate(ev agentcore.Event) {
 			})
 			break
 		}
-		// 未提前发过 → 正常流程
-		// （非流式 tool args 的模型不会触发 ensureSubagentToolStarted，
-		// fallback header 必须在这条路径上补一次，否则 read_chapter 这类
-		// 无 extractor 的工具流式面板上就没有 ✻ 头部，紧贴前面思考一段。）
+		// Chưa phát trước → luồng bình thường
+		// (Model dùng tool args không stream sẽ không kích hoạt ensureSubagentToolStarted,
+		// fallback header bắt buộc phải bù một lần trên nhánh này, nếu không các công cụ không có extractor
+		// như read_chapter sẽ không có phần đầu ✻ trên panel stream, dính sát vào đoạn thinking phía trước.)
 		id := nextEventID()
 		o.toolStarts[ev.Progress.Agent] = &activeCall{id: id, start: time.Now(), summary: toolName, depth: 1}
 		o.emitAndLog(Event{
@@ -68,8 +68,8 @@ func (o *observer) handleToolUpdate(ev agentcore.Event) {
 			return
 		}
 		delete(o.toolStarts, ev.Progress.Agent)
-		// 同 ID 更新事件：TUI 按 ID 定位原 TOOL 行，回填 FinishedAt / Duration。
-		// Summary / Depth 也带上，保证 runtime queue replay 时能还原完整行。
+		// Cập nhật sự kiện cùng ID: TUI định vị dòng TOOL ban đầu theo ID, điền lại FinishedAt / Duration.
+		// Summary / Depth cũng được mang theo, đảm bảo có thể khôi phục lại nguyên dòng khi runtime queue replay.
 		finishEv := Event{
 			ID:         call.id,
 			Time:       call.start,
@@ -86,8 +86,8 @@ func (o *observer) handleToolUpdate(ev agentcore.Event) {
 	case agentcore.ProgressThinking:
 		o.handleThinkingProgress(ev)
 	case agentcore.ProgressRetry:
-		// 只展示上游明确报告的实际等待时间，避免本地估算与真实退避节奏不一致。
-		// Summary 不嵌静态延时——UI 依 RetryAt 逐秒倒计时；Detail/日志保留发出时的延时快照。
+		// Chỉ hiển thị thời gian chờ thực tế do upstream báo cáo rõ ràng, tránh chênh lệch giữa ước tính cục bộ và nhịp độ lùi lại thực sự.
+		// Summary không nhúng thời gian chờ tĩnh——UI đếm ngược từng giây theo RetryAt; Detail/log giữ lại snapshot thời gian chờ lúc phát ra.
 		delay := retryProgressDelay(ev.Progress)
 		retryEv := Event{
 			ID:       o.retryEventID(ev.Progress.Agent, ev.Progress.Attempt),
@@ -111,12 +111,12 @@ func (o *observer) handleToolUpdate(ev agentcore.Event) {
 		if msg == "" {
 			msg = "unknown error"
 		}
-		// 如果有进行中的 TOOL 行，原地标记为失败并把完整错误放进 Detail。
-		// 同一次失败只生成一个 ERROR 级事件，避免 TOOL 失败态与附加 ERROR
-		// 详情在 tui.log 中被误读成两次独立故障。
+		// Nếu có dòng TOOL đang diễn ra, đánh dấu tại chỗ là thất bại và đưa toàn bộ lỗi vào Detail.
+		// Cùng một lỗi chỉ sinh ra một sự kiện cấp ERROR, tránh việc trạng thái TOOL thất bại và chi tiết ERROR bổ sung
+		// bị đọc nhầm thành hai lỗi độc lập trong tui.log.
 		if call, ok := o.toolStarts[ev.Progress.Agent]; ok {
 			delete(o.toolStarts, ev.Progress.Agent)
-			detail := fmt.Sprintf("%s 错误: %s", ev.Progress.Tool, msg)
+			detail := fmt.Sprintf("%s lỗi: %s", ev.Progress.Tool, msg)
 			finishEv := Event{
 				ID:         call.id,
 				Time:       call.start,
@@ -124,7 +124,7 @@ func (o *observer) handleToolUpdate(ev agentcore.Event) {
 				Failed:     true,
 				Category:   "TOOL",
 				Agent:      ev.Progress.Agent,
-				Summary:    fmt.Sprintf("%s 错误: %s", call.summary, truncate(msg, 100)),
+				Summary:    fmt.Sprintf("%s lỗi: %s", call.summary, truncate(msg, 100)),
 				Detail:     detail,
 				Kind:       errorKind(nil, msg),
 				Level:      "error",
@@ -135,13 +135,13 @@ func (o *observer) handleToolUpdate(ev agentcore.Event) {
 			o.persistEvent(finishEv)
 			return
 		}
-		// 极少数缺失 start 的进度流无法原地更新，保留独立 ERROR 事件暴露故障。
+		// Số ít luồng tiến độ thiếu start không thể cập nhật tại chỗ, giữ lại sự kiện ERROR độc lập để phơi bày sự cố.
 		errEv := Event{
 			Time:     time.Now(),
 			Category: "ERROR",
 			Agent:    ev.Progress.Agent,
-			Summary:  fmt.Sprintf("%s 错误: %s", ev.Progress.Tool, truncate(msg, 100)),
-			Detail:   fmt.Sprintf("%s 错误: %s", ev.Progress.Tool, msg),
+			Summary:  fmt.Sprintf("%s lỗi: %s", ev.Progress.Tool, truncate(msg, 100)),
+			Detail:   fmt.Sprintf("%s lỗi: %s", ev.Progress.Tool, msg),
 			Kind:     errorKind(nil, msg),
 			Level:    "error",
 			Depth:    1,
@@ -185,10 +185,10 @@ func dispatchSummary(agent, task string) string {
 func dispatchDetail(task, reason string) string {
 	var parts []string
 	if strings.TrimSpace(reason) != "" {
-		parts = append(parts, "派发原因: "+reason)
+		parts = append(parts, "Lý do phân phối: "+reason)
 	}
 	if strings.TrimSpace(task) != "" {
-		parts = append(parts, "完整任务:\n"+task)
+		parts = append(parts, "Nhiệm vụ hoàn chỉnh:\n"+task)
 	}
 	return strings.Join(parts, "\n")
 }
@@ -303,7 +303,7 @@ func (o *observer) emitCallFinish(call *activeCall, category, agentName string, 
 	if failed {
 		detail = callErr.Error()
 		kind = errorKind(callErr, detail)
-		summary = fmt.Sprintf("%s 错误: %s", call.summary, truncate(detail, 100))
+		summary = fmt.Sprintf("%s lỗi: %s", call.summary, truncate(detail, 100))
 	}
 	finishEv := Event{
 		ID:         call.id,
@@ -340,7 +340,7 @@ func displayToolName(tool string, args json.RawMessage) string {
 			Chapter int `json:"chapter"`
 		}
 		if json.Unmarshal(args, &p) == nil && p.Chapter > 0 {
-			return fmt.Sprintf("%s(第%d章)", tool, p.Chapter)
+			return fmt.Sprintf("%s(chương %d)", tool, p.Chapter)
 		}
 	case "save_review":
 		var p struct {
@@ -352,12 +352,12 @@ func displayToolName(tool string, args json.RawMessage) string {
 			label := ""
 			switch p.Scope {
 			case "arc":
-				label = "本弧"
+				label = "arc này"
 			case "global":
-				label = "全局"
+				label = "toàn cục"
 			default:
 				if p.Chapter > 0 {
-					label = fmt.Sprintf("第%d章", p.Chapter)
+					label = fmt.Sprintf("chương %d", p.Chapter)
 				}
 			}
 			if label == "" {
@@ -373,7 +373,7 @@ func displayToolName(tool string, args json.RawMessage) string {
 			Chapter int `json:"chapter"`
 		}
 		if json.Unmarshal(args, &p) == nil && p.Chapter > 0 {
-			return fmt.Sprintf("%s(第%d章)", tool, p.Chapter)
+			return fmt.Sprintf("%s(chương %d)", tool, p.Chapter)
 		}
 	case "read_chapter":
 		var p struct {
@@ -384,11 +384,11 @@ func displayToolName(tool string, args json.RawMessage) string {
 		if json.Unmarshal(args, &p) == nil && p.Chapter > 0 {
 			suffix := ""
 			if p.Character != "" {
-				suffix = "·" + p.Character + "对话"
+				suffix = "·đối thoại " + p.Character
 			} else if p.Source == "draft" {
-				suffix = "·草稿"
+				suffix = "·bản thảo"
 			}
-			return fmt.Sprintf("%s(第%d章%s)", tool, p.Chapter, suffix)
+			return fmt.Sprintf("%s(chương %d%s)", tool, p.Chapter, suffix)
 		}
 	}
 	return tool

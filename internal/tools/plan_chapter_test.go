@@ -13,8 +13,8 @@ import (
 func planArgs(chapter int) json.RawMessage {
 	b, _ := json.Marshal(map[string]any{
 		"chapter":     chapter,
-		"title":       "测试章",
-		"goal":        "推进剧情",
+		"title":       "kiểm tra chương ",
+		"goal":        "đẩy tiến 剧情",
 		"conflict":    "外部阻力",
 		"hook":        "留下悬念",
 		"emotion_arc": "紧张到期待",
@@ -32,17 +32,17 @@ func TestPlanChapterRejectsUnexpandedLayeredChapter(t *testing.T) {
 	}
 	if err := st.Outline.SaveLayeredOutline([]domain.VolumeOutline{{
 		Index: 1,
-		Title: "第一卷",
+		Title: "第一tập",
 		Arcs: []domain.ArcOutline{{
 			Index: 1,
-			Title: "第一弧",
+			Title: "第一arc ",
 			Chapters: []domain.OutlineEntry{
 				{Chapter: 1, Title: "一"},
 				{Chapter: 2, Title: "二"},
 			},
 		}, {
 			Index:             2,
-			Title:             "第二弧",
+			Title:             "第二arc ",
 			EstimatedChapters: 3,
 		}},
 	}}); err != nil {
@@ -74,10 +74,10 @@ func TestPlanChapterAllowsExpandedLayeredChapter(t *testing.T) {
 	}
 	if err := st.Outline.SaveLayeredOutline([]domain.VolumeOutline{{
 		Index: 1,
-		Title: "第一卷",
+		Title: "第一tập",
 		Arcs: []domain.ArcOutline{{
 			Index: 1,
-			Title: "第一弧",
+			Title: "第一arc ",
 			Chapters: []domain.OutlineEntry{
 				{Chapter: 1, Title: "一"},
 				{Chapter: 2, Title: "二"},

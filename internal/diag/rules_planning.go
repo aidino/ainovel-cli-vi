@@ -7,7 +7,7 @@ import (
 	"github.com/voocel/ainovel-cli/internal/domain"
 )
 
-// StaleForeshadow 检测长期未推进的伏笔。
+// StaleForeshadow phát hiện chi tiết gieo mầm lâu không được đẩy mạnh.
 func StaleForeshadow(snap *Snapshot) []Finding {
 	if snap.Progress == nil || len(snap.Foreshadow) == 0 {
 		return nil
@@ -41,7 +41,7 @@ func StaleForeshadow(snap *Snapshot) []Finding {
 	}}
 }
 
-// CompassDrift 检测指南针长期未更新。
+// CompassDrift phát hiện la bàn lâu không cập nhật.
 func CompassDrift(snap *Snapshot) []Finding {
 	if snap.Progress == nil || !snap.Progress.Layered {
 		return nil
@@ -80,7 +80,7 @@ func CompassDrift(snap *Snapshot) []Finding {
 	}}
 }
 
-// OutlineExhausted 检测大纲耗尽但小说未完结。
+// OutlineExhausted phát hiện đại cương cạn nhưng tiểu thuyết chưa hoàn kết.
 func OutlineExhausted(snap *Snapshot) []Finding {
 	if snap.Progress == nil {
 		return nil
@@ -120,7 +120,7 @@ func OutlineExhausted(snap *Snapshot) []Finding {
 	}}
 }
 
-// MissingSummaries 检测已完成章节缺少摘要。
+// MissingSummaries phát hiện chương đã hoàn thành thiếu tóm tắt.
 func MissingSummaries(snap *Snapshot) []Finding {
 	if snap.Progress == nil || len(snap.Progress.CompletedChapters) == 0 {
 		return nil

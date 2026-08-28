@@ -47,7 +47,7 @@ func TestRuntimeStoreAppendTaskLog(t *testing.T) {
 	if err := store.Runtime.AppendTaskLog("task-1", domain.RuntimeTaskLogEntry{
 		Agent:   "writer",
 		Event:   "stream",
-		Summary: "开始落稿",
+		Summary: "bắt đầu 落稿",
 	}); err != nil {
 		t.Fatalf("AppendTaskLog 1: %v", err)
 	}
@@ -55,7 +55,7 @@ func TestRuntimeStoreAppendTaskLog(t *testing.T) {
 		Agent:   "writer",
 		Event:   "tool",
 		Tool:    "draft_chapter",
-		Summary: "正文输出完成",
+		Summary: "chính văn输出完成",
 	}); err != nil {
 		t.Fatalf("AppendTaskLog 2: %v", err)
 	}

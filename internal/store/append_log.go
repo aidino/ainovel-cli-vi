@@ -8,10 +8,10 @@ import (
 	"os"
 )
 
-// appendLog 管理只增长事实的 JSONL 存储。调用方负责持有 io.mu 写锁。
+// appendLog quản lý bộ lưu trữ JSONL dữ kiện chỉ tăng. Bên gọi chịu trách nhiệm giữ khóa ghi io.mu.
 //
-// 首次加载建立内存去重索引；正常追加只写新增记录。旧版 JSON 数组在第一次
-// 追加时一次性迁移，JSONL 成功落盘后再删除旧文件，因此任一中断窗口都可重放。
+// Lần tải đầu tiên thiết lập chỉ mục khử trùng lặp trong bộ nhớ; ghi thêm bình thường chỉ ghi các bản ghi mới. Mảng JSON cũ trong lần đầu tiên
+// ghi thêm sẽ được di trú một lần, sau khi JSONL được ghi thành công vào đĩa thì mới xóa tệp cũ, do đó bất kỳ cửa sổ ngắt quãng nào cũng có thể phát lại.
 type appendLog[T any] struct {
 	path       string
 	legacyPath string
@@ -76,8 +76,8 @@ func (l *appendLog[T]) allUnlocked(io *IO) ([]T, error) {
 	return l.cloneValues(l.values), nil
 }
 
-// appendUnlocked 返回实际新增的记录。即使旧文件清理失败，已经提交到 JSONL 的
-// 新记录也会返回，调用方可据此把派生投影标记为待修复；下一次重放只做清理。
+// appendUnlocked trả về các bản ghi mới thực sự. Ngay cả khi dọn dẹp tệp cũ thất bại, những gì đã cam kết vào JSONL
+// bản ghi mới cũng sẽ được trả về, bên gọi có thể dựa vào đó đánh dấu phép chiếu phái sinh là cần sửa chữa; lần phát lại tiếp theo chỉ dọn dẹp.
 func (l *appendLog[T]) appendUnlocked(io *IO, incoming []T) ([]T, error) {
 	if err := l.loadUnlocked(io); err != nil {
 		return nil, err
@@ -114,14 +114,14 @@ func (l *appendLog[T]) appendUnlocked(io *IO, incoming []T) ([]T, error) {
 			return nil, err
 		}
 		if err := io.AppendLineUnlocked(l.path, data); err != nil {
-			// 写入可能留下未换行的尾部。丢弃缓存，让下一次加载按提交协议
-			// 显式截断未提交尾部后再重放。
+			// Việc ghi có thể để lại phần đuôi chưa ngắt dòng. Hủy bộ đệm, để lần tải tiếp theo theo giao thức cam kết
+			// cắt cụt rõ ràng phần đuôi chưa cam kết rồi mới phát lại.
 			l.reset()
 			return nil, err
 		}
 	} else if len(incoming) > 0 && l.hasLog {
-		// 上一次追加可能已写完整记录，但 Sync 返回了错误。
-		// 幂等重放在确认成功前再次同步，不把“当前可读”误当成“已持久化”。
+		// Lần ghi thêm trước có thể đã ghi toàn bộ bản ghi, nhưng Sync trả về lỗi.
+		// Phát lại lũy đẳng sẽ đồng bộ lại trước khi xác nhận thành công, không nhầm lẫn "có thể đọc hiện tại" với "đã bền bỉ hóa".
 		if err := io.syncFileUnlocked(l.path); err != nil {
 			l.reset()
 			return nil, err
@@ -222,8 +222,8 @@ func decodeJSONLines[T any](path string, data []byte) ([]T, error) {
 	return values, nil
 }
 
-// committedJSONLinesUnlocked 丢弃协议上可证明未提交的尾部：只有以换行结束的
-// JSONL 记录才算提交。完整行损坏仍严格报错，不做猜测式修复。
+// committedJSONLinesUnlocked loại bỏ phần đuôi có thể chứng minh là chưa cam kết theo giao thức: chỉ có kết thúc bằng ngắt dòng
+// Bản ghi JSONL mới được tính là cam kết. Dòng hoàn chỉnh bị hỏng vẫn báo lỗi nghiêm ngặt, không sửa chữa kiểu phỏng đoán.
 func committedJSONLinesUnlocked(io *IO, path string) ([]byte, error) {
 	data, err := io.ReadFileUnlocked(path)
 	if err != nil {

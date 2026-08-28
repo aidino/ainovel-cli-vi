@@ -20,7 +20,7 @@ func TestLoadStateReturnsProgressReadError(t *testing.T) {
 		t.Fatal(err)
 	}
 	if _, err := LoadState(st); err == nil {
-		t.Fatal("损坏的 progress 必须阻止路由")
+		t.Fatal("bị hỏng progress phải ngăn chặn 路由")
 	}
 }
 
@@ -37,7 +37,7 @@ func TestLoadStateOnlyPrioritizesExternalRevisionFeedback(t *testing.T) {
 		t.Fatalf("Save progress: %v", err)
 	}
 	if err := st.Outline.AppendOutlineFeedback(storepkg.ChapterFeedback{
-		Chapter: 1, Deviation: "无明显偏离", Suggestion: "下一章继续推进",
+		Chapter: 1, Deviation: "无明显偏离", Suggestion: "下一chương 继续đẩy tiến ",
 	}); err != nil {
 		t.Fatalf("Append normal feedback: %v", err)
 	}
@@ -54,7 +54,7 @@ func TestLoadStateOnlyPrioritizesExternalRevisionFeedback(t *testing.T) {
 	}
 
 	if err := st.Outline.AppendOutlineFeedback(storepkg.ChapterFeedback{
-		Chapter: 1, StoryChanged: true, ChangeSummary: "用户改写了本章结局",
+		Chapter: 1, StoryChanged: true, ChangeSummary: "người dùng 改写了本chương 结局",
 	}); err != nil {
 		t.Fatalf("Append external revision feedback: %v", err)
 	}
@@ -70,7 +70,7 @@ func TestLoadStateOnlyPrioritizesExternalRevisionFeedback(t *testing.T) {
 	}
 }
 
-// helper：构造一个处于 Writing 阶段、分层模式的 Progress。
+// helper：构造一个处于 Writing giai đoạn、分层模式的 Progress。
 func writingProgress(completed []int, flow domain.FlowState) *domain.Progress {
 	return &domain.Progress{
 		Phase:             domain.PhaseWriting,
@@ -309,7 +309,7 @@ func TestRoute_NonLayeredOutlineExhaustedDispatchesArchitect(t *testing.T) {
 }
 
 func TestRoute_ArcEndNonLayeredSkipsBoundary(t *testing.T) {
-	// 非 Layered 模式即使 ArcBoundary 非 nil 也不走弧末分支
+	// 非 Layered 模式即使 ArcBoundary 非 nil 也不走arc 末分支
 	p := &domain.Progress{
 		Phase:             domain.PhaseWriting,
 		Flow:              domain.FlowWriting,
@@ -337,7 +337,7 @@ func contains(s, sub string) bool {
 	return false
 }
 
-// 规划期补齐:设定缺项 + 规划师可判定 → 照缺项续派同一规划师。
+// quy hoạch 期补齐:thiết lập 缺项 + nhà quy hoạch 可判定 → 照缺项续派同一nhà quy hoạch 。
 func TestRoute_PlanningFillDispatchesSamePlanner(t *testing.T) {
 	base := State{
 		Progress:          &domain.Progress{Phase: domain.PhaseOutline},
@@ -358,7 +358,7 @@ func TestRoute_PlanningFillDispatchesSamePlanner(t *testing.T) {
 	}
 	for _, want := range []string{"Bổ sung các mục thiếu", "characters", "world_rules", "save_foundation"} {
 		if !contains(got.Task, want) {
-			t.Errorf("补齐任务缺少 %q: %s", want, got.Task)
+			t.Errorf("补齐nhiệm vụ 缺少 %q: %s", want, got.Task)
 		}
 	}
 
@@ -366,16 +366,16 @@ func TestRoute_PlanningFillDispatchesSamePlanner(t *testing.T) {
 	bookMissing.PlanningTier = domain.PlanningTierLong
 	bookMissing.FoundationMissing = []string{"book"}
 	if got := Route(bookMissing); got == nil || !contains(got.Task, "save_book") {
-		t.Fatalf("book 缺失时应指示 save_book,got %+v", got)
+		t.Fatalf("book thiếu 时应指示 save_book,got %+v", got)
 	}
 
-	// 首次规划未落盘任何设定(tier 空)→ 选型是语义判断,交 LLM
+	// 首次quy hoạch 未落盘任何thiết lập (tier 空)→ 选型是语义phán đoán ,交 LLM
 	unknown := base
 	if got := Route(unknown); got != nil {
-		t.Fatalf("tier 未知时应交 LLM 裁定,got %+v", got)
+		t.Fatalf("tier chưa biết 时应交 LLM phán quyết ,got %+v", got)
 	}
 
-	// 缺项已齐 → 无补齐指令(等 phase 推进)
+	// thiếu项已齐 → 无补齐lệnh (等 phase đẩy tiến )
 	done := base
 	done.PlanningTier = domain.PlanningTierLong
 	done.FoundationMissing = nil

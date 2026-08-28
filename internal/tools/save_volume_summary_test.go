@@ -22,10 +22,10 @@ func setupVolumeSummaryStore(t *testing.T) *store.Store {
 		t.Fatal(err)
 	}
 	volumes := []domain.VolumeOutline{{
-		Index: 1, Title: "终卷", Final: true,
+		Index: 1, Title: "终tập", Final: true,
 		Arcs: []domain.ArcOutline{{
-			Index: 1, Title: "收官弧",
-			Chapters: []domain.OutlineEntry{{Title: "终章"}},
+			Index: 1, Title: "收官arc ",
+			Chapters: []domain.OutlineEntry{{Title: "终chương "}},
 		}},
 	}}
 	if err := s.Outline.SaveLayeredOutline(volumes); err != nil {
@@ -43,7 +43,7 @@ func setupVolumeSummaryStore(t *testing.T) *store.Store {
 	if err := s.World.SaveReview(domain.ReviewEntry{Chapter: 1, Scope: "arc", Verdict: "accept", Summary: "评审通过"}); err != nil {
 		t.Fatal(err)
 	}
-	if err := s.Summaries.SaveArcSummary(domain.ArcSummary{Volume: 1, Arc: 1, Title: "收官弧", Summary: "完成", KeyEvents: []string{"终局"}}); err != nil {
+	if err := s.Summaries.SaveArcSummary(domain.ArcSummary{Volume: 1, Arc: 1, Title: "收官arc ", Summary: "完成", KeyEvents: []string{"终局"}}); err != nil {
 		t.Fatal(err)
 	}
 	return s
@@ -52,7 +52,7 @@ func setupVolumeSummaryStore(t *testing.T) *store.Store {
 func TestSaveVolumeSummaryRejectsNonDueVolume(t *testing.T) {
 	s := setupVolumeSummaryStore(t)
 	args, err := json.Marshal(map[string]any{
-		"volume": 2, "title": "未来卷", "summary": "尚未发生", "key_events": []string{"事件"},
+		"volume": 2, "title": "未来tập", "summary": "尚未xảy ra ", "key_events": []string{"事件"},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -68,8 +68,8 @@ func TestSaveVolumeSummaryRejectsNonDueVolume(t *testing.T) {
 
 func TestReconcileLayeredCompletionRepairsInterruptedVolumeSummary(t *testing.T) {
 	s := setupVolumeSummaryStore(t)
-	// 模拟进程在卷摘要已经落盘、Progress.MarkComplete 尚未执行时退出。
-	if err := s.Summaries.SaveVolumeSummary(domain.VolumeSummary{Volume: 1, Title: "终卷", Summary: "全书收束", KeyEvents: []string{"终局"}}); err != nil {
+	// mô phỏng进程在tập摘要已经落盘、Progress.MarkComplete 尚未thực thi 时退出。
+	if err := s.Summaries.SaveVolumeSummary(domain.VolumeSummary{Volume: 1, Title: "终tập", Summary: "全书收束", KeyEvents: []string{"终局"}}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -96,7 +96,7 @@ func TestSaveVolumeSummaryRetriesCheckpointThenCompletes(t *testing.T) {
 		t.Fatal(err)
 	}
 	args, err := json.Marshal(map[string]any{
-		"volume": 1, "title": "终卷", "summary": "全书收束", "key_events": []string{"终局"},
+		"volume": 1, "title": "终tập", "summary": "全书收束", "key_events": []string{"终局"},
 	})
 	if err != nil {
 		t.Fatal(err)

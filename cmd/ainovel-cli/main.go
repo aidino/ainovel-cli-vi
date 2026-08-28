@@ -23,11 +23,11 @@ var (
 	date    = "unknown"
 )
 
-// headlessMode 记录本次是否 headless 启动，供 die 决定错误退出时是否暂停。
+// headlessMode ghi lại xem lần này có khởi động headless hay không, để die quyết định có tạm dừng khi thoát do lỗi hay không.
 var headlessMode bool
 
 func main() {
-	// 子命令在常规 flag 解析之前拦截：eval 是离线评测 harness，参数体系独立。
+	// Subcommand được chặn trước khi phân tích flag thông thường: eval là harness đánh giá offline, hệ thống tham số độc lập.
 	if len(os.Args) > 1 && os.Args[1] == "eval" {
 		os.Exit(eval.Command(os.Args[2:]))
 	}
@@ -49,7 +49,7 @@ func main() {
 	}
 	headlessMode = opts.Headless
 
-	// 首次引导
+	// Dẫn dắt lần đầu
 	if bootstrap.NeedsSetup() {
 		if opts.Headless {
 			die("error: chế độ headless không hỗ trợ dẫn dắt lần đầu, vui lòng chạy TUI một lần để hoàn tất cấu hình")
@@ -58,12 +58,12 @@ func main() {
 		if err != nil {
 			die("setup: %v", err)
 		}
-		// 引导完成后使用生成的配置继续
+		// Sau khi dẫn dắt hoàn tất, tiếp tục sử dụng cấu hình đã tạo
 		runWithConfig(setupCfg, opts, args)
 		return
 	}
 
-	// 加载配置
+	// Tải cấu hình
 	cfg, err := bootstrap.LoadConfig()
 	if err != nil {
 		die("config: %v", err)
@@ -72,9 +72,9 @@ func main() {
 	runWithConfig(cfg, opts, args)
 }
 
-// die 统一处理致命错误退出：打印到 stderr、落盘到 ~/.ainovel/last-error.log，
-// 并在交互式终端（非 headless）下暂停等待回车——双击启动时控制台会随进程退出
-// 立即关闭，不暂停的话错误一闪而过，正是 issue #37 里用户无从排查的根因。
+// die xử lý hợp nhất việc thoát khi có lỗi chí mạng: in ra stderr, ghi đĩa vào ~/.ainovel/last-error.log,
+// và tạm dừng chờ Enter ở terminal tương tác (không phải headless) —— khi khởi động bằng nhấp đúp, console sẽ đóng ngay
+// cùng tiến trình, nếu không tạm dừng thì lỗi lướt qua quá nhanh, chính là nguyên nhân gốc trong issue #37 khiến người dùng không biết đâu mà rà soát.
 func die(format string, args ...any) {
 	msg := fmt.Sprintf(format, args...)
 	fmt.Fprintln(os.Stderr, msg)
@@ -88,8 +88,8 @@ func die(format string, args ...any) {
 	os.Exit(1)
 }
 
-// stdinIsTerminal 判断标准输入是否连接到终端（字符设备）。双击启动 / 交互式终端
-// 为 true；管道、重定向、CI 为 false。零依赖近似，足够区分要不要暂停。
+// stdinIsTerminal phán đoán xem stdin có kết nối với terminal (thiết bị ký tự) hay không. Khởi động bằng nhấp đúp / terminal tương tác
+// là true; pipe, chuyển hướng, CI là false. Xấp xỉ không phụ thuộc, đủ để phân biệt có cần tạm dừng không.
 func stdinIsTerminal() bool {
 	fi, err := os.Stdin.Stat()
 	if err != nil {
@@ -105,8 +105,8 @@ func runWithConfig(cfg bootstrap.Config, opts cliOptions, args []string) {
 		die("error: không còn hỗ trợ truyền yêu cầu tiểu thuyết trực tiếp qua dòng lệnh, vui lòng nhập vào ô nhập của TUI sau khi khởi động")
 	}
 
-	// FillDefaults 必须先于资产加载:OutputDir 是运行时字段,默认值在此归一——
-	// 否则默认配置下 <书目录>/style/ 的本书级文风覆盖永远不会被加载。
+	// FillDefaults phải làm trước khi tải tài sản: OutputDir là trường lúc chạy, giá trị mặc định được chuẩn hóa ở đây ——
+	// nếu không với cấu hình mặc định, ghi đè văn phong cấp độ sách ở <thư mục sách>/style/ sẽ không bao giờ được tải.
 	cfg.FillDefaults()
 	bundle := assets.Load(cfg.Style, assets.DefaultLoadOptions(cfg.OutputDir))
 	if opts.Headless {
@@ -136,7 +136,7 @@ type cliOptions struct {
 	UpdateVersion string
 }
 
-// parseCLIOptions 提取 CLI flag，返回选项和剩余参数。
+// parseCLIOptions trích xuất CLI flag, trả về tùy chọn và tham số còn lại.
 func parseCLIOptions(argv []string) (cliOptions, []string, error) {
 	var opts cliOptions
 	var args []string

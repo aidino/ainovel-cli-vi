@@ -43,7 +43,7 @@ func (f *fakeModelRuntime) SetRoleThinking(role, level string) error {
 	return nil
 }
 
-// 存储的强度意图高于当前模型能力、面板无法呈现时，用户不动强度字段直接应用，
+// 存储的强度意图高于当前model 能力、bảng điều khiển 无法呈现时，người dùng 不动强度chữ 段直接应用，
 // 不应把意图误抹成初始默认值。
 func TestModelSwitchKeepsUnrepresentableThinkingIntent(t *testing.T) {
 	rt := &fakeModelRuntime{
@@ -51,11 +51,11 @@ func TestModelSwitchKeepsUnrepresentableThinkingIntent(t *testing.T) {
 		models:      map[string][]host.ConfiguredModel{"proxy": {{Name: "chat-only"}}},
 		curProvider: "proxy", curModel: "chat-only",
 		thinking:  map[string]string{"writer": "high"},
-		available: nil, // 当前模型只有“继承”一档
+		available: nil, // 当前model 只有“继承”一档
 	}
 	st := newModelSwitchState(rt, "writer")
 	if st.thinkingKey() != "" {
-		t.Fatalf("high 无法呈现时面板应落在继承档，得到 %q", st.thinkingKey())
+		t.Fatalf("high 无法呈现时bảng điều khiển 应落在继承档，nhận được  %q", st.thinkingKey())
 	}
 	if err := st.apply(rt); err != nil {
 		t.Fatalf("apply: %v", err)
@@ -64,11 +64,11 @@ func TestModelSwitchKeepsUnrepresentableThinkingIntent(t *testing.T) {
 		t.Fatalf("未改动强度不应回写：%+v", rt.setCalls)
 	}
 	if rt.thinking["writer"] != "high" {
-		t.Fatalf("意图被抹成 %q，应保留 high", rt.thinking["writer"])
+		t.Fatalf("意图被抹成 %q，应giữ lại  high", rt.thinking["writer"])
 	}
 }
 
-// 用户在面板里显式改动强度，则应回写为新值。
+// người dùng 在bảng điều khiển 里显式改动强度，则应回写为新值。
 func TestModelSwitchAppliesExplicitThinkingChange(t *testing.T) {
 	rt := &fakeModelRuntime{
 		providers:   []string{"proxy"},
@@ -79,15 +79,15 @@ func TestModelSwitchAppliesExplicitThinkingChange(t *testing.T) {
 	}
 	st := newModelSwitchState(rt, "writer")
 	st.focus = modelFocusThinking
-	st.cycle(1, rt) // 移动强度字段
+	st.cycle(1, rt) // di chuyển trường cường độ
 	want := st.thinkingKey()
 	if want == "" {
-		t.Fatal("测试前置：应已移动到某个非空强度档")
+		t.Fatal("kiểm tra 前置：应已移动到某个非空强度档")
 	}
 	if err := st.apply(rt); err != nil {
 		t.Fatalf("apply: %v", err)
 	}
 	if len(rt.setCalls) != 1 || rt.setCalls[0].level != want {
-		t.Fatalf("显式改动应回写 %q，得到 %+v", want, rt.setCalls)
+		t.Fatalf("显式改动应回写 %q，nhận được  %+v", want, rt.setCalls)
 	}
 }

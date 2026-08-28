@@ -13,8 +13,8 @@ import (
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
-// DraftChapterTool 写入整章草稿，替代旧的 write_scene + polish_chapter 流水线。
-// Agent 自主决定一次写完还是分批续写。
+// DraftChapterTool Viết toàn chương bản thảo, thay thế dây chuyền write_scene + polish_chapter cũ.
+// Agent Tự chủ quyết định viết một lần xong hay viết tiếp từng đợt.
 type DraftChapterTool struct {
 	store *store.Store
 }
@@ -29,14 +29,14 @@ func (t *DraftChapterTool) Description() string {
 }
 func (t *DraftChapterTool) Label() string { return "ghi chương" }
 
-// 写工具，禁止并发（读-改-写竞态）。
+// Công cụ ghi, cấm đồng thời (cạnh tranh đọc-sửa-ghi).
 func (t *DraftChapterTool) ReadOnly(_ json.RawMessage) bool        { return false }
 func (t *DraftChapterTool) ConcurrencySafe(_ json.RawMessage) bool { return false }
 
 func (t *DraftChapterTool) Schema() map[string]any {
-	// mode 标 required 是为了兼容 OpenAI strict tool calling——strict 模式
-	// 要求所有 properties 都在 required 列表中。原来的"省略 mode 走 write
-	// 默认"行为现在需要模型显式传 mode="write"，Execute 的 default 分支不变。
+	// mode Đánh dấu required là để tương thích OpenAI strict tool calling——chế độ strict
+	// yêu cầu tất cả properties đều trong danh sách required. 'Bỏ qua mode theo write' cũ
+	// mặc định' hiện cần mô hình truyền rõ mode='write', nhánh default của Execute không đổi.
 	return schema.Object(
 		schema.Property("chapter", schema.Int("số chương")).Required(),
 		schema.Property("content", schema.String("phần thân chương")).Required(),
@@ -44,7 +44,7 @@ func (t *DraftChapterTool) Schema() map[string]any {
 	)
 }
 
-// StrictSchema 要求 Provider 保证工具参数符合 schema。
+// StrictSchema Yêu cầu Provider đảm bảo tham số công cụ khớp schema.
 func (t *DraftChapterTool) StrictSchema() bool { return true }
 
 func (t *DraftChapterTool) Execute(_ context.Context, args json.RawMessage) (json.RawMessage, error) {
@@ -73,7 +73,7 @@ func (t *DraftChapterTool) Execute(_ context.Context, args json.RawMessage) (jso
 		return nil, fmt.Errorf("load progress: %w: %w", errs.ErrStoreRead, err)
 	}
 	if completed {
-		// 打磨/重写路径：章节虽已完成，但仍在 pending_rewrites 中，允许覆盖草稿
+		// Đường dẫn làm bóng/làm lại: chương tuy đã hoàn thành, nhưng vẫn trong pending_rewrites, cho phép đè bản thảo
 		progress, err := t.store.Progress.Load()
 		if err != nil {
 			return nil, fmt.Errorf("load progress: %w: %w", errs.ErrStoreRead, err)

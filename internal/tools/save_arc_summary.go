@@ -16,7 +16,7 @@ import (
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
-// SaveArcSummaryTool 保存弧级摘要、角色快照和写作规则，Editor 在弧结束时调用。
+// SaveArcSummaryTool Lưu tóm tắt cấp arc, ảnh chụp nhân vật và quy tắc sáng tác, Editor gọi khi kết thúc arc.
 type SaveArcSummaryTool struct {
 	store *store.Store
 }
@@ -31,7 +31,7 @@ func (t *SaveArcSummaryTool) Description() string {
 }
 func (t *SaveArcSummaryTool) Label() string { return "lưu tóm tắt arc" }
 
-// 写工具，禁止并发。
+// Công cụ ghi, cấm đồng thời.
 func (t *SaveArcSummaryTool) ReadOnly(_ json.RawMessage) bool        { return false }
 func (t *SaveArcSummaryTool) ConcurrencySafe(_ json.RawMessage) bool { return false }
 
@@ -41,24 +41,24 @@ func (t *SaveArcSummaryTool) Schema() map[string]any {
 		schema.Property("status", schema.String("trạng thái hiện tại (còn sống/bị thương/mất tích...)")).Required(),
 		schema.Property("power", schema.String("thay đổi năng lực")),
 		schema.Property("motivation", schema.String("động cơ hiện tại")).Required(),
-		schema.Property("relations", schema.String("关键关系变化")),
+		schema.Property("relations", schema.String("Thay đổi quan hệ chính")),
 	)
 	voiceSchema := schema.Object(
 		schema.Property("name", schema.String("tên nhân vật")).Required(),
-		schema.Property("rules", schema.Array("2-3 条语言特征规则（每条 ≤30 字）", schema.String(""))).Required(),
+		schema.Property("rules", schema.Array("2-3 quy tắc đặc trưng ngôn ngữ (mỗi quy tắc ≤30 chữ)", schema.String(""))).Required(),
 	)
 	styleRulesSchema := schema.Object(
-		schema.Property("prose", schema.Array("3-5 条叙述风格规则（每条 ≤50 字，要具体可执行）", schema.String(""))).Required(),
-		schema.Property("dialogue", schema.Array("核心角色的对话特征规则", voiceSchema)).Required(),
-		schema.Property("taboos", schema.Array("本小说需避免的写法", schema.String(""))),
+		schema.Property("prose", schema.Array("3-5 quy tắc phong cách trần thuật (mỗi quy tắc ≤50 chữ, phải cụ thể khả thi)", schema.String(""))).Required(),
+		schema.Property("dialogue", schema.Array("Quy tắc đặc trưng đối thoại của nhân vật cốt lõi", voiceSchema)).Required(),
+		schema.Property("taboos", schema.Array("Cách viết tiểu thuyết này cần tránh", schema.String(""))),
 	)
 	return schema.Object(
-		schema.Property("volume", schema.Int("卷号")).Required(),
-		schema.Property("arc", schema.Int("弧号")).Required(),
-		schema.Property("title", schema.String("弧标题")).Required(),
-		schema.Property("summary", schema.String("弧摘要（500字以内）")).Required(),
-		schema.Property("key_events", schema.Array("弧内关键事件", schema.String(""))).Required(),
-		schema.Property("character_snapshots", schema.Array("角色状态快照", snapshotSchema)).Required(),
+		schema.Property("volume", schema.Int("Số tập")).Required(),
+		schema.Property("arc", schema.Int("Số arc")).Required(),
+		schema.Property("title", schema.String("Tiêu đề arc")).Required(),
+		schema.Property("summary", schema.String("Tóm tắt arc (trong 500 chữ)")).Required(),
+		schema.Property("key_events", schema.Array("Sự kiện chính trong arc", schema.String(""))).Required(),
+		schema.Property("character_snapshots", schema.Array("Ảnh chụp trạng thái nhân vật", snapshotSchema)).Required(),
 		schema.Property("style_rules", styleRulesSchema).Required(),
 	)
 }
@@ -120,8 +120,8 @@ func (t *SaveArcSummaryTool) Execute(_ context.Context, args json.RawMessage) (j
 			return nil, fmt.Errorf("save style rules: %w: %w", errs.ErrStoreWrite, err)
 		}
 
-		// 弧摘要是 Router 的完成标记，作为最后一个语义工件写入。此前任一步
-		// 失败时摘要保持缺失，恢复后 Router 仍会重派本任务。
+		// Tóm tắt arc là dấu hoàn thành của Router, được ghi như công cụ ngữ nghĩa cuối cùng. Trước đó bất kỳ bước nào
+		// thất bại thì tóm tắt vẫn thiếu, sau khi khôi phục Router vẫn phân phát lại nhiệm vụ này.
 		if err := t.store.Summaries.SaveArcSummary(arcSummary); err != nil {
 			return nil, fmt.Errorf("save arc summary: %w: %w", errs.ErrStoreWrite, err)
 		}
@@ -147,8 +147,8 @@ func (t *SaveArcSummaryTool) Execute(_ context.Context, args json.RawMessage) (j
 	})
 }
 
-// arcSummaryReplay 只放行内容完全相同的幂等收尾，用于语义工件已落盘但
-// checkpoint 追加失败的重试。任何差异都显式冲突，不能借重试覆盖历史聚合事实。
+// arcSummaryReplay Chỉ cho qua kết thúc idempotent có nội dung hoàn toàn giống nhau, dùng khi công cụ ngữ nghĩa đã lưu nhưng
+// thử lại do thêm checkpoint thất bại. Bất kỳ khác biệt nào đều xung đột rõ ràng, không thể mượn thử lại đè sự thật tổng hợp lịch sử.
 func (t *SaveArcSummaryTool) arcSummaryReplay(
 	summary domain.ArcSummary,
 	snapshots []domain.CharacterSnapshot,
@@ -175,7 +175,7 @@ func (t *SaveArcSummaryTool) arcSummaryReplay(
 	if !reflect.DeepEqual(*existing, summary) ||
 		!slices.Equal(storedSnapshots, snapshots) ||
 		storedRules == nil || !reflect.DeepEqual(*storedRules, rules) {
-		return false, fmt.Errorf("第 %d 卷第 %d 弧摘要已存在但关联工件不同，拒绝覆盖: %w", summary.Volume, summary.Arc, errs.ErrToolConflict)
+		return false, fmt.Errorf("Tóm tắt tập %d arc %d đã tồn tại nhưng công cụ liên kết khác nhau, từ chối ghi đè: %w", summary.Volume, summary.Arc, errs.ErrToolConflict)
 	}
 	return true, nil
 }

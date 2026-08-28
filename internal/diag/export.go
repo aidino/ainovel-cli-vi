@@ -11,17 +11,17 @@ import (
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
-// ExportRelPath 是脱敏诊断文件相对 output 目录的固定位置（覆盖式一份）。
+// ExportRelPath là vị trí cố định của file chẩn đoán đã làm nhạy tương đối với thư mục output (ghi đè một bản).
 const ExportRelPath = "meta/diag-export.md"
 
-// Export 完整诊断 + 渲染 + 落盘，返回写出的绝对路径。供 headless / 外部调用。
+// Export chẩn đoán đầy đủ + render + ghi đĩa, trả về đường dẫn tuyệt đối đã ghi. Dùng cho gọi headless / bên ngoài.
 func Export(s *store.Store) (string, error) {
 	rep, rc := Diagnose(s)
 	return WriteExport(s, rep, rc)
 }
 
-// WriteExport 把已算好的 Report + RuntimeCapture 渲染落盘，不重复抓取。
-// 供 /diag 命令复用 Diagnose 的结果。
+// WriteExport render và ghi đĩa Report + RuntimeCapture đã tính toán, không lấy lại.
+// Dành cho lệnh /diag tái sử dụng kết quả của Diagnose.
 func WriteExport(s *store.Store, rep Report, rc RuntimeCapture) (string, error) {
 	data := RenderExport(rep, rc)
 	abs := filepath.Join(s.Dir(), filepath.FromSlash(ExportRelPath))
@@ -34,7 +34,7 @@ func WriteExport(s *store.Store, rep Report, rc RuntimeCapture) (string, error) 
 	return abs, nil
 }
 
-// RenderExport 把创作 Report + 运行时抓取组合成脱敏 Markdown。
+// RenderExport kết hợp sáng tác Report + chụp runtime thành Markdown đã làm nhạy.
 func RenderExport(rep Report, rc RuntimeCapture) []byte {
 	var b strings.Builder
 	st := rep.Stats
@@ -43,7 +43,7 @@ func RenderExport(rep Report, rc RuntimeCapture) []byte {
 	fmt.Fprintf(&b, "> Thời điểm sinh %s · %s/%s\n", time.Now().Format("2006-01-02 15:04:05"), rc.GoOS, rc.GoArch)
 	b.WriteString("> ⚠️ Đã làm nhạy: phần thân tiểu thuyết / prompt / suy nghĩ đã gỡ bỏ, chỉ giữ khung hành vi. Có thể dán thẳng vào issue.\n\n")
 
-	// 1. 环境
+	// 1. Môi trường
 	b.WriteString("## 1. Môi trường\n\n")
 	fmt.Fprintf(&b, "- Giai đoạn `%s`", orDash(st.Phase))
 	if st.Flow != "" {
@@ -57,7 +57,7 @@ func RenderExport(rep Report, rc RuntimeCapture) []byte {
 		fmt.Fprintf(&b, "- %s → `%s` / `%s`\n", m.Agent, orDash(m.Provider), orDash(m.Model))
 	}
 
-	// 2. 诊断发现（仅运行时；创作类诊断含剧情/伏笔，留在 /diag 屏上报告，不进可分享导出）
+	// 2. Phát hiện chẩn đoán (chỉ runtime; chẩn đoán loại sáng tác chứa cốt truyện/chi tiết gieo mầm, để lại báo cáo trên màn hình /diag, không xuất ra để chia sẻ)
 	b.WriteString("\n## 2. Phát hiện chẩn đoán (runtime)\n\n")
 	rf := runtimeFindings(&rc)
 	sortFindings(rf)
@@ -75,7 +75,7 @@ func RenderExport(rep Report, rc RuntimeCapture) []byte {
 		}
 	}
 
-	// 3. 运行时信号（原始聚合）
+	// 3. Tín hiệu runtime (tổng hợp thô)
 	b.WriteString("\n## 3. Tín hiệu runtime\n\n")
 	wrote := false
 	if rc.CurrentStep != "" {
@@ -118,7 +118,7 @@ func RenderExport(rep Report, rc RuntimeCapture) []byte {
 		b.WriteString("- Không có tín hiệu bất thường runtime rõ rệt.\n")
 	}
 
-	// 4. 行为骨架尾巴
+	// 4. Đuôi khung hành vi
 	fmt.Fprintf(&b, "\n## 4. Đuôi khung hành vi (%d dòng cuối)\n\n", len(rc.Tail))
 	if len(rc.Tail) == 0 {
 		b.WriteString("(không có bản ghi phiên)\n")
@@ -131,7 +131,7 @@ func RenderExport(rep Report, rc RuntimeCapture) []byte {
 		b.WriteString("```\n")
 	}
 
-	// 5. 脱敏自检
+	// 5. Tự kiểm làm nhạy
 	b.WriteString("\n## 5. Tự kiểm làm nhạy\n\n")
 	fmt.Fprintf(&b, "- Khối văn bản đã che %d chỗ · phần thân lọt gói 0 chỗ\n", rc.RedactedTexts)
 	if len(rc.Sources) > 0 {
@@ -141,7 +141,7 @@ func RenderExport(rep Report, rc RuntimeCapture) []byte {
 	return []byte(b.String())
 }
 
-// formatSkel 把一条骨架渲染成单行，看派发先后顺序。
+// formatSkel render một bộ xương thành một dòng, xem thứ tự phân phối.
 func formatSkel(ev SkelEvent) string {
 	var parts []string
 	parts = append(parts, "["+ev.Agent+"/"+ev.Role+"]")

@@ -40,7 +40,7 @@ func (m *nativeImportModel) Generate(ctx context.Context, messages []agentcore.M
 
 func TestCallStructuredUsesNativeSchemaWithoutPromptDuplication(t *testing.T) {
 	model := &nativeImportModel{mockModel: &mockModel{responses: []string{`{"boundaries":[]}`}}}
-	const prompt = "判断真实边界。"
+	const prompt = "phán đoán 真实边界。"
 	_, err := callStructured[boundaryBatch](t.Context(), model, segmentContract, prompt, `{}`, 100, callProfile{}, nil)
 	if err != nil {
 		t.Fatalf("callStructured: %v", err)
@@ -50,14 +50,14 @@ func TestCallStructuredUsesNativeSchemaWithoutPromptDuplication(t *testing.T) {
 		t.Fatalf("response format = %#v", format)
 	}
 	if got := model.messages[0].TextContent(); got != prompt {
-		t.Fatalf("native prompt 被重复注入 schema: %s", got)
+		t.Fatalf("native prompt 被lặp lại 注入 schema: %s", got)
 	}
 }
 
 func TestCallStructuredPromptModeInjectsContract(t *testing.T) {
 	model := &nativeImportModel{mockModel: &mockModel{responses: []string{`{"boundaries":[]}`}}}
 	modelCaps := &promptImportModel{nativeImportModel: model}
-	_, err := callStructured[boundaryBatch](t.Context(), modelCaps, segmentContract, "判断真实边界。", `{}`, 100, callProfile{}, nil)
+	_, err := callStructured[boundaryBatch](t.Context(), modelCaps, segmentContract, "phán đoán 真实边界。", `{}`, 100, callProfile{}, nil)
 	if err != nil {
 		t.Fatalf("callStructured: %v", err)
 	}

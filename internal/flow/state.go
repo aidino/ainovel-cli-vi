@@ -7,10 +7,10 @@ import (
 	storepkg "github.com/voocel/ainovel-cli/internal/store"
 )
 
-// LoadState 从 Store 读取 Route 所需的全部事实。
-// 这是路由的"IO 边界"：所有读取集中在这里，Route 保持纯。
-// 任何读取失败都返回错误；损坏的工件与“尚未生成”是两种不同事实，Router 不得
-// 在不完整快照上继续派单。
+// LoadState đọc toàn bộ sự thật mà Route cần từ Store.
+// Đây là "Biên giới IO" của định tuyến: tất cả việc đọc tập trung ở đây, Route giữ tính thuần túy.
+// Bất kỳ lỗi đọc nào đều trả về lỗi; công cụ bị hỏng và "chưa được tạo" là hai sự thật khác nhau, Router không được
+// tiếp tục điều phối trên snapshot không hoàn chỉnh.
 func LoadState(store *storepkg.Store) (State, error) {
 	var s State
 	missing, err := store.FoundationMissing()
@@ -18,8 +18,8 @@ func LoadState(store *storepkg.Store) (State, error) {
 		return s, fmt.Errorf("load foundation state: %w", err)
 	}
 	s.FoundationMissing = missing
-	// 规划级别:save_foundation 落 scale 时写入 RunMeta,补齐分支据此推导规划师。
-	// 读失败按未知处理(tier 空 → 补齐交 LLM 裁定),与其余事实的保守默认一致。
+	// Cấp độ quy hoạch: ghi vào RunMeta khi save_foundation lưu scale, nhánh bổ sung dựa vào đó suy ra nhà quy hoạch.
+	// Lỗi đọc xử lý như không xác định (tier rỗng → bổ sung giao LLM phán quyết), nhất quán với mặc định bảo thủ của các sự thật khác.
 	meta, err := store.RunMeta.Load()
 	if err != nil {
 		return s, fmt.Errorf("load run meta: %w", err)
@@ -47,7 +47,7 @@ func LoadState(store *storepkg.Store) (State, error) {
 
 	s.LastCompleted = progress.LatestCompleted()
 
-	// 弧边界仅在分层模式且有已完成章节时才计算
+	// Ranh giới arc chỉ tính ở chế độ phân tầng và khi có chương đã hoàn thành
 	if progress.Layered && s.LastCompleted > 0 {
 		boundaries, err := store.Outline.CompletedArcBoundaries(s.LastCompleted)
 		if err != nil {
@@ -108,7 +108,7 @@ func LoadState(store *storepkg.Store) (State, error) {
 		}
 	}
 
-	// 非分层全局审阅事实:仅在触发点读盘(其余组合 Route 不消费该字段)。
+	// Sự thật đọc kiểm toàn cục phi phân tầng: chỉ đọc đĩa tại điểm kích hoạt (các kết hợp Route khác không tiêu thụ trường này).
 	if !progress.Layered && s.LastCompleted > 0 {
 		for completed := domain.ReviewInterval; completed <= len(progress.CompletedChapters); completed += domain.ReviewInterval {
 			chapter := progress.CompletedChapters[completed-1]

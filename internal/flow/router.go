@@ -1,13 +1,13 @@
-// Package flow 实现垂类路由：Host 根据事实决定下一个调哪个子代理做什么。
+// Package flow thực hiện định tuyến ngành dọc: Host dựa vào sự thật quyết định tiếp theo gọi subagent nào làm gì.
 //
-// 设计原则：
-//   - Route 是纯函数：输入 State，输出 *Instruction。无 IO、无 Store 调用，可单测。
-//   - State 由 LoadState（非纯）从 Store 构造，一次性把路由需要的事实读齐。
-//   - 返回 nil 是合法的：表示当前没有可由确定性事实推出的 Worker 指令；
-//     Engine 再按终态、启动补裁或等待用户干预处理。
+// Nguyên tắc thiết kế:
+//   - Route là hàm thuần túy: nhập State, xuất *Instruction. Không IO, không gọi Store, có thể test độc lập.
+//   - State được tạo từ Store bởi LoadState (không thuần túy), đọc toàn bộ sự thật mà định tuyến cần trong một lần.
+//   - Trả về nil là hợp lệ: biểu thị hiện tại không có chỉ lệnh Worker nào có thể được suy ra từ sự thật xác định;
+//     Engine sau đó xử lý theo trạng thái kết thúc, khởi động bù trừ hoặc đợi người dùng can thiệp.
 //
-// Router 覆盖的是"查表型"决策（每章下一步、弧末后处理、队列驱动），
-// 不覆盖"语义理解型"决策（选规划师、处理用户 Steer、输出总结）。
+// Router bao trùm các quyết định "loại tra bảng" (bước tiếp theo mỗi chương, xử lý sau cuối arc, dẫn động hàng đợi),
+// không bao trùm các quyết định "loại hiểu ngữ nghĩa" (chọn nhà quy hoạch, xử lý Steer từ người dùng, xuất tóm tắt).
 package flow
 
 import (
@@ -18,8 +18,8 @@ import (
 	storepkg "github.com/voocel/ainovel-cli/internal/store"
 )
 
-// plannerForTier 从已落盘的规划级别推导规划师身份:short 归短篇规划师,
-// mid/long 归长篇规划师(与启动 Arbiter 的选型口径一致)。
+// plannerForTier suy ra danh tính nhà quy hoạch từ cấp độ quy hoạch đã lưu xuống đĩa: short thuộc nhà quy hoạch truyện ngắn,
+// mid/long thuộc nhà quy hoạch truyện dài (nhất quán với tiêu chí chọn lọc khi khởi động Arbiter).
 func plannerForTier(tier domain.PlanningTier) string {
 	if tier == domain.PlanningTierShort {
 		return "architect_short"
@@ -27,12 +27,12 @@ func plannerForTier(tier domain.PlanningTier) string {
 	return "architect_long"
 }
 
-// Instruction 指示 Engine 下一步直接运行的 Worker 与任务。
+// Instruction chỉ thị Worker và nhiệm vụ mà Engine sẽ trực tiếp chạy ở bước tiếp theo.
 type Instruction struct {
 	Agent   string // architect_long / architect_short / writer / editor
-	Task    string // 给子代理的任务描述
-	Reason  string // 路由理由（用于事件、日志与失败裁定）
-	Chapter int    // writer 任务涉及的章节号（续写/重写/打磨）；0 表示不涉及（editor/architect 任务）
+	Task    string // Mô tả nhiệm vụ cho subagent
+	Reason  string // Lý do định tuyến (dùng cho sự kiện, log và phán quyết thất bại)
+	Chapter int    // Số chương liên quan đến nhiệm vụ writer (viết tiếp/viết lại/đánh bóng); 0 là không liên quan (nhiệm vụ editor/architect)
 }
 
 type AggregateKind string
@@ -52,70 +52,70 @@ type AggregateRefresh struct {
 	EndChapter   int
 }
 
-// State 是 Route 的输入：所有事实必须在此显式声明，禁止 Route 内部读 Store。
+// State là đầu vào của Route: tất cả sự thật phải được khai báo rõ ràng ở đây, cấm Route tự đọc Store bên trong.
 type State struct {
 	Progress *domain.Progress
 
-	// 已完成章节中的最大章节号；为 0 表示尚未开始写作。
+	// Số chương lớn nhất trong các chương đã hoàn thành; 0 biểu thị chưa bắt đầu sáng tác.
 	LastCompleted int
 
-	// 上一章的弧边界信息；IsArcEnd=false 时其他字段无意义。
-	// 当 LastCompleted=0 或非 Layered 模式时应为 nil。
+	// Thông tin ranh giới arc của chương trước; khi IsArcEnd=false các trường khác không có ý nghĩa.
+	// Nên là nil khi LastCompleted=0 hoặc không phải chế độ Layered.
 	ArcBoundary *storepkg.ArcBoundary
 
-	// 弧末后处理的三个事实：评审 / 弧摘要 / 卷摘要是否已完成。
+	// Ba sự thật xử lý sau cuối arc: đọc kiểm / tóm tắt arc / tóm tắt tập đã hoàn thành chưa.
 	HasArcReview     bool
 	HasArcSummary    bool
 	HasVolumeSummary bool
 
-	// 基础设定缺项（规划阶段的补齐信号）。
+	// Các mục thiết lập nền tảng bị thiếu (tín hiệu bổ sung trong giai đoạn quy hoạch).
 	FoundationMissing []string
 
-	// 已落盘的规划级别（save_foundation 落 scale 时写入 RunMeta）。
-	// 空 = 首次规划尚未产出任何设定，规划师身份不可判定。
+	// Cấp độ quy hoạch đã lưu (ghi vào RunMeta khi save_foundation lưu scale).
+	// Rỗng = quy hoạch lần đầu chưa tạo ra bất kỳ thiết lập nào, không thể xác định danh tính nhà quy hoạch.
 	PlanningTier domain.PlanningTier
 
-	// 非分层书：最近完成章是否已有 scope=global 的全局审阅
-	//（仅在 ShouldReview 触发点有意义；分层书恒 false）。
+	// Sách phi phân tầng: chương hoàn thành gần nhất đã có đọc kiểm toàn cục scope=global chưa
+	//(chỉ có ý nghĩa tại điểm kích hoạt ShouldReview; sách phân tầng luôn là false).
 	HasGlobalReview bool
 
-	// 必须在续写前由 Architect 处理的外部修订影响。普通 Writer 反馈留到下一次
-	// 自然结构操作统一吸收，不为每章额外派发规划师。
+	// Ảnh hưởng sửa đổi bên ngoài phải được Architect xử lý trước khi viết tiếp. Phản hồi Writer thông thường để lại cho lần
+	// thao tác cấu trúc tự nhiên tiếp theo hấp thụ đồng loạt, không điều phối thêm nhà quy hoạch cho mỗi chương.
 	ImmediateFeedbackCount int
 
-	// 外部修订后最早一个需要由 Editor 重新生成的弧/卷工件。
+	// Công cụ arc/tập cần Editor tạo lại sớm nhất sau sửa đổi bên ngoài.
 	AggregateRefresh *AggregateRefresh
 }
 
-// Route 根据事实返回下一步确定性指令；返回 nil 由 Engine 按调用上下文处理。
+// Route trả về chỉ lệnh xác định bước tiếp theo dựa trên sự thật; trả về nil thì Engine xử lý theo ngữ cảnh gọi.
 //
-// 决策优先级（互斥，自上而下匹配第一个）：
-//  1. Phase=Complete        → nil（Host 确定性输出总结）
-//  2. 规划期设定缺项且规划师可判定 → 同一规划师补齐；否则 nil（Engine 启动补裁）
-//  3. PendingRewrites 非空  → writer 按队列重写/打磨
-//  4. Flow=Reviewing        → nil（dormant：当前无写入者，评审期 Flow 实为 writing）
-//  5. Flow=Steering         → nil（用户干预处理中）
-//  6. 外部修订导致聚合工件失效 → editor 重建
-//  7. 外部修订影响后续规划     → architect 处理
-//  8. 分层书到达弧末          → 评审、摘要、扩弧或续卷
-//  9. 非分层全局审阅到期       → editor(global review)
+// Độ ưu tiên quyết định (loại trừ lẫn nhau, khớp cái đầu tiên từ trên xuống dưới):
+//  1. Phase=Complete        → nil (Host xuất tóm tắt xác định)
+//  2. Thiếu mục thiết lập kỳ quy hoạch và xác định được nhà quy hoạch → cùng nhà quy hoạch bù đắp; nếu không nil (Engine khởi động phán quyết bổ sung)
+//  3. PendingRewrites khác rỗng  → writer viết lại/đánh bóng theo hàng đợi
+//  4. Flow=Reviewing        → nil (dormant: hiện không có người viết, Flow kỳ đọc kiểm thực tế là writing)
+//  5. Flow=Steering         → nil (đang xử lý can thiệp của người dùng)
+//  6. Sửa đổi bên ngoài làm công cụ tổng hợp hết hiệu lực → editor tạo lại
+//  7. Sửa đổi bên ngoài ảnh hưởng quy hoạch sau     → architect xử lý
+//  8. Sách phân tầng đến cuối arc          → đọc kiểm, tóm tắt, mở rộng arc hoặc viết tiếp tập
+//  9. Đọc kiểm toàn cục phi phân tầng đến hạn       → editor(global review)
 //
-// 10. 非分层大纲已耗尽        → architect(决定完结或续接大纲)
-// 11. 其它                   → writer(写 next_chapter)
+// 10. Đại cương phi phân tầng đã cạn        → architect (quyết định hoàn kết hoặc nối tiếp đại cương)
+// 11. Khác                   → writer (viết next_chapter)
 func Route(s State) *Instruction {
 	p := s.Progress
 	if p == nil {
 		return nil
 	}
 
-	// 1. 终态：Host 根据 store 事实生成确定性总结
+	// 1. Trạng thái kết thúc: Host tạo tóm tắt xác định dựa trên sự thật store
 	if p.Phase == domain.PhaseComplete {
 		return nil
 	}
 
-	// 2. 规划期补齐：查表型决策——缺什么在 store，规划师身份从已落盘的 scale 推导
-	//    （short → architect_short，其余 → architect_long）。tier 为空说明首次规划
-	//    尚未落盘任何设定（选型是语义判断），由 Engine 的 planStartFallback 补裁。
+	// 2. Bổ sung kỳ quy hoạch: quyết định loại tra bảng——thiếu gì ở store, danh tính nhà quy hoạch suy ra từ scale đã lưu
+	//    (short → architect_short, còn lại → architect_long). tier rỗng nghĩa là quy hoạch lần đầu
+	//    chưa lưu bất kỳ thiết lập nào (chọn lọc là phán đoán ngữ nghĩa), do planStartFallback của Engine phán quyết bổ sung.
 	if p.Phase != domain.PhaseWriting {
 		if len(s.FoundationMissing) > 0 && s.PlanningTier != "" {
 			task := fmt.Sprintf("Bổ sung các mục thiếu của thiết lập nền tảng và thông tin tác phẩm: %s; book dùng save_book, các thiết lập nền tảng còn lại dùng save_foundation để ghi xuống đĩa", strings.Join(s.FoundationMissing, ", "))
@@ -131,7 +131,7 @@ func Route(s State) *Instruction {
 		return nil
 	}
 
-	// 3. 重写/打磨队列优先（事实已在工具层落盘，Router 只照单派发）
+	// 3. Ưu tiên hàng đợi viết lại/đánh bóng (sự thật đã lưu ở tầng công cụ, Router chỉ điều phối theo lệnh)
 	if len(p.PendingRewrites) > 0 {
 		ch := p.PendingRewrites[0]
 		verb := "Viết lại"
@@ -146,15 +146,15 @@ func Route(s State) *Instruction {
 		}
 	}
 
-	// 4. 审阅中 → 交回 LLM。当前为 dormant 分支：save_review 只把 Flow 置为
-	//    writing/rewriting/polishing，无任何生产路径置 reviewing（评审期 Flow 实为 writing，
-	//    "评审先于续写"由 agentcore steering 优先级保证，不靠此分支）。保留以与 Steering
-	//    对称，并在未来 editor 评审期显式置 reviewing 时使路由让位于 LLM。
+	// 4. Đang đọc kiểm → trả về LLM. Hiện là nhánh dormant: save_review chỉ đặt Flow thành
+	//    writing/rewriting/polishing, không có bất kỳ đường dẫn sản xuất nào đặt reviewing (Flow kỳ đọc kiểm thực tế là writing,
+	//    "đọc kiểm trước khi viết tiếp" được đảm bảo bởi ưu tiên steering của agentcore, không phụ thuộc nhánh này). Giữ lại để đối xứng với Steering
+	//    và nhường định tuyến cho LLM khi editor đặt rõ ràng reviewing trong kỳ đọc kiểm tương lai.
 	if p.Flow == domain.FlowReviewing {
 		return nil
 	}
 
-	// 5. 用户干预处理中：Arbiter 正在裁定，Engine 不抢占
+	// 5. Đang xử lý can thiệp của người dùng: Arbiter đang phán quyết, Engine không chiếm quyền
 	if p.Flow == domain.FlowSteering {
 		return nil
 	}
@@ -198,7 +198,7 @@ func Route(s State) *Instruction {
 		}
 	}
 
-	// 8. 分层模式的弧末后处理
+	// 8. Xử lý sau cuối arc ở chế độ phân tầng
 	if p.Layered && s.ArcBoundary != nil && s.ArcBoundary.IsArcEnd {
 		b := s.ArcBoundary
 		switch {
@@ -238,9 +238,9 @@ func Route(s State) *Instruction {
 		}
 	}
 
-	// 11. 非分层全局审阅：每 ReviewInterval 章一次(事实:该章的 global review 未落盘)。
-	//     原为 commit_chapter 返回值里的 review_required 信号,现按事实推导——
-	//     返回值只是事实的镜像,Route 从 store 直接看同一事实。
+	// 11. Đọc kiểm toàn cục phi phân tầng: Mỗi ReviewInterval chương một lần (sự thật: global review của chương đó chưa lưu).
+	//     Vốn là tín hiệu review_required trong giá trị trả về của commit_chapter, nay suy ra theo sự thật——
+	//     giá trị trả về chỉ là hình ảnh phản chiếu của sự thật, Route xem trực tiếp cùng một sự thật từ store.
 	if !p.Layered && s.LastCompleted > 0 {
 		if due, reason := domain.ShouldReview(len(p.CompletedChapters)); due && !s.HasGlobalReview {
 			return &Instruction{
@@ -251,8 +251,8 @@ func Route(s State) *Instruction {
 		}
 	}
 
-	// 12. 非分层大纲耗尽时不能继续派发越界章节。让 Architect 基于当前故事事实
-	// 决定完结，或用 revise_outline 从 next 章续接计划。
+	// 12. Khi đại cương phi phân tầng cạn kiệt, không thể tiếp tục điều phối chương vượt giới hạn. Để Architect dựa trên sự thật câu chuyện hiện tại
+	// quyết định hoàn kết, hoặc dùng revise_outline nối tiếp kế hoạch từ chương next.
 	next := p.NextChapter()
 	if next <= 0 {
 		return nil
@@ -268,7 +268,7 @@ func Route(s State) *Instruction {
 		}
 	}
 
-	// 13. 正常续写
+	// 13. Viết tiếp bình thường
 	return &Instruction{
 		Agent:   "writer",
 		Task:    fmt.Sprintf("Viết chương %d", next),

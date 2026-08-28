@@ -1,27 +1,27 @@
-// Package rules 实现用户偏好的输入层（Policy）：把各来源的写作规则归一化、合并成
-// 本书快照（见 snapshot.go），运行时由 novel_context 注入、commit_chapter 机械检查。
+// Package rules hiện thực hóa lớp đầu vào sở thích người dùng (Policy): chuẩn hóa quy tắc viết từ các nguồn, gộp thành
+// điểm khôi phục của cuốn sách này (xem snapshot.go), lúc chạy được novel_context tiêm vào, commit_chapter kiểm tra máy móc.
 //
-// Rule 是第四类事实，跟 Progress / Checkpoint / Artifact 并列，但性质相反：
-// 前三类是系统输出，Rule 是用户意图的持久化输入。
+// Rule là sự thật loại thứ tư, xếp ngang hàng với Progress / Checkpoint / Artifact, nhưng tính chất ngược lại:
+// ba loại trước là đầu ra hệ thống, Rule là đầu vào bền bỉ của ý định người dùng.
 //
-// 设计约束（不可妥协）：
-//   - 工具只返事实，不返指令（Violation 是事实，由 editor 决定是否触发重写）
-//   - 不引入新的 verdict 路径（复用 PendingRewrites）
-//   - 不引入严格度字段（severity 由规则类型固定映射，editor 自主语义裁定）
-//   - 不动 Flow Router（rule 不参与路由）
+// Ràng buộc thiết kế (không thể thỏa hiệp):
+//   - Công cụ chỉ trả về sự thật, không trả về lệnh (Violation là sự thật, do biên tập viên quyết định có kích hoạt viết lại không)
+//   - Không đưa vào đường dẫn verdict mới (tái sử dụng PendingRewrites)
+//   - Không đưa vào trường độ nghiêm ngặt (severity được ánh xạ cố định theo loại quy tắc, biên tập viên tự chủ phán quyết ngữ nghĩa)
+//   - Không động đến Flow Router (quy tắc không tham gia định tuyến)
 package rules
 
-// SourceKind 标记规则文件来源，仅用于生成来源标签（如 global:my-style.md）。
+// SourceKind đánh dấu nguồn file quy tắc, chỉ dùng để tạo nhãn nguồn (ví dụ global:my-style.md).
 type SourceKind int
 
 const (
-	// SourceGlobal — 用户全局偏好（~/.ainovel/rules/ 目录下所有 .md，按文件名字典序合并），跨书复用。
+	// SourceGlobal — Sở thích toàn cục của người dùng (tất cả .md trong thư mục ~/.ainovel/rules/, gộp theo thứ tự từ điển tên file), tái sử dụng xuyên sách.
 	SourceGlobal SourceKind = iota
-	// SourceProject — 本书规则（./.ainovel/rules/ 目录下所有 .md，按文件名字典序合并），优先级最高。
+	// SourceProject — Quy tắc cuốn sách này (tất cả .md trong thư mục ./.ainovel/rules/, gộp theo thứ tự từ điển tên file), độ ưu tiên cao nhất.
 	SourceProject
 )
 
-// String 返回来源的可读名称，用于来源标签前缀。
+// String trả về tên dễ đọc của nguồn, dùng cho tiền tố nhãn nguồn.
 func (k SourceKind) String() string {
 	switch k {
 	case SourceGlobal:
@@ -33,9 +33,9 @@ func (k SourceKind) String() string {
 	}
 }
 
-// Structured 装载机械可检的结构化规则字段（归一化各来源后的候选/合并结果）。
-// 章节字数刻意不在此列：多长算一章是叙事完整性问题，属语义裁量（writer/editor），
-// 数字化成机械硬线会诱导模型为跨线注水——字数意愿走 preferences 自然语言通道。
+// Structured chứa các trường quy tắc cấu trúc có thể kiểm tra máy móc (kết quả ứng viên/gộp sau khi chuẩn hóa các nguồn).
+// Số từ chương cố tình không nằm ở đây: dài bao nhiêu tính là một chương là vấn đề toàn vẹn tự sự, thuộc quyền định đoạt ngữ nghĩa (người viết/biên tập viên),
+// số hóa thành đường cứng máy móc sẽ xúi giục model bơm nước để vượt vạch —— ý muốn số từ đi theo kênh ngôn ngữ tự nhiên preferences.
 type Structured struct {
 	Genre            string         `json:"genre,omitempty"`
 	ForbiddenChars   []string       `json:"forbidden_chars,omitempty"`
@@ -43,7 +43,7 @@ type Structured struct {
 	FatigueWords     map[string]int `json:"fatigue_words,omitempty"`
 }
 
-// IsEmpty 用于判定是否完全没有结构化规则；checker 可据此跳过。
+// IsEmpty dùng để phán đoán xem có hoàn toàn không có quy tắc cấu trúc nào không; checker có thể dựa vào đó để bỏ qua.
 func (s Structured) IsEmpty() bool {
 	return s.Genre == "" &&
 		len(s.ForbiddenChars) == 0 &&
@@ -51,12 +51,12 @@ func (s Structured) IsEmpty() bool {
 		len(s.FatigueWords) == 0
 }
 
-// Severity 标记 Violation 的严重等级。
-// 固定映射（用户不可配置）：
+// Severity đánh dấu mức độ nghiêm trọng của Violation.
+// Ánh xạ cố định (người dùng không thể cấu hình):
 //
-//	forbidden_chars 出现             -> Error
-//	forbidden_phrases 出现           -> Error
-//	fatigue_words 超阈值             -> Warning
+//	forbidden_chars xuất hiện             -> Error
+//	forbidden_phrases xuất hiện           -> Error
+//	fatigue_words vượt ngưỡng             -> Warning
 type Severity string
 
 const (
@@ -64,15 +64,15 @@ const (
 	SeverityError   Severity = "error"
 )
 
-// Violation 是 checker 的输出：本章违反了某条机械规则的事实陈述。
+// Violation là đầu ra của checker: trần thuật sự thật chương này đã vi phạm một quy tắc máy móc nào đó.
 //
-// 注意：commit_chapter 把 violations 透传到返回 JSON，不阻断 commit；
-// editor 在审阅时把这些事实映射到现有七维（aesthetic/pacing/character/consistency），
-// 由 LLM 自主决定是否升级 verdict 触发 polish/rewrite。
+// Chú ý: commit_chapter truyền suốt các violations vào JSON trả về, không cản trở commit;
+// biên tập viên khi đọc kiểm sẽ ánh xạ những sự thật này vào 7 chiều hiện tại (thẩm mỹ/nhịp điệu/nhân vật/nhất quán),
+// do LLM tự chủ quyết định xem có nâng cấp phán quyết để kích hoạt đánh bóng/viết lại không.
 type Violation struct {
 	Rule     string   `json:"rule"`             // forbidden_chars / forbidden_phrases / fatigue_words
-	Target   string   `json:"target,omitempty"` // 具体违规对象（哪个词/字符）
-	Limit    any      `json:"limit,omitempty"`  // 阈值；fatigue_words=int / forbidden_*=空
-	Actual   any      `json:"actual"`           // 实际值：出现次数
+	Target   string   `json:"target,omitempty"` // Đối tượng vi phạm cụ thể (từ/ký tự nào)
+	Limit    any      `json:"limit,omitempty"`  // Ngưỡng; fatigue_words=int / forbidden_*=rỗng
+	Actual   any      `json:"actual"`           // Giá trị thực tế: số lần xuất hiện
 	Severity Severity `json:"severity"`         // error / warning
 }

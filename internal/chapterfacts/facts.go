@@ -66,13 +66,13 @@ func Properties(includeFeedback bool) []schema.Prop {
 // Validate kiểm tra các ràng buộc tất định dùng chung cho nộp thường và sửa thủ công.
 func Validate(facts domain.ChapterFacts) error {
 	if strings.TrimSpace(facts.Title) == "" {
-		return fmt.Errorf("title is required")
+		return fmt.Errorf("title là bắt buộc")
 	}
 	if strings.TrimSpace(facts.Summary) == "" {
-		return fmt.Errorf("summary is required")
+		return fmt.Errorf("summary là bắt buộc")
 	}
 	if len(facts.KeyEvents) == 0 {
-		return fmt.Errorf("key_events must contain at least one event")
+		return fmt.Errorf("key_events phải chứa ít nhất một sự kiện")
 	}
 	if err := validateTextItems("characters", facts.Characters); err != nil {
 		return err
@@ -82,7 +82,7 @@ func Validate(facts domain.ChapterFacts) error {
 	}
 	for i, event := range facts.TimelineEvents {
 		if strings.TrimSpace(event.Time) == "" || strings.TrimSpace(event.Event) == "" {
-			return fmt.Errorf("timeline_events[%d] requires time and event", i)
+			return fmt.Errorf("timeline_events[%d] yêu cầu time và event", i)
 		}
 		if err := validateTextItems(fmt.Sprintf("timeline_events[%d].characters", i), event.Characters); err != nil {
 			return err
@@ -90,44 +90,44 @@ func Validate(facts domain.ChapterFacts) error {
 	}
 	for i, update := range facts.ForeshadowUpdates {
 		if strings.TrimSpace(update.ID) == "" {
-			return fmt.Errorf("foreshadow_updates[%d].id is required", i)
+			return fmt.Errorf("foreshadow_updates[%d].id là bắt buộc", i)
 		}
 		switch update.Action {
 		case "plant":
 			if strings.TrimSpace(update.Description) == "" {
-				return fmt.Errorf("foreshadow_updates[%d] plant requires description", i)
+				return fmt.Errorf("foreshadow_updates[%d] plant yêu cầu description", i)
 			}
 		case "advance", "resolve":
 		default:
-			return fmt.Errorf("foreshadow_updates[%d].action invalid: %q", i, update.Action)
+			return fmt.Errorf("foreshadow_updates[%d].action không hợp lệ: %q", i, update.Action)
 		}
 	}
 	for i, change := range facts.RelationshipChanges {
 		if strings.TrimSpace(change.CharacterA) == "" || strings.TrimSpace(change.CharacterB) == "" || strings.TrimSpace(change.Relation) == "" {
-			return fmt.Errorf("relationship_changes[%d] requires character_a, character_b and relation", i)
+			return fmt.Errorf("relationship_changes[%d] yêu cầu character_a, character_b và relation", i)
 		}
 		if change.CharacterA == change.CharacterB {
-			return fmt.Errorf("relationship_changes[%d] cannot relate a character to itself", i)
+			return fmt.Errorf("relationship_changes[%d] không thể liên kết một nhân vật với chính nó", i)
 		}
 	}
 	for i, change := range facts.StateChanges {
 		if strings.TrimSpace(change.Entity) == "" || strings.TrimSpace(change.Field) == "" || strings.TrimSpace(change.NewValue) == "" {
-			return fmt.Errorf("state_changes[%d] requires entity, field and new_value", i)
+			return fmt.Errorf("state_changes[%d] yêu cầu entity, field và new_value", i)
 		}
 	}
 	for i, intro := range facts.CastIntros {
 		if strings.TrimSpace(intro.Name) == "" || strings.TrimSpace(intro.BriefRole) == "" {
-			return fmt.Errorf("cast_intros[%d] requires name and brief_role", i)
+			return fmt.Errorf("cast_intros[%d] yêu cầu name và brief_role", i)
 		}
 	}
 	if facts.HookType != "" && !domain.ValidHookType(facts.HookType) {
-		return fmt.Errorf("invalid hook_type %q", facts.HookType)
+		return fmt.Errorf("hook_type không hợp lệ %q", facts.HookType)
 	}
 	if facts.DominantStrand != "" && !domain.ValidDominantStrand(facts.DominantStrand) {
-		return fmt.Errorf("invalid dominant_strand %q", facts.DominantStrand)
+		return fmt.Errorf("dominant_strand không hợp lệ %q", facts.DominantStrand)
 	}
 	if facts.Feedback != nil && (strings.TrimSpace(facts.Feedback.Deviation) == "" || strings.TrimSpace(facts.Feedback.Suggestion) == "") {
-		return fmt.Errorf("feedback requires deviation and suggestion")
+		return fmt.Errorf("feedback yêu cầu deviation và suggestion")
 	}
 	return nil
 }
@@ -135,7 +135,7 @@ func Validate(facts domain.ChapterFacts) error {
 func validateTextItems(name string, items []string) error {
 	for i, item := range items {
 		if strings.TrimSpace(item) == "" {
-			return fmt.Errorf("%s[%d] cannot be empty", name, i)
+			return fmt.Errorf("%s[%d] không được để trống", name, i)
 		}
 	}
 	return nil

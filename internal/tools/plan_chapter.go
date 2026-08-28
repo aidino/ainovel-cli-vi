@@ -11,7 +11,7 @@ import (
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
-// PlanChapterTool 保存章节构思，Agent 自主决定规划粒度。
+// PlanChapterTool Lưu cấu tứ chương, Agent tự chủ quyết định độ chi tiết quy hoạch.
 type PlanChapterTool struct {
 	store *store.Store
 }
@@ -26,7 +26,7 @@ func (t *PlanChapterTool) Description() string {
 }
 func (t *PlanChapterTool) Label() string { return "lập kế hoạch chương" }
 
-// 写工具，禁止并发。
+// Công cụ ghi, cấm đồng thời.
 func (t *PlanChapterTool) ReadOnly(_ json.RawMessage) bool        { return false }
 func (t *PlanChapterTool) ConcurrencySafe(_ json.RawMessage) bool { return false }
 

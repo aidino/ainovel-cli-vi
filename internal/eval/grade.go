@@ -7,7 +7,7 @@ import (
 	"github.com/voocel/ainovel-cli/internal/stylestat"
 )
 
-// Outcome 是单个 case 的门禁结论。
+// Outcome là kết luận cổng chặn của một case đơn lẻ.
 type Outcome string
 
 const (
@@ -16,7 +16,7 @@ const (
 	Fail Outcome = "FAIL"
 )
 
-// Issue 是门禁判定中的一条记录。
+// Issue là một bản ghi trong quá trình phán đoán cổng chặn.
 type Issue struct {
 	Kind     string `json:"kind"`               // hard_fail / warning / passed
 	Source   string `json:"source"`             // runtime / finding:<rule> / contract:<name>
@@ -24,7 +24,7 @@ type Issue struct {
 	Detail   string `json:"detail"`
 }
 
-// Metrics 是从 diag.Stats 直接借来的概览指标——eval 不重算。
+// Metrics là các chỉ số tổng quan được mượn trực tiếp từ diag.Stats——eval không tính lại.
 type Metrics struct {
 	CompletedChapters int              `json:"completed_chapters"`
 	TotalChapters     int              `json:"total_chapters"`
@@ -43,8 +43,8 @@ type Metrics struct {
 	Stylestat         *stylestat.Stats `json:"stylestat,omitempty"`
 }
 
-// Result 是单个 case 的完整评测结果。对齐设计稿三层模型：
-// HardFails（阻塞）/ Warnings（回归，WARN）/ Notes（信息性，不影响门禁）。
+// Result là kết quả đánh giá hoàn chỉnh của một case đơn lẻ. Đối chiếu với mô hình 3 lớp của bản thiết kế:
+// HardFails (chặn) / Warnings (hồi quy, WARN) / Notes (thông tin, không ảnh hưởng cổng chặn).
 type Result struct {
 	CaseID    string  `json:"case_id"`
 	Category  string  `json:"category"`
@@ -60,8 +60,8 @@ type Result struct {
 	Dir       string  `json:"dir"`
 }
 
-// Grade 把采集结果按 case 契约与 diag Finding 严重度映射成门禁结论。这是 MVP 的核心：
-// 确定性证据决定 PASS/WARN/FAIL，不掺主观判断。
+// Grade ánh xạ kết quả thu thập thành kết luận cổng chặn dựa trên hợp đồng case và độ nghiêm trọng của diag Finding. Đây là cốt lõi của MVP:
+// Bằng chứng xác định quyết định PASS/WARN/FAIL, không pha trộn đánh giá chủ quan.
 func Grade(c Case, col Collected) Result {
 	r := Result{
 		CaseID:   c.ID,
@@ -71,22 +71,22 @@ func Grade(c Case, col Collected) Result {
 		Metrics:  metricsFrom(col),
 	}
 
-	// 1. 运行时错误：headless 返回 error 直接 hard fail（失败显式暴露）。
+	// 1. Lỗi runtime: headless trả về error thì hard fail trực tiếp (lỗi được bộc lộ rõ ràng).
 	if col.RuntimeErr != "" {
 		r.HardFails = append(r.HardFails, Issue{
 			Kind: "hard_fail", Source: "runtime", Detail: "lỗi runtime: " + col.RuntimeErr,
 		})
 	}
 
-	// 1b. 工件读取失败：契约依赖的事实读不到，宁可 hard fail 也不 false pass（fail-loud）。
+	// 1b. Đọc sản phẩm thất bại: sự thật phụ thuộc của hợp đồng không đọc được, thà hard fail chứ không false pass (fail-loud).
 	for _, le := range col.LoadErrors {
 		r.HardFails = append(r.HardFails, Issue{
 			Kind: "hard_fail", Source: "load", Detail: "đọc sản phẩm thất bại: " + le,
 		})
 	}
 
-	// 2. diag Findings 三层映射（rank 越小越严重）：
-	//    超过 max_severity → hard fail；等于 → warning（回归）；低于 → note（信息性，不影响门禁）。
+	// 2. Ánh xạ 3 lớp diag Findings (rank càng nhỏ càng nghiêm trọng):
+	//    Vượt quá max_severity → hard fail; Bằng → warning (hồi quy); Thấp hơn → note (thông tin, không ảnh hưởng cổng chặn).
 	maxRank := severityRank(c.Gate.MaxSeverity)
 	for _, f := range col.Report.Findings {
 		sev := string(f.Severity)
@@ -104,10 +104,10 @@ func Grade(c Case, col Collected) Result {
 		}
 	}
 
-	// 3. case 契约断言：薄断言，只验本 case 强相关的预期。
+	// 3. Khẳng định hợp đồng case: Khẳng định mỏng, chỉ kiểm tra các kỳ vọng liên quan chặt chẽ đến case này.
 	gradeContracts(c, col, &r)
 
-	// 4. 汇总结论。
+	// 4. Tổng hợp kết luận.
 	switch {
 	case len(r.HardFails) > 0:
 		r.Outcome = Fail
@@ -119,7 +119,7 @@ func Grade(c Case, col Collected) Result {
 	return r
 }
 
-// Delta 描述 variant 相对 baseline 的确定性差异。
+// Delta mô tả sự khác biệt xác định của variant so với baseline.
 type Delta struct {
 	Outcome   Outcome      `json:"outcome"`
 	HardFails []Issue      `json:"hard_fails,omitempty"`
@@ -148,7 +148,7 @@ type StyleDelta struct {
 	TitleMixedDelta      int     `json:"title_mixed_delta,omitempty"`
 }
 
-// GradeDelta 只比较确定性事实：variant 比 baseline 是否更差。
+// GradeDelta chỉ so sánh các sự thật xác định: variant có tệ hơn baseline hay không.
 func GradeDelta(c Case, baseline, variant Result) Delta {
 	d := Delta{Metrics: deltaMetrics(baseline, variant)}
 
@@ -398,7 +398,7 @@ func metricsFrom(col Collected) Metrics {
 	return m
 }
 
-// phaseOf 优先取 progress 的 phase，回落到 diag.Stats（两者同源）。
+// phaseOf ưu tiên lấy phase của progress, nếu không có thì lùi về diag.Stats (cả hai cùng nguồn).
 func phaseOf(col Collected) string {
 	if col.Progress != nil {
 		return string(col.Progress.Phase)
@@ -408,12 +408,12 @@ func phaseOf(col Collected) string {
 
 func findingDetail(f diag.Finding) string {
 	if f.Evidence != "" {
-		return f.Title + "（" + f.Evidence + "）"
+		return f.Title + " (" + f.Evidence + ")"
 	}
 	return f.Title
 }
 
-// ── 严重度 ─────────────────────────────────────────────
+// ── Độ nghiêm trọng ─────────────────────────────────────────────
 
 var severityRanks = map[string]int{"critical": 0, "warning": 1, "info": 2}
 
@@ -422,7 +422,7 @@ func validSeverity(s string) bool {
 	return ok
 }
 
-// severityRank 越小越严重；未知严重度按最不严重处理，避免误判 hard fail。
+// severityRank càng nhỏ càng nghiêm trọng; độ nghiêm trọng không rõ sẽ được xử lý như ít nghiêm trọng nhất để tránh hard fail nhầm.
 func severityRank(s string) int {
 	if r, ok := severityRanks[s]; ok {
 		return r

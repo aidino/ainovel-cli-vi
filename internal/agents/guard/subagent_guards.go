@@ -10,43 +10,43 @@ import (
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
-// subagentMaxConsecutiveBlocks 连续阻拦 N 次后升级为终止，避免弱模型死循环。
+// subagentMaxConsecutiveBlocks chặn liên tiếp N lần sẽ nâng cấp thành chấm dứt, tránh model yếu rơi vào vòng lặp vô hạn.
 const subagentMaxConsecutiveBlocks = 3
 
-// BlockHook 是 StopGuard 的审计回调：每次拦截/升级时同步调用。Host 用它把拦截
-// 事实浮出到 TUI 事件流与离屏通知——否则拦截只进日志，用户在界面上只看到
-// "卡顿+token 变快"，无从判断系统是在自愈还是在空转（issue #75）。
-// 回调不参与 guard 决策。reason 取值：
-//   - "blocked"    已注入催促消息，模型将继续推进
-//   - "escalated"  连续空转超限，本轮 run 终止交回上层
-//   - "hard_stop"  provider 拒答（safety/content_filter），立即终止
+// BlockHook là callback kiểm toán của StopGuard: được gọi đồng bộ mỗi lần chặn/nâng cấp. Host dùng nó để đưa thông tin
+// chặn lên luồng sự kiện TUI và thông báo ngoài màn hình——nếu không thì sự việc chặn chỉ vào log, người dùng trên giao diện chỉ thấy
+// "giật lag + token tăng nhanh", không biết hệ thống đang tự phục hồi hay đang chạy không tải (issue #75).
+// Callback không tham gia vào quyết định guard. Giá trị reason gồm:
+//   - "blocked"    đã tiêm tin nhắn thúc giục, model sẽ tiếp tục tiến hành
+//   - "escalated"  chạy không tải liên tục vượt giới hạn, vòng run này chấm dứt trả về tầng trên
+//   - "hard_stop"  provider từ chối trả lời (safety/content_filter), chấm dứt ngay
 type BlockHook func(agent, reason string, consecutive int32)
 
-// hardStopReasons 是无法用催促消息恢复的 provider 端拒答原因。注入
-// "必须 commit" 对它们无效，反而每次产生一次完整 LLM 调用的 token 消耗，
-// 并最终升级 escalate 后让 Engine 重跑整个 Worker 任务，叠加多倍浪费
-// （实测 ch02 撞 safety 时一次写章产生 3 次重派 17 次 LLM 调用、命中率
-// 从 50% 跌到 2.8%）。
+// hardStopReasons là những lý do từ chối trả lời từ phía provider mà không thể phục hồi bằng tin nhắn thúc giục. Tiêm
+// "bắt buộc commit" không có tác dụng với chúng, ngược lại mỗi lần tạo ra tiêu hao token của một lần gọi LLM đầy đủ,
+// và cuối cùng nâng cấp escalate xong lại khiến Engine chạy lại toàn bộ task Worker, cộng dồn lãng phí nhiều lần
+// (thực tế ch02 đụng safety khi viết một chương tạo ra 3 lần gửi lại 17 lần gọi LLM, tỷ lệ trúng
+// giảm từ 50% xuống 2.8%).
 //
-// 注意 StopReasonError / StopReasonAborted 不需要列入：agentcore 在
-// loop.go 收到这两种 stop reason 时直接终止 run，根本不会调用 StopGuard。
-// 这里只列那些会真正走到 StopGuard 的 provider 拒答语义。
+// Lưu ý StopReasonError / StopReasonAborted không cần đưa vào: agentcore trong
+// loop.go nhận được 2 stop reason này sẽ trực tiếp chấm dứt run, hoàn toàn không gọi StopGuard.
+// Ở đây chỉ liệt kê những ngữ nghĩa từ chối trả lời của provider mà thực sự đi đến StopGuard.
 var hardStopReasons = map[agentcore.StopReason]struct{}{
 	"safety":         {},
 	"content_filter": {},
 }
 
-// newCheckpointDeltaGuard 构造一个 StopGuard：
-// 在 baseline 之后若未出现指定 step 的 checkpoint，则拒绝 end_turn。
-// baseline 由调用方在 factory 时刻捕获，保证 per-run 语义正确。
+// newCheckpointDeltaGuard cấu tạo một StopGuard:
+// sau baseline nếu không xuất hiện checkpoint của step được chỉ định, thì từ chối end_turn.
+// baseline do bên gọi bắt tại thời điểm factory, đảm bảo ngữ nghĩa per-run chính xác.
 //
-// blockMsg 接收 baseline 之后已观测到的 checkpoint step 集合，按实际进度组装
-// 催促消息——静态消息在"必需工具本身持续报错"的场景下是误导（催模型去调一个
-// 正在失败的工具，见 #75）。
+// blockMsg nhận tập hợp checkpoint step đã quan sát được sau baseline, ghép thành theo tiến độ thực tế
+// tin nhắn thúc giục——tin nhắn tĩnh trong kịch bản "công cụ thiết yếu liên tục báo lỗi" là đánh lạc hướng (thúc giục model gọi một
+// công cụ đang thất bại, xem #75).
 //
-// 计数语义是"有进展即重置"：两次拦截之间出现过
-// 任何新 checkpoint（重新 draft / check 等）视为模型在推进，consecutive 归零；
-// 只有毫无产物的连续空转才累计并升级终止。
+// Ngữ nghĩa đếm là "có tiến triển thì reset": giữa hai lần chặn từng xuất hiện
+// bất kỳ checkpoint mới nào (draft lại / check v.v.) thì xem như model đang tiến hành, consecutive về 0;
+// Chỉ có chạy không tải liên tục không sinh ra kết quả gì mới được tích lũy và nâng cấp chấm dứt.
 func newCheckpointDeltaGuard(st *store.Store, agentName string, requiredSteps []string, blockMsg func(seen map[string]struct{}) string, onBlock BlockHook) agentcore.StopGuard {
 	var baseline int64
 	if cp := st.Checkpoints.LatestGlobal(); cp != nil {
@@ -57,10 +57,10 @@ func newCheckpointDeltaGuard(st *store.Store, agentName string, requiredSteps []
 		need[s] = struct{}{}
 	}
 	var consecutive atomic.Int32
-	var lastBlockSeq atomic.Int64 // 上次拦截时观测到的最新 checkpoint Seq；-1 表示尚未拦截过
+	var lastBlockSeq atomic.Int64 // Seq của checkpoint mới nhất quan sát được ở lần chặn trước; -1 nghĩa là chưa từng chặn
 	lastBlockSeq.Store(-1)
 	return func(_ context.Context, info agentcore.StopInfo) agentcore.StopDecision {
-		// 不可恢复错误：直接升级，不浪费一次催促。
+		// Lỗi không thể phục hồi: leo thang trực tiếp, không lãng phí một lần thúc giục.
 		if _, hard := hardStopReasons[info.Message.StopReason]; hard {
 			slog.Error("subagent stop_guard phát hiện treo không thể phục hồi, leo thang ngay",
 				"module", "agent.guard", "agent", agentName,
@@ -70,8 +70,8 @@ func newCheckpointDeltaGuard(st *store.Store, agentName string, requiredSteps []
 			}
 			return agentcore.StopDecision{Allow: false, Escalate: true}
 		}
-		// 倒序扫描 baseline 之后的 checkpoint，收集已出现的 step（放行判定 + 进度消息共用）。
-		// 新 checkpoint 在尾部，遇到 <= baseline 即可 break。
+		// Quét ngược checkpoint sau baseline, thu thập các step đã xuất hiện (dùng chung cho phán đoán thả hành và thông báo tiến độ).
+		// Checkpoint mới ở đuôi, gặp <= baseline là có thể break.
 		all := st.Checkpoints.All()
 		latestSeq := baseline
 		seen := make(map[string]struct{})
@@ -91,8 +91,8 @@ func newCheckpointDeltaGuard(st *store.Store, agentName string, requiredSteps []
 				return agentcore.StopDecision{Allow: true}
 			}
 		}
-		// 上次拦截以来有新工件落盘 = 模型在推进（如被催后重新 draft 再试探收尾），
-		// 重置计数；升级只应惩罚毫无进展的空转，而不是把整个 run 的拦截攒在一起报废。
+		// Từ lần chặn trước có công cụ ghi xuống đĩa = model đang đẩy tiến (như bị thúc giục rồi làm lại draft thử thu gọn),
+		// reset bộ đếm; leo thang chỉ nên trừng phạt việc chạy không tiến triển, chứ không phải gom hết chặn của toàn run để báo phế.
 		if prev := lastBlockSeq.Load(); prev >= 0 && latestSeq > prev {
 			consecutive.Store(0)
 		}
@@ -115,21 +115,21 @@ func newCheckpointDeltaGuard(st *store.Store, agentName string, requiredSteps []
 	}
 }
 
-// staticBlockMsg 把固定文案适配成 blockMsg 签名（架构/编辑器的产物是单工具落盘，
-// 不存在多步进度，静态催促即够）。
+// staticBlockMsg chuyển đổi văn bản cố định thành chữ ký blockMsg (sản phẩm của quy hoạch sư/người đọc kiểm là gọi công cụ một lần ghi đĩa,
+// không tồn tại tiến độ nhiều bước, thúc giục tĩnh là đủ).
 func staticBlockMsg(msg string) func(map[string]struct{}) string {
 	return func(map[string]struct{}) string { return msg }
 }
 
-// NewWriterStopGuard 要求 writer 本轮至少产生一次成功的 commit_chapter。
-// 催促消息按已落盘的 step 进度组装：writer 是唯一有多步工具链的子代理，
-// 静态的"必须调 commit_chapter"在前置步骤缺失或 commit 本身报错时是误导。
+// NewWriterStopGuard yêu cầu writer trong lượt này phải có ít nhất một commit_chapter thành công.
+// Tin nhắn thúc giục lắp ráp theo tiến độ step đã ghi đĩa: writer là subagent duy nhất có chuỗi công cụ nhiều bước,
+// Việc yêu cầu tĩnh "phải gọi commit_chapter" khi thiếu bước tiền đề hoặc commit gặp lỗi sẽ gây hiểu nhầm.
 func NewWriterStopGuard(st *store.Store, onBlock BlockHook) agentcore.StopGuard {
 	return newCheckpointDeltaGuard(st, "writer", []string{"commit"}, writerBlockMsg, onBlock)
 }
 
-// writerBlockMsg 按本轮已出现的 checkpoint step 判断 writer 卡在哪一步。
-// step 名与各工具落盘值对应：plan / draft / edit / consistency_check / commit。
+// writerBlockMsg phán đoán writer đang bị kẹt ở bước nào dựa vào step checkpoint đã xuất hiện trong lượt này.
+// Tên step tương ứng với giá trị công cụ ghi đĩa: plan / draft / edit / consistency_check / commit.
 func writerBlockMsg(seen map[string]struct{}) string {
 	_, hasDraft := seen["draft"]
 	_, hasEdit := seen["edit"]
@@ -144,7 +144,7 @@ func writerBlockMsg(seen map[string]struct{}) string {
 	}
 }
 
-// NewArchitectStopGuard 要求 architect 本轮至少落盘一次规划产物。
+// NewArchitectStopGuard yêu cầu architect lượt này ít nhất ghi đĩa sản phẩm quy hoạch một lần.
 func NewArchitectStopGuard(st *store.Store, onBlock BlockHook) agentcore.StopGuard {
 	return newCheckpointDeltaGuard(st, "architect",
 		[]string{
@@ -166,10 +166,10 @@ func NewArchitectStopGuard(st *store.Store, onBlock BlockHook) agentcore.StopGua
 // phủ quyết lần thoát đó và thúc giục, cho đến khi tóm tắt tương ứng được ghi xuống đĩa.
 func NewEditorStopGuard(st *store.Store, task string, onBlock BlockHook) agentcore.StopGuard {
 	switch {
-	case strings.Contains(task, "save_volume_summary") || strings.Contains(task, "tóm tắt tập") || strings.Contains(task, "卷摘要"):
+	case strings.Contains(task, "save_volume_summary") || strings.Contains(task, "tóm tắt tập") || strings.Contains(task, "tóm tắt tập"):
 		return newCheckpointDeltaGuard(st, "editor", []string{"volume_summary"},
 			staticBlockMsg("Nhiệm vụ lần này là sinh tóm tắt tập: bạn phải gọi save_volume_summary ghi xuống đĩa rồi mới được kết thúc; save_review kiểm lại không tính là hoàn thành."), onBlock)
-	case strings.Contains(task, "save_arc_summary") || strings.Contains(task, "tóm tắt arc") || strings.Contains(task, "弧摘要"):
+	case strings.Contains(task, "save_arc_summary") || strings.Contains(task, "tóm tắt arc") || strings.Contains(task, "tóm tắt arc"):
 		return newCheckpointDeltaGuard(st, "editor", []string{"arc_summary"},
 			staticBlockMsg("Nhiệm vụ lần này là sinh tóm tắt arc: bạn phải gọi save_arc_summary ghi xuống đĩa rồi mới được kết thúc; save_review kiểm lại không tính là hoàn thành."), onBlock)
 	default:

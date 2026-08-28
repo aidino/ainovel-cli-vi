@@ -10,7 +10,7 @@ import (
 	"github.com/voocel/ainovel-cli/internal/utils"
 )
 
-// ReadChapterTool 读取章节原文，让 Agent 能回读自己和前文的文字。
+// ReadChapterTool Đọc nguyên văn chương, để Agent có thể đọc lại chữ của mình và phần trước.
 type ReadChapterTool struct {
 	store *store.Store
 }
@@ -25,7 +25,7 @@ func (t *ReadChapterTool) Description() string {
 }
 func (t *ReadChapterTool) Label() string { return "đọc chương" }
 
-// 纯读工具，可被并发调度（editor 审阅时常一次读多章）。
+// Công cụ chỉ đọc, có thể được lập lịch đồng thời (khi editor đọc kiểm thường đọc nhiều chương cùng lúc).
 func (t *ReadChapterTool) ReadOnly(_ json.RawMessage) bool        { return true }
 func (t *ReadChapterTool) ConcurrencySafe(_ json.RawMessage) bool { return true }
 
@@ -56,7 +56,7 @@ func (t *ReadChapterTool) Execute(_ context.Context, args json.RawMessage) (json
 		return nil, fmt.Errorf("source must be final or draft")
 	}
 
-	// 模式 1：提取角色对话
+	// Chế độ 1: Trích xuất hội thoại nhân vật
 	if a.Character != "" {
 		var warnings []string
 		warn := func(scope string, err error) {
@@ -95,7 +95,7 @@ func (t *ReadChapterTool) Execute(_ context.Context, args json.RawMessage) (json
 		return json.Marshal(result)
 	}
 
-	// 模式 2：范围读取
+	// Chế độ 2: Đọc theo phạm vi
 	if a.From > 0 && a.To > 0 {
 		maxRunes := a.MaxRunes
 		if maxRunes <= 0 {
@@ -111,7 +111,7 @@ func (t *ReadChapterTool) Execute(_ context.Context, args json.RawMessage) (json
 		for ch := a.From; ch <= a.To; ch++ {
 			chapter, err := load(ch)
 			if err != nil {
-				return nil, fmt.Errorf("load %s chapter %d: %w", a.Source, ch, err)
+				return nil, fmt.Errorf("tải %s chương %d: %w", a.Source, ch, err)
 			}
 			if chapter == "" {
 				continue
@@ -130,7 +130,7 @@ func (t *ReadChapterTool) Execute(_ context.Context, args json.RawMessage) (json
 		})
 	}
 
-	// 模式 3：单章读取
+	// Chế độ 3: Đọc đơn chương
 	if a.Chapter <= 0 {
 		return nil, fmt.Errorf("chapter is required")
 	}
@@ -144,7 +144,7 @@ func (t *ReadChapterTool) Execute(_ context.Context, args json.RawMessage) (json
 		content, err = t.store.Drafts.LoadChapterText(a.Chapter)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("read chapter %d: %w", a.Chapter, err)
+		return nil, fmt.Errorf("đọc chương %d: %w", a.Chapter, err)
 	}
 	if content == "" {
 		return json.Marshal(map[string]any{
@@ -163,7 +163,7 @@ func (t *ReadChapterTool) Execute(_ context.Context, args json.RawMessage) (json
 	})
 }
 
-// maxCompletedChapter 返回已完成章节列表中的最大章节号。
+// maxCompletedChapter Trả về số chương lớn nhất trong danh sách chương đã hoàn thành.
 func maxCompletedChapter(completed []int) int {
 	m := 0
 	for _, ch := range completed {

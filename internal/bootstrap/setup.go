@@ -13,13 +13,13 @@ import (
 	"github.com/voocel/ainovel-cli/internal/utils"
 )
 
-// exampleConfig 是引导后写入 ~/.ainovel/config.example.jsonc 的带注释模板。
-// 嵌入文件必须与仓库根目录 config.example.jsonc 保持一致，测试会防止漂移。
+// exampleConfig Là mẫu cấu hình có chú thích ghi vào ~/.ainovel/config.example.jsonc sau khi hướng dẫn.
+// File nhúng bắt buộc phải nhất quán với config.example.jsonc ở thư mục gốc của repository, unit test sẽ kiểm tra độ lệch.
 //
 //go:embed config.example.jsonc
 var exampleConfig string
 
-// NeedsSetup 检查是否需要首次引导（全局与项目级配置都不存在时触发）。
+// NeedsSetup Kiểm tra xem có cần hướng dẫn lần đầu không (kích hoạt khi không có cả cấu hình toàn cục lẫn dự án).
 func NeedsSetup() bool {
 	if p := DefaultConfigPath(); p != "" {
 		if _, err := os.Stat(p); err == nil {
@@ -35,12 +35,12 @@ func NeedsSetup() bool {
 type setupProvider struct {
 	name           string
 	label          string
-	baseURL        string // 预填的 base_url
-	needType       bool   // 自定义代理需要额外问 type 和 base_url
-	apiKeyOptional bool   // true 表示 API Key 允许留空
+	baseURL        string // base_url điền sẵn
+	needType       bool   // Proxy tùy chỉnh cần hỏi thêm type và base_url
+	apiKeyOptional bool   // true Biểu thị API Key được phép để trống
 }
 
-// ProviderPreset 是首次引导和运行时 /config 共用的 provider 目录项。
+// ProviderPreset Là mục menu provider dùng chung cho hướng dẫn lần đầu và lúc chạy /config.
 type ProviderPreset struct {
 	Name           string
 	Label          string
@@ -63,7 +63,7 @@ var setupProviders = []setupProvider{
 	{name: "custom", label: "Custom Proxy", needType: true, apiKeyOptional: true},
 }
 
-// ProviderPresets 返回一份可安全修改的预设列表。
+// ProviderPresets trả về một danh sách preset có thể sửa đổi an toàn.
 func ProviderPresets() []ProviderPreset {
 	out := make([]ProviderPreset, 0, len(setupProviders))
 	for _, preset := range setupProviders {
@@ -75,7 +75,7 @@ func ProviderPresets() []ProviderPreset {
 	return out
 }
 
-// RunSetup 运行首次引导，返回生成的配置。
+// RunSetup chạy hướng dẫn lần đầu, trả về cấu hình được tạo ra.
 func RunSetup() (Config, error) {
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("99")).
@@ -84,7 +84,7 @@ func RunSetup() (Config, error) {
 	fmt.Fprintf(os.Stderr, "  Sau khi hoàn tất có thể chỉnh sửa file này bất cứ lúc nào để tinh chỉnh cấu hình nâng cao.\n")
 	fmt.Fprintln(os.Stderr)
 
-	// Step 1: 选择 Provider
+	// Step 1: Chọn Provider
 	sp, err := runProviderSelect()
 	if err != nil {
 		return Config{}, err
@@ -94,7 +94,7 @@ func RunSetup() (Config, error) {
 	var pc ProviderConfig
 	printStepDone("Provider", sp.label)
 
-	// 自定义代理：额外问名称和 API 协议类型
+	// Proxy tùy chỉnh: hỏi thêm tên và loại giao thức API
 	if sp.needType {
 		providerName, err = runTextInput("Tên Provider", "my-proxy")
 		if err != nil {
@@ -107,7 +107,7 @@ func RunSetup() (Config, error) {
 		pc.Type = providerType
 	}
 
-	// Step 2: 输入 API Key
+	// Step 2: Nhập API Key
 	var apiKey string
 	if sp.apiKeyOptional {
 		apiKey, err = runOptionalTextInput("[2/4] API Key (có thể để trống)", "để trống nghĩa là không dùng API Key")
@@ -124,7 +124,7 @@ func RunSetup() (Config, error) {
 		printStepDone("API Key", maskKey(apiKey))
 	}
 
-	// Step 3: Base URL（直接回车使用官方默认地址）
+	// Step 3: Base URL（Bấm Enter ngay sẽ dùng địa chỉ mặc định chính thức）
 	baseDefault := sp.baseURL
 	baseHint := "để trống dùng địa chỉ chính thức"
 	if baseDefault != "" {
@@ -141,7 +141,7 @@ func RunSetup() (Config, error) {
 		printStepDone("Base URL", "mặc định")
 	}
 
-	// Step 4: 模型名（必填）
+	// Step 4: Tên model (Bắt buộc)
 	modelName, err := runTextInput("[4/4] Tên model", "ví dụ: gpt-4o / claude-sonnet-4 / gemini-2.5-pro")
 	if err != nil {
 		return Config{}, err
@@ -157,16 +157,16 @@ func RunSetup() (Config, error) {
 		Style:     "default",
 	}
 
-	// 保存
+	// Lưu
 	path := DefaultConfigPath()
 	if err := SaveConfig(path, cfg); err != nil {
 		return cfg, fmt.Errorf("save config: %w", err)
 	}
 
-	// 生成注释模板
+	// Tạo mẫu chú thích
 	saveExampleConfig()
 
-	// 全局偏好目录由启动流程（runWithConfig）统一创建，这里仅取路径用于提示
+	// Thư mục sở thích toàn cục do quy trình khởi động (runWithConfig) tạo thống nhất, ở đây chỉ lấy đường dẫn để hiển thị gợi ý
 	rulesDir := rules.DefaultHomeRulesDir()
 
 	fmt.Fprintln(os.Stderr)
@@ -190,7 +190,7 @@ func saveExampleConfig() {
 	_ = os.WriteFile(filepath.Join(dir, "config.example.jsonc"), []byte(exampleConfig), 0o644)
 }
 
-// printStepDone 打印一步完成的确认行。
+// printStepDone In dòng xác nhận hoàn thành một bước.
 func printStepDone(label, value string) {
 	fmt.Fprintf(os.Stderr, "  %s %s: %s\n",
 		lipgloss.NewStyle().Foreground(lipgloss.Color("42")).Render("✓"),
@@ -205,7 +205,7 @@ func maskKey(key string) string {
 	return key[:4] + "****" + key[len(key)-4:]
 }
 
-// ---------- TUI 组件 ----------
+// ---------- TUI Thành phần ----------
 
 func runProviderSelect() (setupProvider, error) {
 	m := setupSelectModel{
@@ -282,7 +282,7 @@ func runTextInputWithDefault(label, placeholder, defaultValue string) (string, e
 	return utils.CleanInputLine(result.value), nil
 }
 
-// ---------- 选择器 ----------
+// ---------- Bộ chọn ----------
 
 var (
 	setupCursorStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("212"))
@@ -338,13 +338,13 @@ func (m setupSelectModel) View() string {
 	return b.String()
 }
 
-// ---------- 文本输入 ----------
+// ---------- Nhập văn bản ----------
 
 type setupInputModel struct {
 	label        string
 	placeholder  string
-	defaultValue string // 直接回车时使用的默认值
-	allowEmpty   bool   // 允许直接输入空值
+	defaultValue string // Giá trị mặc định dùng khi bấm Enter ngay
+	allowEmpty   bool   // Cho phép nhập giá trị rỗng trực tiếp
 	value        string
 	cancelled    bool
 }

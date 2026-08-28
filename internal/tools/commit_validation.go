@@ -7,8 +7,8 @@ import (
 	"github.com/voocel/ainovel-cli/internal/errs"
 )
 
-// validateCommitArgs 在创建 PendingCommit 前校验模型提交的完整语义载荷。
-// 错误直接返回模型修正；不生成半成品状态，也不猜测缺失值。
+// validateCommitArgs Kiểm tra tải trọng ngữ nghĩa đầy đủ do mô hình gửi trước khi tạo PendingCommit.
+// Lỗi trả về trực tiếp cho mô hình sửa; không tạo trạng thái bán thành phẩm, cũng không đoán giá trị thiếu.
 func (t *CommitChapterTool) validateCommitArgs(a commitArgs) error {
 	if err := chapterfacts.Validate(a.ChapterFacts); err != nil {
 		return fmt.Errorf("%v: %w", err, errs.ErrToolArgs)
@@ -19,9 +19,9 @@ func (t *CommitChapterTool) validateCommitArgs(a commitArgs) error {
 		if err != nil {
 			return fmt.Errorf("load foreshadow ledger: %w: %w", errs.ErrStoreRead, err)
 		}
-		// 账本是全书投影，而 Projector 按章序重放章节记录。重写早期章节时账本里
-		// 还躺着后续章节才种下的伏笔——放行它们，提交前校验就与重放结论相反，
-		// 模型无从修正，返工队列随之锁死。故一律以"本章可见"为准。
+		// Sổ là hình chiếu toàn sách, còn Projector phát lại bản ghi chương theo thứ tự. Khi làm lại chương đầu sổ
+		// vẫn chứa chi tiết gieo mầm của các chương sau——cho qua chúng, kiểm tra trước khi gửi sẽ trái ngược kết luận phát lại,
+		// mô hình không thể sửa, hàng đợi làm lại theo đó bị khóa. Do đó nhất luật lấy 'chương này có thể thấy' làm chuẩn.
 		plantedAt := make(map[string]int, len(ledger))
 		for _, entry := range ledger {
 			plantedAt[entry.ID] = entry.PlantedAt

@@ -31,9 +31,9 @@ type legacyCommitArgs struct {
 	domain.ChapterFacts
 }
 
-// MigrateLegacyBaseline 为 chapter_records 出现前创建的作品补齐接纳基线。
-// 成功提交会话保存完整章节事实，草稿保存当时的正文；只使用这两份历史事实，
-// 不会把可能已被用户修改的 chapters/*.md 静默当成已接纳版本。
+// MigrateLegacyBaseline bổ sung baseline tiếp nhận cho các tác phẩm được tạo ra trước khi có chapter_records.
+// Phiên bản submit thành công lưu giữ sự thật chương hoàn chỉnh, bản thảo lưu giữ chính văn lúc đó; chỉ sử dụng hai sự thật lịch sử này,
+// sẽ không âm thầm coi các file chapters/*.md (có thể đã bị người dùng sửa) là phiên bản đã tiếp nhận.
 func MigrateLegacyBaseline(st *store.Store) error {
 	progress, err := st.Progress.Load()
 	if err != nil {
@@ -212,7 +212,7 @@ func readLegacyCommits(path string, commits map[int]legacyCommit) error {
 		if len(line) > 0 {
 			var msg agentcore.Message
 			if err := json.Unmarshal(line, &msg); err != nil {
-				return fmt.Errorf("解析历史会话 %s:%d: %w", filepath.Base(path), lineNo, err)
+				return fmt.Errorf("phân tích phiên lịch sử %s:%d: %w", filepath.Base(path), lineNo, err)
 			}
 			for _, call := range msg.ToolCalls() {
 				if call.Name != "commit_chapter" || call.ArgsInvalid || call.ID == "" {
@@ -220,7 +220,7 @@ func readLegacyCommits(path string, commits map[int]legacyCommit) error {
 				}
 				var args legacyCommitArgs
 				if err := json.Unmarshal(call.Args, &args); err != nil {
-					return fmt.Errorf("解析历史会话 %s:%d 的 commit_chapter: %w", filepath.Base(path), lineNo, err)
+					return fmt.Errorf("phân tích commit_chapter của phiên lịch sử %s:%d: %w", filepath.Base(path), lineNo, err)
 				}
 				pending[call.ID] = args
 			}
@@ -244,7 +244,7 @@ func readLegacyCommits(path string, commits map[int]legacyCommit) error {
 			if readErr == io.EOF {
 				return nil
 			}
-			return fmt.Errorf("读取历史会话 %s: %w", filepath.Base(path), readErr)
+			return fmt.Errorf("đọc phiên lịch sử %s: %w", filepath.Base(path), readErr)
 		}
 	}
 }

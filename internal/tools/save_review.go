@@ -16,7 +16,7 @@ import (
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
-// SaveReviewTool 保存 Editor 的审阅结果。
+// SaveReviewTool Lưu kết quả đọc kiểm của Editor.
 type SaveReviewTool struct {
 	store *store.Store
 }
@@ -33,7 +33,7 @@ func (t *SaveReviewTool) Description() string {
 }
 func (t *SaveReviewTool) Label() string { return "lưu đọc kiểm" }
 
-// 写工具（同时更新 reviews/ 与 Progress 的 PendingRewrites/Flow），禁止并发。
+// Công cụ ghi (đồng thời cập nhật reviews/ và PendingRewrites/Flow của Progress), cấm đồng thời.
 func (t *SaveReviewTool) ReadOnly(_ json.RawMessage) bool        { return false }
 func (t *SaveReviewTool) ConcurrencySafe(_ json.RawMessage) bool { return false }
 func (t *SaveReviewTool) StrictSchema() bool                     { return true }
@@ -90,7 +90,7 @@ func (t *SaveReviewTool) Execute(_ context.Context, args json.RawMessage) (json.
 		return nil, fmt.Errorf("load progress: %w", err)
 	}
 	if progress == nil || !slices.Contains(progress.CompletedChapters, r.Chapter) {
-		return nil, fmt.Errorf("review chapter %d must be completed", r.Chapter)
+		return nil, fmt.Errorf("chương %d đọc kiểm phải ở trạng thái hoàn thành", r.Chapter)
 	}
 	scope := domain.ChapterScope(r.Chapter)
 	artifact := fmt.Sprintf("reviews/%02d.json", r.Chapter)
@@ -129,8 +129,8 @@ func (t *SaveReviewTool) Execute(_ context.Context, args json.RawMessage) (json.
 		}
 	}
 
-	// 先原子应用控制状态，再保存审阅工件。若第二步失败，返工意图仍然存在；
-	// Writer 排空队列后，路由会因审阅工件缺失而重新派发 Editor，不会跳过审阅。
+	// Áp dụng nguyên tử trạng thái điều khiển trước, sau đó lưu công cụ đọc kiểm. Nếu bước 2 thất bại, ý đồ làm lại vẫn tồn tại;
+	// Writer Sau khi làm trống hàng đợi, bộ định tuyến sẽ phân phát lại Editor do thiếu công cụ đọc kiểm, không bỏ qua đọc kiểm.
 	latest, err := t.store.Progress.ApplyReviewOutcome(reviewOutcome, affected, r.Summary)
 	if err != nil {
 		return nil, fmt.Errorf("apply review outcome: %w", err)
@@ -152,7 +152,7 @@ func (t *SaveReviewTool) finishReview(
 		return nil, fmt.Errorf("checkpoint review: %w", err)
 	}
 
-	// 使用原子更新返回的 Progress 快照作为事实，避免二次读取产生新的失败窗口。
+	// Sử dụng ảnh chụp Progress trả về từ cập nhật nguyên tử làm sự thật, tránh cửa sổ thất bại mới do đọc lại.
 	nextFlow := string(domain.FlowWriting)
 	nextChapter := 0
 	if progress != nil {
@@ -229,15 +229,15 @@ func (t *SaveReviewTool) normalizeReviewEntry(r *domain.ReviewEntry) (*store.Arc
 			switch r.Scope {
 			case "chapter":
 				if chapter != r.Chapter {
-					return nil, fmt.Errorf("chapter review issue must reference chapter %d, got %d", r.Chapter, chapter)
+					return nil, fmt.Errorf("vấn đề đọc kiểm chương phải tham chiếu chương %d, nhận được %d", r.Chapter, chapter)
 				}
 			case "global":
 				if chapter <= 0 || chapter > r.Chapter {
-					return nil, fmt.Errorf("global review issue chapter %d outside 1-%d", chapter, r.Chapter)
+					return nil, fmt.Errorf("vấn đề đọc kiểm toàn cục chương %d nằm ngoài khoảng 1-%d", chapter, r.Chapter)
 				}
 			case "arc":
 				if chapter < boundary.StartChapter || chapter > boundary.EndChapter {
-					return nil, fmt.Errorf("arc review issue chapter %d outside %d-%d", chapter, boundary.StartChapter, boundary.EndChapter)
+					return nil, fmt.Errorf("vấn đề đọc kiểm arc chương %d nằm ngoài khoảng %d-%d", chapter, boundary.StartChapter, boundary.EndChapter)
 				}
 			}
 			if issue.RequiresChange {
@@ -276,8 +276,8 @@ func uniqueSortedChapters(chapters []int) []int {
 	return result
 }
 
-// reviewFlow 是文学裁定与持久化协议之间唯一的映射点。verdict 由 Editor 决定；
-// 这里只接受 Router 能恢复的三种控制结果。
+// reviewFlow là điểm ánh xạ duy nhất giữa phán quyết văn học và giao thức bền vững. verdict do Editor quyết định;
+// ở đây chỉ nhận 3 kết quả điều khiển mà Router có thể khôi phục.
 func reviewFlow(verdict string) (domain.FlowState, error) {
 	switch verdict {
 	case "accept":

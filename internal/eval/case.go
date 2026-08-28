@@ -1,11 +1,11 @@
-// Package eval 是 ainovel-cli 的离线评测 harness。
+// Package eval là harness đánh giá ngoại tuyến của ainovel-cli.
 //
-// 设计立足点：评测器（确定性诊断 diag、全书文体 stylestat、七维 rubric）项目里已经
-// 存在，eval 只做薄薄一层——批量驱动 case、采集产出、把 diag Finding 与 case 契约映射
-// 成门禁、聚合报告。一份事实定义，不在评测层重写一遍判断。详见 docs/evaluation-system.md。
+// Điểm xuất phát thiết kế: Các trình đánh giá (chẩn đoán xác định diag, phong cách toàn sách stylestat, tiêu chí 7 chiều rubric) đã
+// tồn tại trong dự án, eval chỉ đóng vai trò là một lớp mỏng——điều khiển case hàng loạt, thu thập kết quả, ánh xạ diag Finding với hợp đồng case
+// thành cổng chặn, tổng hợp báo cáo. Một định nghĩa thực tế, không viết lại phán đoán ở lớp đánh giá. Xem chi tiết tại docs/evaluation-system.md.
 //
-// 当前已覆盖确定性主线：单路门禁、baseline/variant A/B delta、repeat 聚合与 stylestat 回归。
-// LLM Judge 仍是可选后续层，不能污染确定性门禁。
+// Hiện tại đã bao phủ luồng chính xác định: cổng chặn đơn, baseline/variant A/B delta, tổng hợp repeat và hồi quy stylestat.
+// LLM Judge vẫn là một lớp tiếp theo tùy chọn, không được làm ô nhiễm cổng chặn xác định.
 package eval
 
 import (
@@ -19,46 +19,46 @@ import (
 	"strings"
 )
 
-// caseIDPattern 限制 case id 为安全字符：id 会拼进输出目录并被 RunCase 的 RemoveAll 清理，
-// 禁止 . / 等路径字符，杜绝 "../" 路径穿越删到工作区外。
+// caseIDPattern giới hạn case id là các ký tự an toàn: id sẽ được ghép vào thư mục đầu ra và được RunCase dọn dẹp bằng RemoveAll,
+// cấm các ký tự đường dẫn như . / v.v., chấm dứt việc xuyên thấu đường dẫn "../" xóa ra ngoài không gian làm việc.
 var caseIDPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]*$`)
 
 const defaultDeltaRatio = 0.3
 
-// Case 是一个评测样本：一段创作需求 + 一组事实层断言。
+// Case là một mẫu đánh giá: một đoạn yêu cầu sáng tác + một tập hợp các khẳng định ở lớp sự thật.
 type Case struct {
 	ID            string   `json:"id"`
-	Category      string   `json:"category"`       // 评测层：smoke/workflow/quality/longform/recovery/steering
-	Role          string   `json:"role,omitempty"` // 被测角色：writer/architect/editor（与 Category 正交）
+	Category      string   `json:"category"`       // Lớp đánh giá: smoke/workflow/quality/longform/recovery/steering
+	Role          string   `json:"role,omitempty"` // Vai trò được kiểm tra: writer/architect/editor (trực giao với Category)
 	Description   string   `json:"description,omitempty"`
-	Prompt        string   `json:"prompt"`                   // 用户创作需求
-	Style         string   `json:"style,omitempty"`          // 覆盖配置风格
-	MaxChapters   int      `json:"max_chapters"`             // 章数上限；0 表示只跑到规划完成（进入 writing）
-	TargetPrompts []string `json:"target_prompts,omitempty"` // 本 case 主要验证的 prompt 文件（信息性）
-	Rubric        string   `json:"rubric,omitempty"`         // LLM Judge 评分表（Phase 3 启用）
+	Prompt        string   `json:"prompt"`                   // Yêu cầu sáng tác của người dùng
+	Style         string   `json:"style,omitempty"`          // Ghi đè phong cách cấu hình
+	MaxChapters   int      `json:"max_chapters"`             // Giới hạn số chương; 0 nghĩa là chỉ chạy đến khi hoàn thành quy hoạch (vào writing)
+	TargetPrompts []string `json:"target_prompts,omitempty"` // Các file prompt chủ yếu được xác minh bởi case này (mang tính thông tin)
+	Rubric        string   `json:"rubric,omitempty"`         // Bảng điểm LLM Judge (Kích hoạt ở Phase 3)
 	Expect        Expect   `json:"expect"`
 	Gate          Gate     `json:"gate"`
 }
 
-// Expect 是 case 级契约断言——只声明 diag 通用规则覆盖不到、与本 case 强相关的预期。
+// Expect là khẳng định hợp đồng cấp case——chỉ khai báo các kỳ vọng mà quy tắc chung của diag không bao phủ được, liên quan chặt chẽ đến case này.
 type Expect struct {
-	Phase                string   `json:"phase,omitempty"`                  // 期望最终 phase
-	MinCompletedChapters int      `json:"min_completed_chapters,omitempty"` // 至少完成的章数
-	RequiredCheckpoints  []string `json:"required_checkpoints,omitempty"`   // 形如 "chapter:1:commit" / "arc:1:1:arc_summary" / "global:layered_outline"
-	NoPending            []string `json:"no_pending,omitempty"`             // 结束时应清空的信号：pending_commit/pending_steer/last_commit/last_review
+	Phase                string   `json:"phase,omitempty"`                  // Phase cuối cùng kỳ vọng
+	MinCompletedChapters int      `json:"min_completed_chapters,omitempty"` // Số chương hoàn thành tối thiểu
+	RequiredCheckpoints  []string `json:"required_checkpoints,omitempty"`   // Có dạng "chapter:1:commit" / "arc:1:1:arc_summary" / "global:layered_outline"
+	NoPending            []string `json:"no_pending,omitempty"`             // Tín hiệu cần dọn sạch khi kết thúc: pending_commit/pending_steer/last_commit/last_review
 }
 
-// Gate 是本 case 的门禁阈值。本期只用 MaxSeverity；其余字段为 A/B（regression）阶段预留，
-// 解析但不参与门禁——保留是为了 case 文件能按 docs/evaluation-system.md 的完整 schema 书写。
+// Gate là ngưỡng cổng chặn của case này. Phiên bản này chỉ dùng MaxSeverity; các trường còn lại dành riêng cho giai đoạn A/B (regression),
+// được phân tích nhưng không tham gia cổng chặn——giữ lại để file case có thể viết theo schema đầy đủ của docs/evaluation-system.md.
 type Gate struct {
-	MaxSeverity string `json:"max_severity,omitempty"` // diag Finding 允许的最高严重度（默认 warning）：超过即 hard fail
+	MaxSeverity string `json:"max_severity,omitempty"` // Mức độ nghiêm trọng tối đa cho phép của diag Finding (mặc định: warning): vượt quá là hard fail
 
 	MaxCostDeltaRatio     *float64 `json:"max_cost_delta_ratio,omitempty"`
 	MaxToolCallDeltaRatio *float64 `json:"max_tool_call_delta_ratio,omitempty"`
 	StylestatRegression   string   `json:"stylestat_regression,omitempty"`
 }
 
-// Validate 校验 case 必填字段。
+// Validate kiểm tra các trường bắt buộc của case.
 func (c *Case) Validate() error {
 	if strings.TrimSpace(c.ID) == "" {
 		return fmt.Errorf("case thiếu id")
@@ -101,7 +101,7 @@ func validStylestatGate(s string) bool {
 	}
 }
 
-// LoadCases 从单个 .json 文件或目录加载 case。目录下所有 *.json 递归加载，按 id 排序。
+// LoadCases tải case từ một file .json đơn hoặc một thư mục. Đệ quy tải tất cả *.json trong thư mục, sắp xếp theo id.
 func LoadCases(path string) ([]Case, error) {
 	info, err := os.Stat(path)
 	if err != nil {
@@ -153,7 +153,7 @@ func loadCaseFile(path string) (Case, error) {
 	}
 	var c Case
 	dec := json.NewDecoder(strings.NewReader(string(data)))
-	dec.DisallowUnknownFields() // 拼错字段直接报错，避免静默忽略
+	dec.DisallowUnknownFields() // Báo lỗi trực tiếp nếu sai trường, tránh bỏ qua im lặng
 	if err := dec.Decode(&c); err != nil {
 		return Case{}, fmt.Errorf("phân tích case %s: %w", path, err)
 	}

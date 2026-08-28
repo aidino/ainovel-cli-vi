@@ -51,11 +51,11 @@ func TestObserverSubagentRetryEventsUpdateSameLinePerAgent(t *testing.T) {
 	if events[0].ID == "" || events[1].ID != events[0].ID {
 		t.Fatalf("writer retry events should share ID: %+v", events)
 	}
-	// Summary 不嵌静态延时（UI 依 RetryAt 倒计时）；延时以截止时刻形式携带，静态快照留在 Detail 供日志。
-	if events[1].Agent != "writer" || !strings.Contains(events[1].Summary, "重试 (2/7)") {
+	// Summary 不嵌tĩnh 延时（UI 依 RetryAt 倒计时）；延时以截止时刻形式携带，tĩnh 快照留在 Detail 供日志。
+	if events[1].Agent != "writer" || !strings.Contains(events[1].Summary, "thử lại  (2/7)") {
 		t.Fatalf("event = %+v, want writer retry 2/7 without inline delay", events[1])
 	}
-	if events[1].RetryAt.IsZero() || !strings.Contains(events[1].Detail, "重试 (2/7，2s后)") {
+	if events[1].RetryAt.IsZero() || !strings.Contains(events[1].Detail, "thử lại  (2/7，2s后)") {
 		t.Fatalf("event = %+v, want RetryAt deadline + static delay in Detail", events[1])
 	}
 	if events[1].Kind != "network" {
@@ -93,7 +93,7 @@ func TestObserverDispatchErrorUpdatesSingleEventWithDetail(t *testing.T) {
 	var events []Event
 	o := testObserver(&events)
 
-	o.dispatchStart("architect_long", "规划长篇小说", "需要生成分层大纲")
+	o.dispatchStart("architect_long", "quy hoạch 长篇tiểu thuyết ", "需要生成分层đại cương")
 	runErr := errors.New("stream read error: INTERNAL_ERROR; received from peer [network, openai]")
 	o.dispatchFinish("architect_long", runErr)
 
@@ -101,14 +101,14 @@ func TestObserverDispatchErrorUpdatesSingleEventWithDetail(t *testing.T) {
 		t.Fatalf("start + failed update 应只有 2 个原始事件，got %d: %+v", len(events), events)
 	}
 	start, failed := events[0], events[1]
-	if !strings.Contains(start.Detail, "需要生成分层大纲") || !strings.Contains(start.Detail, "规划长篇小说") {
-		t.Fatalf("DISPATCH 开始日志应保留完整原因与任务: %+v", start)
+	if !strings.Contains(start.Detail, "需要生成分层đại cương") || !strings.Contains(start.Detail, "quy hoạch 长篇tiểu thuyết ") {
+		t.Fatalf("DISPATCH bắt đầu 日志应giữ lại 完整nguyên nhân 与nhiệm vụ : %+v", start)
 	}
 	if failed.ID != start.ID || failed.Category != "DISPATCH" || !failed.Failed || failed.Level != "error" {
-		t.Fatalf("失败应原地更新 DISPATCH: start=%+v failed=%+v", start, failed)
+		t.Fatalf("thất bại应原地cập nhật  DISPATCH: start=%+v failed=%+v", start, failed)
 	}
 	if failed.Detail != runErr.Error() || failed.Kind != "network" || !strings.Contains(failed.Summary, "INTERNAL_ERROR") {
-		t.Fatalf("DISPATCH 应携带完整错误和分类: %+v", failed)
+		t.Fatalf("DISPATCH 应携带完整lỗi 和分类: %+v", failed)
 	}
 }
 
@@ -121,7 +121,7 @@ func TestObserverSubagentToolDeltaUpdatesSaveFoundationType(t *testing.T) {
 		Agent:     "architect_long",
 		Tool:      "save_foundation",
 		DeltaKind: agentcore.DeltaToolCall,
-		Delta:     `{"type":"premise","content":"# 书名`,
+		Delta:     `{"type":"premise","content":"# tên sách `,
 	})
 
 	if len(events) < 2 {
@@ -139,7 +139,7 @@ func TestObserverSubagentToolDeltaUpdatesSaveFoundationTypeAcrossChunks(t *testi
 	var events []Event
 	o := testObserver(&events)
 
-	for _, delta := range []string{`{"ty`, `pe":"premise","content":"# 书名`} {
+	for _, delta := range []string{`{"ty`, `pe":"premise","content":"# tên sách `} {
 		o.handleSubagentDelta(&agentcore.ProgressPayload{
 			Kind:      agentcore.ProgressToolDelta,
 			Agent:     "architect_long",
@@ -187,11 +187,11 @@ func TestObserverToolErrorUpdatesSingleToolEventWithFullDetail(t *testing.T) {
 	}
 	start, failed := events[0], events[1]
 	if failed.ID == "" || failed.ID != start.ID || !failed.Failed || failed.Category != "TOOL" || failed.Level != "error" {
-		t.Fatalf("失败事件应原地更新 TOOL 行: start=%+v failed=%+v", start, failed)
+		t.Fatalf("thất bại事件应原地cập nhật  TOOL dòng : start=%+v failed=%+v", start, failed)
 	}
 	if !strings.Contains(failed.Summary, "tool argument validation failed") ||
 		!strings.Contains(failed.Detail, fullError) || !strings.Contains(failed.Detail, "<TAIL>") {
-		t.Fatalf("失败事件应同时保留 UI 摘要和完整日志详情: %+v", failed)
+		t.Fatalf("thất bại事件应同时giữ lại  UI 摘要和完整日志详情: %+v", failed)
 	}
 	if len(failed.Summary) >= len(failed.Detail) {
 		t.Fatalf("UI Summary 应短于完整 Detail: summary=%d detail=%d", len(failed.Summary), len(failed.Detail))
