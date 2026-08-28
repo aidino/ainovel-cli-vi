@@ -43,5 +43,5 @@ func (s *BookStore) Save(book domain.BookMetadata) error {
 }
 
 func renderBook(book domain.BookMetadata) string {
-	return fmt.Sprintf("# 《%s》\n\n## 简介\n\n%s\n", book.Title, book.Synopsis)
+	return fmt.Sprintf("# %s\n\n## Tóm tắt\n\n%s\n", book.Title, book.Synopsis)
 }

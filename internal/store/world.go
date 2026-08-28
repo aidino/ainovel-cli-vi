@@ -172,7 +172,7 @@ func (s *WorldStore) UpdateForeshadow(chapter int, updates []domain.ForeshadowUp
 		}
 		for _, u := range updates {
 			if strings.TrimSpace(u.ID) == "" {
-				return fmt.Errorf("foreshadow id 不能为空")
+				return fmt.Errorf("id chi tiết gieo mầm không được rỗng")
 			}
 			switch u.Action {
 			case "plant":
@@ -518,7 +518,7 @@ func stableRecordKey(chapter int, parts ...string) string {
 
 func renderTimeline(events []domain.TimelineEvent) string {
 	var b strings.Builder
-	b.WriteString("# 时间线\n\n")
+	b.WriteString("# Dòng thời gian\n\n")
 	b.WriteString(renderTimelineEntries(events))
 	return b.String()
 }
@@ -530,20 +530,20 @@ func renderTimelineEntries(events []domain.TimelineEvent) string {
 		if len(e.Characters) > 0 {
 			chars = "（" + strings.Join(e.Characters, "、") + "）"
 		}
-		fmt.Fprintf(&b, "- **第 %d 章 [%s]**：%s%s\n", e.Chapter, e.Time, e.Event, chars)
+		fmt.Fprintf(&b, "- **Chương %d [%s]**: %s%s\n", e.Chapter, e.Time, e.Event, chars)
 	}
 	return b.String()
 }
 
 func renderForeshadow(entries []domain.ForeshadowEntry) string {
 	var b strings.Builder
-	b.WriteString("# 伏笔账本\n\n")
+	b.WriteString("# Sổ chi tiết gieo mầm\n\n")
 	for _, e := range entries {
 		status := e.Status
 		if e.ResolvedAt > 0 {
-			status = fmt.Sprintf("已回收（第 %d 章）", e.ResolvedAt)
+			status = fmt.Sprintf("đã thu (chương %d)", e.ResolvedAt)
 		}
-		fmt.Fprintf(&b, "- **[%s]** %s — 埋设于第 %d 章，状态：%s\n",
+		fmt.Fprintf(&b, "- **[%s]** %s — gieo tại chương %d, trạng thái: %s\n",
 			e.ID, e.Description, e.PlantedAt, status)
 	}
 	return b.String()
@@ -551,9 +551,9 @@ func renderForeshadow(entries []domain.ForeshadowEntry) string {
 
 func renderRelationships(entries []domain.RelationshipEntry) string {
 	var b strings.Builder
-	b.WriteString("# 人物关系\n\n")
+	b.WriteString("# Quan hệ nhân vật\n\n")
 	for _, e := range entries {
-		fmt.Fprintf(&b, "- **%s ↔ %s**：%s（第 %d 章）\n",
+		fmt.Fprintf(&b, "- **%s ↔ %s**: %s (chương %d)\n",
 			e.CharacterA, e.CharacterB, e.Relation, e.Chapter)
 	}
 	return b.String()
@@ -574,13 +574,13 @@ func renderWorldRules(rules []domain.WorldRule) string {
 	}
 
 	var b strings.Builder
-	b.WriteString("# 世界观规则\n\n")
+	b.WriteString("# Luật thế giới quan\n\n")
 	for _, cat := range order {
 		fmt.Fprintf(&b, "## %s\n\n", cat)
 		for _, r := range grouped[cat] {
-			fmt.Fprintf(&b, "- **规则**：%s\n", r.Rule)
+			fmt.Fprintf(&b, "- **Quy tắc**: %s\n", r.Rule)
 			if r.Boundary != "" {
-				fmt.Fprintf(&b, "  - 边界：%s\n", r.Boundary)
+				fmt.Fprintf(&b, "  - Ranh giới: %s\n", r.Boundary)
 			}
 		}
 		b.WriteString("\n")
