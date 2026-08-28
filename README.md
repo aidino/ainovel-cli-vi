@@ -193,25 +193,37 @@ ToolResultMicrocompact → LightTrim → StoreSummaryCompact → FullSummary
 
 ## Bắt đầu nhanh
 
+> **Đây là phiên bản Việt hóa** của [ainovel-cli gốc](https://github.com/voocel/ainovel-cli). Toàn bộ giao diện, thông báo lỗi, tài liệu và prompt đã được dịch sang tiếng Việt.
+
+### Cài đặt từ source (khuyến nghị)
+
 ```bash
-# Cài đặt một chạm (macOS / Linux, không cần Go)
-curl -fsSL https://raw.githubusercontent.com/voocel/ainovel-cli/main/scripts/install.sh | sh
+# Clone repo Việt hóa
+git clone https://github.com/aidino/ainovel-cli-vi.git
+cd ainovel-cli-vi
 
-# Cài đặt phiên bản chỉ định
-curl -fsSL https://raw.githubusercontent.com/voocel/ainovel-cli/v1.2.3/scripts/install.sh | sh -s -- v1.2.3
+# Build binary
+go build -o ainovel-cli ./cmd/ainovel-cli
 
-# Hoặc cài đặt qua Go
-go install github.com/voocel/ainovel-cli/cmd/ainovel-cli@latest
+# (Tùy chọn) Cài vào PATH
+sudo mv ainovel-cli /usr/local/bin/
+# hoặc
+mv ainovel-cli ~/.local/bin/
 
-# Xem phiên bản / Cập nhật lên phiên bản mới nhất
+# Xem phiên bản
 ainovel-cli --version
-ainovel-cli update
 
 # Lần chạy đầu tiên, tự động vào quy trình hướng dẫn (Chọn Provider → Nhập API Key → Base URL → Tên model)
 ainovel-cli
 ```
 
-> Windows hoặc cài đặt thủ công: Truy cập [Releases](https://github.com/voocel/ainovel-cli/releases/latest) để tải gói cho nền tảng tương ứng.
+### Cài đặt nhanh bằng script (macOS / Linux, không cần Go)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/aidino/ainovel-cli-vi/main/scripts/install.sh | sh
+```
+
+> Windows hoặc cài đặt thủ công: Truy cập [Releases](https://github.com/aidino/ainovel-cli-vi/releases/latest) để tải gói cho nền tảng tương ứng.
 > Script cài đặt sẽ tải danh sách SHA256 từ cùng một GitHub Release, sau khi xác minh thông qua mới giải nén và cài đặt file nhị phân.
 
 ### Chế độ Headless
@@ -242,13 +254,13 @@ mkdir -p config workspace
 docker run --rm -it \
   -v "$PWD/config:/root/.ainovel" \
   -v "$PWD/workspace:/workspace" \
-  ghcr.io/voocel/ainovel-cli:latest
+  ghcr.io/aidino/ainovel-cli-vi:latest
 
 # Headless
 docker run --rm \
   -v "$PWD/config:/root/.ainovel" \
   -v "$PWD/workspace:/workspace" \
-  ghcr.io/voocel/ainovel-cli:latest \
+  ghcr.io/aidino/ainovel-cli-vi:latest \
   --headless --prompt "Viết một bộ tiểu thuyết huyền huyễn phương Đông dài tập, nhân vật chính bắt đầu từ một thị trấn nhỏ ở vùng biên giới"
 ```
 
