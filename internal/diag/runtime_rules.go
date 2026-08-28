@@ -54,12 +54,12 @@ func repeatedErrors(rc *RuntimeCapture) []Finding {
 		switch {
 		case strings.Contains(r.Sig, " · err: "):
 			rule = "RepeatedToolError"
-			title = "工具反复报同一错误"
-			sugg = "近端同一工具反复返回同一错误，多为模型参数不合规或工具契约不符；查 agentcore 工具校验 / prompt 参数约定（参见 #34）。"
+			title = "tool lặp lại cùng một lỗi"
+			sugg = "Cùng một tool gần đây lặp lại trả về cùng lỗi, phần nhiều do tham số model không hợp lệ hoặc không khớp hợp đồng tool; kiểm tra việc kiểm tra tool của agentcore / quy ước tham số prompt (xem #34)."
 		case strings.Contains(r.Sig, "(args invalid)"):
 			rule = "ArgsInvalidLoop"
-			title = "参数反复无法解析"
-			sugg = "模型发来的参数无法解析却不断重试；看 agentcore 是否对该类型做了宽松强转（参见 #34）。"
+			title = "tham số lặp lại không phân tích được"
+			sugg = "Tham số model gửi đến không phân tích được nhưng cứ thử lại; xem agentcore có ép kiểu lỏng lẻo cho kiểu này không (xem #34)."
 		default:
 			continue // 普通工具重复不产 Finding
 		}
@@ -98,9 +98,9 @@ func stuckStep(rc *RuntimeCapture) []Finding {
 		Confidence: ConfHigh,
 		AutoLevel:  AutoNone,
 		Target:     "runtime.flow",
-		Title:      "checkpoint 停滞在同一 step",
-		Evidence:   fmt.Sprintf("连续停在 `%s` ×%d", rc.StuckStep, rc.StuckCount),
-		Suggestion: "同一 step 反复写入而不推进；结合上面的重复签名定位是哪个子代理卡住。",
+		Title:      "checkpoint dừng đờ tại cùng một step",
+		Evidence:   fmt.Sprintf("dừng liên tiếp tại `%s` ×%d", rc.StuckStep, rc.StuckCount),
+		Suggestion: "Cùng một step được ghi lặp lại mà không tiến; kết hợp chữ ký lặp phía trên để định vị subagent nào bị kẹt.",
 	}}
 }
 
@@ -117,8 +117,8 @@ func streamIdleStorm(rc *RuntimeCapture) []Finding {
 		Confidence: ConfHigh,
 		AutoLevel:  AutoNone,
 		Target:     "runtime.provider",
-		Title:      "流式中断频发（stream_idle）",
+		Title:      "Gián đoạn streaming thường xuyên (stream_idle)",
 		Evidence:   fmt.Sprintf("stream_idle ×%d", n),
-		Suggestion: "上游长时间不吐 token 被 watchdog 误杀；慢思考模型调大 streamIdleTimeout，或排查 provider 连接稳定性（参见 #32）。",
+		Suggestion: "Thượng nguồn lâu không nhả token nên bị watchdog giết nhầm; với model suy nghĩ chậm, tăng streamIdleTimeout, hoặc rà độ ổn định kết nối provider (xem #32).",
 	}}
 }

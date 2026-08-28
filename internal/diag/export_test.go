@@ -91,8 +91,8 @@ func TestExport_DeathLoopShape(t *testing.T) {
 		t.Errorf("重复聚合未列出 ×14\n%s", out)
 	}
 	// Phase 2：运行时检测应把这个循环判成 critical 的 RepeatedToolError。
-	if !strings.Contains(out, "工具反复报同一错误") {
-		t.Errorf("运行时检测未产出 RepeatedToolError\n%s", out)
+	if !strings.Contains(out, "tool lặp lại cùng một lỗi") {
+		t.Errorf("phát hiện runtime không sản xuất RepeatedToolError\n%s", out)
 	}
 	if !strings.Contains(out, "[critical]") {
 		t.Errorf("14 次重复应升为 critical\n%s", out)
