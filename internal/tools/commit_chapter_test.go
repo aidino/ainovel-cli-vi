@@ -1554,7 +1554,7 @@ func TestCommitChapterFinaleSkeletonArcBlocksCompletion(t *testing.T) {
 	volArgs, _ := json.Marshal(map[string]any{
 		"volume": 1, "title": "终卷", "summary": "s", "key_events": []string{"e"},
 	})
-	if _, err := volTool.Execute(context.Background(), volArgs); err == nil || !strings.Contains(err.Error(), "当前没有待处理") {
+	if _, err := volTool.Execute(context.Background(), volArgs); err == nil || !strings.Contains(err.Error(), "hiện không có sản phẩm volume_summary chờ xử lý") {
 		t.Fatalf("骨架弧尚未展开时卷并未结束，卷摘要必须被拒绝，got %v", err)
 	}
 	if p, _ := s.Progress.Load(); p.Phase == domain.PhaseComplete {
