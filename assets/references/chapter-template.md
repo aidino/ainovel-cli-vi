@@ -1,19 +1,19 @@
-# 第[X]章：[章节标题]
+# Mẫu đại cương chương
 
-## 本章概要
-- **核心事件**：[一句话概括本章发生的事]
-- **承接上章**：[回应上一章的悬念]
-- **悬念钩子**：[本章结尾的钩子]
+Dùng mẫu này làm tham chiếu khi thiết kế hoặc đọc kiểm một chương đơn lẻ.
 
----
+## Trường dữ liệu
 
-## 正文
+| Trường | Mô tả |
+|---|---|
+| `title` | Tiêu đề chương — tối thiểu, dễ nhớ, gắn với nội dung |
+| `core_event` | Sự kiện trọng tâm mà chương này xoay quanh |
+| `hook` | Móc treo ở cuối chương — giữ độc giả muốn đọc tiếp |
+| `scenes` | Các cảnh hoặc beat chính trong chương |
 
-[章节正文内容 3000-6000 字，最低不低于 2500 字]
+## Tự kiểm nhanh
 
----
-
-## 章节备注
-- 本章悬念：[简述结尾钩子]
-- 下章预告：[可选，1-2句话]
-- 伏笔标记：[如果埋下伏笔，在此记录]
+- [ ] Chương có xung đột không？
+- [ ] Chương có đẩy tuyến chính hoặc làm sâu nhân vật không？
+- [ ] Kết thúc có khiến độc giả muốn đọc tiếp không？
+- [ ] Chapter contract có đáp ứng không？

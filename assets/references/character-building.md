@@ -1,220 +1,220 @@
-# 人物塑造原则
+# Nguyên tắc dựng nhân vật
 
-好的人物是故事的灵魂。读者记住的是人，不是情节。
+Nhân vật hay là linh hồn của truyện. Độc giả nhớ người, không nhớ tình tiết.
 
-## 人物档案模板
+## Mẫu hồ sơ nhân vật
 
-每个主要角色都应建立完整档案：
+Mỗi nhân vật chính nên lập hồ sơ đầy đủ:
 
-### 基本信息
+### Thông tin cơ bản
 
 ```text
-姓名：（有意义的名字更好）
-年龄：
-职业：
-外貌特征：（2-3个显著特征，避免泛泛而谈）
+Tên: (tên có ý nghĩa càng tốt)
+Tuổi:
+Nghề nghiệp:
+Đặc điểm ngoại hình: (2-3 đặc điểm nổi bật, tránh nói chung chung)
 ```
 
-### 性格核心
+### Lõi tính cách
 
 ```text
-核心价值观：（他最相信什么）
-最大恐惧：（他最害怕什么）
-致命缺陷：（什么会导致他失败）
-内心渴望：（他真正想要什么）
+Giá trị cốt lõi: (điều anh ta tin tưởng nhất)
+Nỗi sợ lớn nhất: (điều anh ta sợ nhất)
+Khuyết điểm chí mạng: (điều gì sẽ khiến anh ta thất bại)
+Khát vọng nội tâm: (điều anh ta thực sự muốn)
 ```
 
-### 背景故事
+### Bối cảnh quá khứ
 
 ```text
-成长环境：
-创伤经历：（过去伤害他的事）
-关键记忆：（塑造他现在的关键事件）
-秘密：（别人不知道的事）
+Môi trường trưởng thành:
+Trải nghiệm tổn thương: (việc quá khứ làm tổn thương anh ta)
+Ký ức then chốt: (sự kiện then chốt tạo nên anh ta hôm nay)
+Bí mật: (điều người khác không biết)
 ```
 
-### 行为模式
+### Khuôn mẫu hành vi
 
 ```text
-说话方式：（口头禅、语速、用词习惯）
-肢体语言：（习惯动作、紧张时的小动作）
-社交风格：（内向/外向、如何对待陌生人）
-压力反应：（压力下如何表现）
+Cách nói chuyện: (từ khóa, tốc độ nói, thói quen dùng từ)
+Ngôn ngữ cơ thể: (động tác quen, động tác nhỏ khi căng thẳng)
+Kiểu xã giao: (hướng nội / hướng ngoại, đối xử người lạ thế nào)
+Phản ứng dưới áp lực: (biểu hiện thế nào khi chịu áp lực)
 ```
 
 ---
 
-## 人物类型塑造
+## Dựng kiểu nhân vật
 
-### 主角（Protagonist）
+### Nhân vật chính (Protagonist)
 
-**必须有：**
-- **明确目标** - 他想要什么
-- **强大动机** - 为什么想要
-- **可共情性** - 读者能理解他的感受
-- **成长空间** - 故事中会改变
+**Bắt buộc có:**
+- **Mục tiêu rõ ràng** - hắn muốn gì
+- **Động cơ mạnh** - vì sao muốn
+- **Tính dễ đồng cảm** - độc giả hiểu được cảm giác của hắn
+- **Không gian trưởng thành** - sẽ thay đổi trong truyện
 
-**主角原型：**
-| 类型 | 特征 | 故事作用 |
+**Nguyên mẫu nhân vật chính:**
+| Kiểu | Đặc điểm | Vai trò trong truyện |
 |-----|------|---------|
-| 英雄型 | 勇敢、正义、利他 | 战胜外在威胁 |
-| 成长型 | 从弱小到强大 | 克服内在缺陷 |
-| 反英雄型 | 道德灰色、复杂 | 挑战传统道德 |
-| 平凡型 | 普通人卷入非凡事 | 读者代入感强 |
+| Kiểu anh hùng | Dũng cảm, chính nghĩa, vị tha | Đánh bại uy hiếp bên ngoài |
+| Kiểu trưởng thành | Từ yếu đến mạnh | Vượt qua khuyết điểm nội tại |
+| Kiểu phản anh hùng | Xám đạo đức, phức tạp | Thách thức đạo đức truyền thống |
+| Kiểu bình thường | Người thường cuốn vào chuyện phi thường | Người đọc dễ nhập vai |
 
-### 反派（Antagonist）
+### Phản diện (Antagonist)
 
-**好反派的特点：**
-- **强大可信** - 不应该是草台班子
-- **有自己的逻辑** - 他相信自己在做正确的事
-- **与主角有深层联系** - 不是单纯为了作恶
-- **揭示主题** - 挑战主角的信念
+**Đặc điểm phản diện hay:**
+- **Mạnh đáng tin** - không nên là đám ô hợp
+- **Có logic riêng** - hắn tin mình đang làm điều đúng
+- **Có liên hệ sâu với nhân vật chính** - không phải thuần túy để làm ác
+- **Hé lộ chủ đề** - thách thức niềm tin nhân vật chính
 
-**反派动机类型：**
-- 理想主义扭曲（"为了大局必须牺牲"）
-- 过去创伤（"世界伤害了我，我要报复"）
-- 权力渴望（"我配得上更多"）
-- 与主角相同目标（不同方法）
+**Kiểu động cơ phản diện:**
+- Chủ nghĩa lý tưởng bị bóp méo ("vì đại cục phải hy sinh")
+- Tổn thương quá khứ ("thế giới làm tôi tổn thương, tôi phải trả thù")
+- Khát vọng quyền lực ("tôi xứng đáng nhiều hơn")
+- Cùng mục tiêu với nhân vật chính (cách làm khác)
 
-### 配角（Supporting Characters）
+### Nhân vật phụ (Supporting Characters)
 
-**配角功能：**
-- **导师型** - 指引主角，传递信息
-- **盟友型** - 协助主角，提供情感支持
-- **搞笑型** - 缓解紧张，提供喜剧元素
-- **爱情型** - 制造浪漫线索，增加个人利害
-- **叛徒型** - 制造背叛和转折
+**Chức năng nhân vật phụ:**
+- **Kiểu đạo sư** - dẫn dắt nhân vật chính, truyền thông tin
+- **Kiểu đồng minh** - trợ giúp nhân vật chính, hỗ trợ cảm xúc
+- **Kiểu hài hước** - giải tỏa căng thẳng, yếu tố hài
+- **Kiểu tình cảm** - tạo tuyến lãng mạn, tăng lợi ích cá nhân
+- **Kiểu phản đồ** - tạo phản bội và bước ngoặt
 
-**配角原则：**
-- 每个配角必须有明确作用
-- 删除"只是存在"的角色
-- 避免刻板印象（除非是有意为之）
+**Nguyên tắc nhân vật phụ:**
+- Mỗi nhân vật phụ phải có vai trò rõ ràng
+- Xóa bỏ nhân vật "chỉ tồn tại"
+- Tránh rập khuôn (trừ khi cố ý)
 
 ---
 
-## 人物深度塑造技巧
+## Kỹ thuật dựng chiều sâu nhân vật
 
-### 1. 矛盾性
+### 1. Tính mâu thuẫn
 
-真实的人是复杂的，充满矛盾。
+Người thật phức tạp, đầy mâu thuẫn.
 
-**示例：**
-- 暴力的黑帮成员但爱护流浪猫
-- 无神论的牧师
-- 害怕黑暗的侦探
-- 重视友情但总是背叛朋友
+**Ví dụ:**
+- Thành viên bang đảng bạo lực nhưng thương yêu mèo hoang
+- Linh mục vô thần
+- Thám tử sợ bóng tối
+- Coi trọng tình bạn nhưng luôn phản bội bạn bè
 
-### 2. 侧面揭示
+### 2. Hé lộ từ cạnh bên
 
-不要直接陈述性格，通过行为展示。
+Không tuyên bố thẳng tính cách, thể hiện qua hành vi.
 
-| 错误（直接陈述） | 正确（侧面展示） |
+| Sai (tuyên bố thẳng) | Đúng (hé lộ cạnh bên) |
 |----------------|----------------|
-| 他很愤怒 | 他捏碎手中的纸杯 |
-| 她很紧张 | 她反复调整眼镜位置 |
-| 他很傲慢 | 他从不直视下属的眼睛 |
-| 她很善良 | 她偷偷喂流浪狗三年 |
+| Anh ta rất giận dữ | Anh vò nát ly giấy trong tay |
+| Cô ta rất căng thẳng | Cô chỉnh kính hết lần này đến lần khác |
+| Anh ta rất kiêu căng | Anh không bao giờ nhìn thẳng mắt cấp dưới |
+| Cô ta rất tốt bụng | Cô lén cho mèo hoang ăn ba năm nay |
 
-### 3. 声音独特性
+### 3. Giọng độc đáo
 
-每个人说话方式不同，对话中能分辨角色。
+Mỗi người nói khác nhau, trong hội thoại phân biệt được nhân vật.
 
-**区分要素：**
-- 用词选择（正式/俚语/方言）
-- 句子长度
-- 是否打断别人
-- 是否喜欢隐喻
-- 情绪表达方式
+**Yếu tố phân biệt:**
+- Lựa chọn từ ngữ (trang trọng / suồng sã / phương ngữ)
+- Độ dài câu
+- Có ngắt lời người khác không
+- Có thích dùng ẩn dụ không
+- Cách biểu đạt cảm xúc
 
-### 4. 动机合理化
+### 4. Hợp lý hóa động cơ
 
-每个角色行为必须有合理动机，即使动机扭曲。
+Mỗi hành vi nhân vật phải có động cơ hợp lý, dù động cơ bị bóp méo.
 
-**反派动机合理化示例：**
-- "我想毁灭世界" → 乏味
-- "我失去了一切，世界对我没有意义" → 可理解但扭曲
-- "人类是地球的病毒，我必须清除" → 有哲学支撑
+**Ví dụ hợp lý hóa động cơ phản diện:**
+- "Tôi muốn hủy diệt thế giới" → nhạt
+- "Tôi mất tất cả, thế giới với tôi vô nghĩa" → hiểu được nhưng bóp méo
+- "Loài người là virus của Trái Đất, tôi phải dọn sạch" → có chống đỡ triết học
 
-### 5. 缺陷致命化
+### 5. Khuyết điểm chí mạng hóa
 
-主角必须有缺陷，缺陷在关键时刻导致失败。
+Nhân vật chính phải có khuyết điểm, khuyết điểm dẫn đến thất bại ở thời khắc then chốt.
 
-**经典缺陷模式：**
-| 缺陷 | 导致的失败 |
+**Khuôn mẫu khuyết điểm kinh điển:**
+| Khuyết điểm | Thất bại dẫn đến |
 |-----|----------|
-| 傲慢 | 低估对手，落入陷阱 |
-| 信任问题 | 拒绝帮助，孤立无援 |
-| 完美主义 | 无法及时行动，错失机会 |
-| 复仇心 | 被利用，失去理智 |
+| Kiêu ngạo | Coi thường đối thủ, rơi vào bẫy |
+| Vấn đề lòng tin | Từ chối giúp đỡ, cô lập vô viện |
+| Cầu toàn | Không kịp hành động, lỡ cơ hội |
+| Lòng báo thù | Bị lợi dụng, mất lý trí |
 
 ---
 
-## 人物关系设计
+## Thiết kế quan hệ nhân vật
 
-### 关系类型
+### Kiểu quan hệ
 
-| 关系 | 戏剧潜力 | 应用 |
+| Quan hệ | Tiềm năng kịch | Ứng dụng |
 |-----|---------|-----|
-| 亦敌亦友 | 高 | 悬疑、动作 |
-| 禁忌之爱 | 高 | 言情、悲剧 |
-| 师徒关系 | 中 | 成长故事 |
-| 兄弟竞争 | 中 | 家庭剧 |
-| 陌生人联盟 | 中 | 冒险、悬疑 |
+| Vừa địch vừa bạn | Cao | Huyền nghi, hành động |
+| Tình cấm kỵ | Cao | Ngôn tình, bi kịch |
+| Quan hệ thầy trò | Trung | Truyện trưởng thành |
+| Anh em cạnh tranh | Trung | Kịch gia đình |
+| Liên minh người lạ | Trung | Mạo hiểm, huyền nghi |
 
-### 关系动态变化
+### Biến đổi động thái quan hệ
 
-**好的关系会随故事发展：**
+**Quan hệ tốt sẽ phát triển theo truyện:**
 ```text
-第一章：陌生人
-第三章：不情愿的盟友
-第五章：建立信任
-第七章：背叛/考验
-终章：真正的友谊（或决裂）
+Chương 1: người lạ
+Chương 3: đồng minh miễn cưỡng
+Chương 5: dựng lòng tin
+Chương 7: phản bội / thử thách
+Chương cuối: tình bạn thật sự (hoặc tuyệt giao)
 ```
 
-### 关系揭示
+### Hé lộ quan hệ
 
-**逐步揭示关系深度：**
-- 表层：表面互动
-- 中层：共同经历
-- 深层：真实感受/秘密
-
----
-
-## 人物一致性检查
-
-角色行为必须符合已建立的性格。
-
-**检查问题：**
-- 这件事符合他的核心价值观吗？
-- 以他的背景，会有这样的反应吗？
-- 他的恐惧会如何影响这个决定？
-- 他的缺陷会导致他犯什么错？
-
-**例外处理：**
-- 如果角色"不符合性格"行事，必须有原因
-- 解释应该在相同/下一章提供
-- 可以是成长的标志（角色克服缺陷）
+**Từng bước hé lộ chiều sâu quan hệ:**
+- Tầng mặt: tương tác bề mặt
+- Tầng giữa: trải nghiệm chung
+- Tầng sâu: cảm xúc thật / bí mật
 
 ---
 
-## 人物出场设计
+## Kiểm nhất quán nhân vật
 
-### 首次出场原则
+Hành vi nhân vật phải hợp tính cách đã dựng.
 
-**有效的出场方式：**
-- **行动中** - 展示能力或性格
-- **冲突中** - 立即建立关系/对立
-- **误解中** - 建立悬念
+**Câu hỏi kiểm:**
+- Việc này có hợp giá trị cốt lõi của hắn không?
+- Với bối cảnh của hắn, sẽ phản ứng thế này không?
+- Nỗi sợ của hắn ảnh hưởng quyết định này thế nào?
+- Khuyết điểm khiến hắn mắc lỗi gì?
 
-**避免：**
-- 镜子自照描写外貌
-- 姓名+年龄+职业的简历式介绍
-- 无意义的日常活动
+**Xử lý ngoại lệ:**
+- Nếu nhân vật hành xử "trái tính cách", phải có nguyên nhân
+- Giải thích nên có trong cùng hoặc chương kế
+- Có thể là dấu hiệu trưởng thành (nhân vật vượt qua khuyết điểm)
 
-### 出场示例对比
+---
 
-| 无效出场 | 有效出场 |
+## Thiết kế ra mắt nhân vật
+
+### Nguyên tắc ra mắt lần đầu
+
+**Cách ra mắt hiệu quả:**
+- **Trong hành động** - phô diễn năng lực hoặc tính cách
+- **Trong xung đột** - lập quan hệ / đối lập ngay
+- **Trong hiểu lầm** - dựng hồi hộp
+
+**Tránh:**
+- Tự soi gương mô tả ngoại hình
+- Giới thiệu kiểu hồ sơ "tên + tuổi + nghề"
+- Hoạt động thường ngày vô nghĩa
+
+### So sánh ví dụ ra mắt
+
+| Ra mắt vô hiệu | Ra mắt hiệu quả |
 |---------|---------|
-| 李明，28岁，是一名侦探。他走进办公室。| 李明跨过警戒线，警官试图拦住他。"市刑警队，李明。"他亮出证件，径直走向尸体。|
-| 美丽的女孩坐在窗边，她叫小红。| 她已经三天没睡了，咖啡杯里的液体在颤抖。当门铃响起时，她几乎把杯子摔在地上。|
+| Lý Minh, 28 tuổi, là thám tử. Anh bước vào văn phòng. | Lý Minh vượt qua dây cảnh giới, viên cảnh sát cố ngăn anh. "Đội hình sự thành phố, Lý Minh." Anh giơ thẻ, đi thẳng về phía thi thể. |
+| Cô gái xinh đẹp ngồi bên cửa sổ, tên là Tiểu Hồng. | Cô đã ba ngày không ngủ, thứ chất lỏng trong ly cà phê đang run. Khi chuông cửa vang, cô suýt làm rơi ly xuống đất. |

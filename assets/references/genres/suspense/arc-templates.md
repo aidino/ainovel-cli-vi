@@ -1,39 +1,39 @@
-## 悬疑/推理 弧型参考
+## Tham khảo arc huyền nghi / suy luận
 
-以下弧型适用于悬疑、推理、刑侦、惊悚类长篇。根据具体设定自由组合，不必全部使用。
+Các arc sau áp dụng cho trường thiên huyền nghi, suy luận, hình sự, kinh dị. Tự do kết hợp theo thiết lập cụ thể, không cần dùng hết.
 
-### 案件调查弧（10-15 章）
-2-3 章案件发生/现场勘查 → 3-5 章多方排查（每条线索打开新疑问） → 2-3 章关键突破 → 1-2 章真相揭示+后续影响
-- 线索必须公平呈现，揭示时读者能回溯到伏笔
-- 每条排查线不能只是"排除嫌疑人"，要揭示新的背景信息
-- 真相揭示后的情感冲击比逻辑推理本身更重要
+### Arc điều tra vụ án (10-15 chương)
+2-3 chương vụ án xảy ra / khám nghiệm hiện trường → 3-5 chương đa hướng sàng lọc (mỗi manh mối mở ra nghi vấn mới) → 2-3 chương đột phá then chốt → 1-2 chương hé lộ chân tướng + ảnh hưởng về sau
+- Manh mối phải trình bày công bằng, lúc hé lộ độc giả quay ngược lại thấy được chi tiết gieo mầm
+- Mỗi tuyến sàng lọc không thể chỉ "loại trừ người tình nghi", phải hé lộ thông tin nền mới
+- Va đập cảm xúc sau khi lộ chân tướng quan trọng hơn bản thân suy luận logic
 
-### 真相逼近弧（8-12 章）
-2-3 章旧案重现/新线索浮现 → 3-5 章追踪深入（主角逐步接近核心） → 2-3 章危险升级+被迫选择
-- 适用于连续剧式的长线悬念（贯穿多弧的主线谜团）
-- 每次接近真相都付出代价（信任破裂、人身危险、道德困境）
-- 在揭示部分真相的同时制造更大的疑问
+### Arc tiến gần chân tướng (8-12 chương)
+2-3 chương vụ cũ tái hiện / manh mối mới nổi lên → 3-5 chương lần theo tiến sâu (nhân vật chính dần tiếp cận lõi) → 2-3 chương nguy hiểm leo thang + buộc phải chọn
+- Áp dụng cho huyền nghi tuyến dài kiểu phim dài tập (bí ẩn tuyến chính xuyên nhiều arc)
+- Mỗi lần tiến gần chân tướng đều trả giá (lòng tin rạn nứt, nguy hiểm tính mạng, lưỡng nan đạo đức)
+- Vừa hé lộ một phần chân tướng vừa tạo ra nghi vấn lớn hơn
 
-### 追凶/潜入弧（12-18 章）
-2-3 章目标锁定/计划制定 → 6-10 章执行过程（多次危机和临场应变） → 2-3 章最终对峙+意外翻转
-- 执行过程中不断出现计划外状况，展示角色的应变能力
-- 潜入类弧需要环境细节和紧张感营造
-- 对峙不应只是武力，要有心理博弈和信息战
+### Arc truy hung / đột nhập (12-18 chương)
+2-3 chương khóa mục tiêu / lập kế hoạch → 6-10 chương quá trình thực thi (nhiều lần khủng hoảng và ứng biến) → 2-3 chương đối đầu cuối + lật ngược bất ngờ
+- Quá trình thực thi liên tục xuất hiện tình huống ngoài kế hoạch, phô diễn năng lực ứng biến của nhân vật
+- Arc kiểu đột nhập cần chi tiết môi trường và dựng cảm giác căng thẳng
+- Đối đầu không chỉ là vũ lực, còn có đấu tâm lý và chiến tranh thông tin
 
-### 审判/揭示弧（8-12 章）
-2-3 章证据整理/庭前博弈 → 3-5 章正式交锋（控辩/审讯/公开对峙） → 1-2 章意外证据+最终裁定
-- 适用于故事的阶段性收束（结案、定罪、真相公开）
-- 交锋过程中双方轮流占上风，不是一边倒
-- 最终裁定不一定是正义获胜，可以是妥协或更大的阴谋
+### Arc xét xử / công bố (8-12 chương)
+2-3 chương sắp xếp chứng cứ / giao tranh trước phiên tòa → 3-5 chương đối kháng chính thức (công tố / thẩm vấn / đối chất công khai) → 1-2 chương chứng cứ bất ngờ + phán quyết cuối
+- Áp dụng cho giai đoạn thu kết cấu của truyện (khép vụ, định tội, công khai chân tướng)
+- Quá trình đối kháng hai bên thay nhau chiếm thế thượng phong, không phải một chiều
+- Phán quyết cuối không nhất thiết công lý thắng, có thể là thỏa hiệp hoặc âm mưu lớn hơn
 
-### 连环案串联弧（15-20 章）
-2-3 章看似独立的案件 → 5-8 章发现关联/模式 → 3-5 章追踪幕后主使 → 2-3 章最终对决+真相
-- 前期案件各有特色，每个都能独立成立
-- 关联发现是重大转折点，改变主角对整个局面的认知
-- 幕后主使的动机必须在前文有伏笔支撑
+### Arc chuỗi vụ liên hoàn (15-20 chương)
+2-3 chương vụ án tưởng độc lập → 5-8 chương phát hiện liên quan / quy luật → 3-5 chương lần theo kẻ chủ mưu → 2-3 chương quyết đấu cuối + chân tướng
+- Các vụ án ban đầu mỗi vụ có đặc sắc riêng, mỗi vụ đều tự đứng vững được
+- Phát hiện sự liên quan là bước ngoặt trọng đại, thay đổi nhận thức của nhân vật chính về toàn cục
+- Động cơ kẻ chủ mưu phải có chi tiết gieo mầm chống đỡ ở phần trước
 
-### 日常/过渡弧（4-6 章）
-角色关系修复/新线索酝酿/心理恢复/暗线推进
-- 高压弧之后需要呼吸空间，但不能完全放松
-- 暗线推进：读者能感觉到"某件事要发生了"
-- 角色在经历大案后的心理变化要有体现
+### Arc thường nhật / chuyển tiếp (4-6 chương)
+Sửa lại quan hệ nhân vật / manh mối mới ấp ủ / phục hồi tâm lý / đẩy tuyến ngầm
+- Sau arc áp lực cao cần không gian hít thở, nhưng không thể hoàn toàn thả lỏng
+- Đẩy tuyến ngầm: độc giả cảm nhận được "có chuyện gì đó sắp xảy ra"
+- Biến hóa tâm lý nhân vật sau vụ án lớn phải được thể hiện

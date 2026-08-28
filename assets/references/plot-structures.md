@@ -1,259 +1,259 @@
-# 情节结构模板
+# Mẫu kết cấu tình tiết
 
-常见的故事结构模板，可用于规划小说章节。
+Các mẫu kết cấu truyện thường gặp, dùng để quy hoạch chương tiểu thuyết.
 
-## 三幕式结构（Three-Act Structure）
+## Kết cấu ba hồi (Three-Act Structure)
 
-最经典的故事结构，适用于大多数短篇小说。
+Kết cấu truyện kinh điển nhất, áp dụng cho hầu hết truyện ngắn.
 
-### 第一幕：设置（Act 1 - Setup）约 25%
+### Hồi một: Thiết lập (Act 1 - Setup) khoảng 25%
 
-| 章节 | 内容 |
+| Chương | Nội dung |
 |-----|------|
-| 第1章 | 介绍主角日常生活（现状） |
-| 第2章 | 激励事件（Inciting Incident）- 打破现状的事件 |
-| 第3章 | 主角拒绝召唤，但最终决定行动 |
+| Chương 1 | Giới thiệu đời thường nhân vật chính (hiện trạng) |
+| Chương 2 | Sự kiện kích thích (Inciting Incident) - sự kiện phá vỡ hiện trạng |
+| Chương 3 | Nhân vật chính từ chối tiếng gọi, nhưng cuối cùng quyết định hành động |
 
-**第一幕悬念示例：**
-- "门开了，进来的人是三年前死去的人。"
-- "她收到的信件，署名是自己。"
+**Ví dụ hồi hộp hồi một:**
+- "Cửa mở, người bước vào là kẻ đã chết ba năm trước."
+- "Bức thư cô nhận được, ký tên là chính mình."
 
-### 第二幕：对抗（Act 2 - Confrontation）约 50%
+### Hồi hai: Đối kháng (Act 2 - Confrontation) khoảng 50%
 
-| 章节 | 内容 |
+| Chương | Nội dung |
 |-----|------|
-| 第4-5章 | 主角进入新世界，遭遇挑战 |
-| 第6章 | 中点（Midpoint）- 重大转折/信息揭示 |
-| 第7-8章 | 困难升级，盟友可能背叛 |
+| Chương 4-5 | Nhân vật chính bước vào thế giới mới, gặp thử thách |
+| Chương 6 | Điểm giữa (Midpoint) - bước ngoặt lớn / hé lộ thông tin |
+| Chương 7-8 | Khó khăn leo thang, đồng minh có thể phản bội |
 
-**第二幕悬念示例：**
-- "导师竟然是幕后黑手。"
-- "唯一的盟友失踪了。"
+**Ví dụ hồi hộp hồi hai:**
+- "Đạo sư hóa ra là kẻ chủ mưu sau màn."
+- "Đồng minh duy nhất mất tích."
 
-### 第三幕：结局（Act 3 - Resolution）约 25%
+### Hồi ba: Kết cục (Act 3 - Resolution) khoảng 25%
 
-| 章节 | 内容 |
+| Chương | Nội dung |
 |-----|------|
-| 第9章 | 一切看似失败，最低点 |
-| 第10章 | 高潮（Climax）- 最终对决 |
-| 终章 | 结局，展示新常态 |
+| Chương 9 | Mọi thứ tưởng như thất bại, điểm thấp nhất |
+| Chương 10 | Cao trào (Climax) - quyết đấu cuối |
+| Chương cuối | Kết cục, phô bày trạng thái mới |
 
 ---
 
-## 英雄之旅（Hero's Journey）
+## Hành trình anh hùng (Hero's Journey)
 
-神话学家约瑟夫·坎贝尔的经典结构，适合冒险/奇幻题材。
+Kết cấu kinh điển của nhà thần thoại học Joseph Campbell, phù hợp đề tài mạo hiểm / kỳ ảo.
 
-### 阶段分解
+### Phân giai đoạn
 
-| 阶段 | 章节 | 内容 |
+| Giai đoạn | Chương | Nội dung |
 |-----|------|------|
-| 1. 平凡世界 | 第1章 | 介绍主角日常生活 |
-| 2. 冒险召唤 | 第1-2章 | 激励事件发生 |
-| 3. 拒绝召唤 | 第2章 | 主角最初犹豫 |
-| 4. 遇见导师 | 第2-3章 | 获得指导/装备 |
-| 5. 跨越门槛 | 第3章 | 离开舒适区 |
-| 6. 考验盟友敌人 | 第4-5章 | 新世界探索 |
-| 7. 接近洞穴 | 第5-6章 | 准备面对大挑战 |
-| 8. 苦难煎熬 | 第6-7章 | 接近死亡/重大失败 |
-| 9. 奖赏 | 第7-8章 | 获得力量/信息 |
-| 10. 返回之路 | 第8章 | 回归途中受阻 |
-| 11. 复活 | 第9章 | 最终考验/蜕变 |
-| 12. 满载而归 | 第10章 | 回归，带着收获 |
+| 1. Thế giới thường ngày | Chương 1 | Giới thiệu đời thường nhân vật chính |
+| 2. Tiếng gọi mạo hiểm | Chương 1-2 | Sự kiện kích thích xảy ra |
+| 3. Từ chối tiếng gọi | Chương 2 | Nhân vật chính ban đầu do dự |
+| 4. Gặp đạo sư | Chương 2-3 | Nhận chỉ dẫn / trang bị |
+| 5. Vượt ngưỡng cửa | Chương 3 | Rời khỏi vùng an toàn |
+| 6. Thử thách, đồng minh địch thủ | Chương 4-5 | Khám phá thế giới mới |
+| 7. Tiến gần hang sâu | Chương 5-6 | Chuẩn bị đối diện thử thách lớn |
+| 8. Nỗi khổ dằn vặt | Chương 6-7 | Cận kề cái chết / thất bại lớn |
+| 9. Phần thưởng | Chương 7-8 | Nhận sức mạnh / thông tin |
+| 10. Đường trở về | Chương 8 | Trên đường về bị cản trở |
+| 11. Phục sinh | Chương 9 | Thử thách cuối / lột xác |
+| 12. Trở về đầy đủ | Chương 10 | Trở về, mang theo thu hoạch |
 
 ---
 
-## 悬疑小说结构
+## Kết cấu tiểu thuyết huyền nghi
 
-适合侦探/推理/惊悚题材。
+Phù hợp đề tài thám tử / suy luận / kinh dị.
 
-### 第一幕：谜题出现
+### Hồi một: Câu đố xuất hiện
 
-| 章节 | 内容 | 悬念钩子 |
+| Chương | Nội dung | Móc hồi hộp |
 |-----|------|---------|
-| 第1章 | 发现尸体/事件发生 | 谁干的？ |
-| 第2章 | 侦探接手案件 | 为什么这个案子特殊？ |
-| 第3章 | 初步调查，发现线索 | 线索指向谁？ |
+| Chương 1 | Phát hiện thi thể / sự kiện xảy ra | Ai làm? |
+| Chương 2 | Thám tử tiếp nhận vụ án | Vì sao vụ này đặc biệt? |
+| Chương 3 | Điều tra sơ bộ, phát hiện manh mối | Manh mối chỉ về ai? |
 
-### 第二幕：调查深入
+### Hồi hai: Điều tra tiến sâu
 
-| 章节 | 内容 | 悬念钩子 |
+| Chương | Nội dung | Móc hồi hộp |
 |-----|------|---------|
-| 第4章 | 审讯嫌疑人，各有嫌疑 | 谁在撒谎？ |
-| 第5章 | 新线索出现，指向意外方向 | 我们是不是一开始就错了？ |
-| 第6章 | 第二起事件，模式浮现 | 这是连环案件？ |
-| 第7章 | 侦探陷入危险 | 侦探会成为下一个目标吗？ |
+| Chương 4 | Thẩm vấn người tình nghi, ai cũng có nghi vấn | Ai đang nói dối? |
+| Chương 5 | Manh mối mới, chỉ hướng bất ngờ | Có phải ta sai từ đầu? |
+| Chương 6 | Vụ thứ hai, quy luật hiện ra | Đây là chuỗi vụ liên hoàn? |
+| Chương 7 | Thám tử lâm nguy | Thám tử có thành mục tiêu kế? |
 
-### 第三幕：真相揭示
+### Hồi ba: Hé lộ chân tướng
 
-| 章节 | 内容 | 悬念钩子 |
+| Chương | Nội dung | Móc hồi hộp |
 |-----|------|---------|
-| 第8章 | 重大突破/反转 | 我们信任的人有问题？ |
-| 第9章 | 最终对决 | 真相是什么？代价是什么？ |
-| 第10章 | 案件解决，遗留疑问 | 真的结束了吗？ |
+| Chương 8 | Đột phá lớn / đảo lộn | Người ta tin có vấn đề? |
+| Chương 9 | Quyết đấu cuối | Chân tướng là gì? Cái giá là gì? |
+| Chương 10 | Vụ án kết thúc, nghi vấn còn sót | Thật sự kết thúc chưa? |
 
 ---
 
-## 言情小说结构
+## Kết cấu tiểu thuyết ngôn tình
 
-适合爱情题材。
+Phù hợp đề tài tình yêu.
 
-### 第一幕：相遇
+### Hồi một: Gặp gỡ
 
-| 章节 | 内容 | 情感节点 |
+| Chương | Nội dung | Nút cảm xúc |
 |-----|------|---------|
-| 第1章 | 介绍主角 A，现状/问题 | 读者共情 A |
-| 第2章 | 介绍主角 B，现状/问题 | 读者共情 B |
-| 第3章 | A 和 B 相遇（第一印象不佳） | 两人注定在一起，但目前有冲突 |
+| Chương 1 | Giới thiệu nhân vật A, hiện trạng / vấn đề | Độc giả đồng cảm A |
+| Chương 2 | Giới thiệu nhân vật B, hiện trạng / vấn đề | Độc giả đồng cảm B |
+| Chương 3 | A và B gặp nhau (ấn tượng đầu không tốt) | Hai người định sẵn bên nhau, nhưng hiện có xung đột |
 
-### 第二幕：发展
+### Hồi hai: Phát triển
 
-| 章节 | 内容 | 情感节点 |
+| Chương | Nội dung | Nút cảm xúc |
 |-----|------|---------|
-| 第4-5章 | 被迫在一起，了解对方 | 发现有吸引力的地方 |
-| 第6章 | 吸引力增强，亲密时刻 | 接近 |
-| 第7-8章 | 误解/秘密/障碍出现 | 推远 |
-| 第9章 | 危机，关系破裂 | 看起来无望 |
+| Chương 4-5 | Buộc phải bên nhau, hiểu đối phương | Phát hiện chỗ hấp dẫn |
+| Chương 6 | Hấp dẫn tăng, khoảnh khắc thân mật | Xích lại gần |
+| Chương 7-8 | Hiểu lầm / bí mật / trở ngại xuất hiện | Đẩy ra xa |
+| Chương 9 | Khủng hoảng, quan hệ rạn nứt | Tưởng như vô vọng |
 
-### 第三幕：和解
+### Hồi ba: Hòa giải
 
-| 章节 | 内容 | 情感节点 |
+| Chương | Nội dung | Nút cảm xúc |
 |-----|------|---------|
-| 第10章 | 意识到真爱，克服障碍 | 高潮 |
-| 终章 | 在一起，展示新生活 | 圆满 |
+| Chương 10 | Nhận ra tình yêu thật, vượt trở ngại | Cao trào |
+| Chương cuối | Bên nhau, phô bày cuộc sống mới | Viên mãn |
 
 ---
 
-## 惊悚/动作结构
+## Kết cấu kinh dị / hành động
 
-适合快节奏、紧张刺激题材。
+Phù hợp đề tài nhịp nhanh, căng thẳng kích thích.
 
-### 短篇结构（5-6章）
+### Kết cấu ngắn (5-6 chương)
 
 ```text
-第1章：危机出现 → 钩子：主角被追杀/威胁
-第2章：应对计划 → 钩子：计划失败，情况恶化
-第3章：追逐/对抗 → 钩子：被逼入绝境
-第4章：逆转机会 → 钩子：发现新希望，但时间紧迫
-第5章：最终对抗 → 钩子：生死一瞬
-第6章：结局 → 展示后果
+Chương 1: Khủng hoảng xuất hiện → móc: nhân vật chính bị truy sát / uy hiếp
+Chương 2: Kế hoạch ứng phó → móc: kế hoạch thất bại, tình huống xấu đi
+Chương 3: Truy đuổi / đối kháng → móc: bị dồn vào tuyệt cảnh
+Chương 4: Cơ hội đảo ngược → móc: phát hiện hy vọng mới, nhưng thời gian gấp
+Chương 5: Đối kháng cuối → móc: một khoảnh khắc sinh tử
+Chương 6: Kết cục → phô bày hậu quả
 ```
 
-### 特点
+### Đặc điểm
 
-- 节奏快，每章都有动作
-- 高密度事件
-- 时间压力持续存在
-- 悬念强度递增
+- Nhịp nhanh, chương nào cũng có hành động
+- Mật độ sự kiện cao
+- Áp lực thời gian tồn tại liên tục
+- Cường độ hồi hộp tăng dần
 
 ---
 
-## 反转结构（Twist-Based）
+## Kết cấu đảo lộn (Twist-Based)
 
-适合心理惊悚/悬疑题材。
+Phù hợp đề tài kinh dị tâm lý / huyền nghi.
 
-### 章节分布
+### Phân bố chương
 
 ```text
-第1-2章：建立"真实"情况
-第3-4章：出现疑点，但不明显
-第5-6章：第一次小反转（重新理解）
-第7-8章：第二次反转（再次反转）
-第9-10章：最终反转（一切颠覆）
+Chương 1-2: Dựng tình huống "thật"
+Chương 3-4: Xuất hiện nghi điểm, nhưng chưa rõ
+Chương 5-6: Đảo lộn nhỏ lần một (hiểu lại)
+Chương 7-8: Đảo lộn lần hai (đảo lộn lần nữa)
+Chương 9-10: Đảo lộn cuối (mọi thứ lật nhào)
 ```
 
-### 关键
+### Then chốt
 
-- 前期埋下看似无辜的线索
-- 每次反转都合乎逻辑（回看有迹可循）
-- 避免机械降神
+- Đầu truyện gieo manh mối tưởng như vô tội
+- Mỗi lần đảo lộn đều hợp logic (nhìn lại có dấu vết)
+- Tránh cứu viện từ trên trời
 
 ---
 
-## 多线叙事结构
+## Kết cấu tường thuật đa tuyến
 
-适合复杂剧情，多主角。
+Phù hợp tình tiết phức tạp, nhiều nhân vật chính.
 
-### 交叉剪辑模式
+### Mẫu dựng chéo
 
 ```text
-第1章：主角A故事
-第2章：主角B故事
-第3章：主角A故事（推进）
-第4章：主角B故事（推进）
-第5章：线索交汇
+Chương 1: Truyện nhân vật A
+Chương 2: Truyện nhân vật B
+Chương 3: Truyện nhân vật A (đẩy tiến)
+Chương 4: Truyện nhân vật B (đẩy tiến)
+Chương 5: Manh mối giao nhau
 ...
 ```
 
-### 时间线模式
+### Mẫu dòng thời gian
 
 ```text
-第1章：现在（时间A）
-第2章：过去（时间A-5年）
-第3章：现在（时间A+1天）
-第4章：过去（时间A-5年+1月）
+Chương 1: Hiện tại (thời điểm A)
+Chương 2: Quá khứ (thời điểm A-5 năm)
+Chương 3: Hiện tại (thời điểm A+1 ngày)
+Chương 4: Quá khứ (thời điểm A-5 năm+1 tháng)
 ...
 ```
 
-### 收敛原则
+### Nguyên tắc hội tụ
 
-- 各线最终必须交汇
-- 早期看似无关的事件后来有关联
-- 收敛时产生"原来如此"的效果
-
----
-
-## 短篇小说快速结构
-
-### 3章微型结构
-
-```text
-第1章：激励事件 + 决定行动
-第2章：尝试 + 失败 + 升级
-第3章：最终尝试 + 成功/失败 + 结局
-```
-
-### 5章标准结构
-
-```text
-第1章：现状 + 激励事件
-第2章：拒绝 + 跨越门槛
-第3章：挑战 + 盟友/敌人
-第4章：低谷 + 觉醒
-第5章：高潮 + 结局
-```
+- Các tuyến cuối cùng phải giao nhau
+- Sự kiện tưởng như không liên quan lúc đầu về sau liên quan
+- Lúc hội tụ tạo hiệu quả "hóa ra là thế"
 
 ---
 
-## 章节情节模板
+## Kết cấu nhanh truyện ngắn
 
-### 单章内部结构
+### Kết cấu 3 chương cực ngắn
 
 ```text
-开头（10%）：钩子 + 上下文连接
-发展（60%）：事件推进 + 冲突
-高潮（20%）：本章最高点
-结尾（10%）：悬念钩子 + 下章铺垫
+Chương 1: Sự kiện kích thích + quyết định hành động
+Chương 2: Thử + thất bại + leo thang
+Chương 3: Thử cuối + thành / bại + kết cục
 ```
 
-### 无效章节结构
+### Kết cấu 5 chương chuẩn
 
 ```text
-开头：漫长铺垫/背景说明
-中间：日常活动/对话流水账
-结尾：平淡结束/无悬念
+Chương 1: Hiện trạng + sự kiện kích thích
+Chương 2: Từ chối + vượt ngưỡng cửa
+Chương 3: Thử thách + đồng minh / địch thủ
+Chương 4: Điểm thấp + thức tỉnh
+Chương 5: Cao trào + kết cục
 ```
 
 ---
 
-## 结构选择指南
+## Mẫu tình tiết chương
 
-| 故事类型 | 推荐结构 | 章节数 |
+### Kết cấu bên trong một chương
+
+```text
+Mở đầu (10%): móc + nối ngữ cảnh
+Phát triển (60%): đẩy sự kiện + xung đột
+Cao trào (20%): điểm cao nhất của chương
+Kết thúc (10%): móc hồi hộp + nền cho chương sau
+```
+
+### Kết cấu chương vô hiệu
+
+```text
+Mở đầu: đoạn trải bại dài / giải thích bối cảnh
+Giữa: hoạt động thường ngày / hội thoại bản kê
+Kết thúc: khép nhạt / không hồi hộp
+```
+
+---
+
+## Hướng dẫn chọn kết cấu
+
+| Kiểu truyện | Kết cấu đề xuất | Số chương |
 |---------|---------|--------|
-| 冒险/奇幻 | 英雄之旅 | 8-12章 |
-| 侦探/悬疑 | 悬疑结构 | 8-10章 |
-| 言情 | 言情结构 | 6-10章 |
-| 动作/惊悚 | 惊悚结构 | 5-8章 |
-| 心理/反转 | 反转结构 | 6-8章 |
-| 多主角 | 多线叙事 | 10-15章 |
-| 微型小说 | 3章结构 | 3章 |
+| Mạo hiểm / kỳ ảo | Hành trình anh hùng | 8-12 chương |
+| Thám tử / huyền nghi | Kết cấu huyền nghi | 8-10 chương |
+| Ngôn tình | Kết cấu ngôn tình | 6-10 chương |
+| Hành động / kinh dị | Kết cấu kinh dị | 5-8 chương |
+| Tâm lý / đảo lộn | Kết cấu đảo lộn | 6-8 chương |
+| Nhiều nhân vật chính | Đa tuyến tường thuật | 10-15 chương |
+| Truyện cực ngắn | Kết cấu 3 chương | 3 chương |

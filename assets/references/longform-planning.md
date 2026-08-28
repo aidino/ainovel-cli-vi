@@ -1,121 +1,99 @@
-# 通用长篇规划参考
+# Tham chieu quy hoach truong thien thong dung
 
-这份参考用于“适合长篇连载”的题材，不限定具体品类。
+Tai lieu tham chieu cho quy hoach su khi thiet ke ket cau truong thien dai ky. Khong phai la quy tac, ma la cac khuon mau da duoc kiem chung.
 
-## 长篇不是把短篇拉长
+## Dac diem cot loi cua truong thien
 
-长篇的核心不是章节更多，而是具备长期展开能力。判断一部作品能否写长，关键看它是否具备以下“故事引擎”：
+Tieu thuyet truong thien khac voi truyen ngan hoac trung o mot so dac diem:
 
-- **目标引擎**：主角会不断追求新的阶段目标
-- **世界引擎**：世界规则、势力格局、资源结构可以持续制造新问题
-- **关系引擎**：主要人物关系会持续演化，而不是定型后停滞
-- **身份引擎**：主角的位置、身份、阵营、责任会变化
-- **代价引擎**：每次成长都带来新的约束、损失或风险
+1. **Trien khai ben vung** — cot truyen co the ho tro viec mo rong lien tuc ma khong bi can kiet
+2. **Ket cau phan tang** — cac su kien to chuc thanh tap va arc, khong phai danh sach chuong phang
+3. **Tien hoa nhan vat** — nhan vat thay doi qua nhieu tap, khong chi trong mot arc
+4. **Lam sau the gioi** — boi canh duoc lam giau dan dan, tiet lo cac tang moi theo thoi gian
+5. **Xung dot lan** — giai quyet mot so van de trong khi mo ra nhung van de moi
 
-如果这几个引擎都很弱，再多章节也只会变成重复灌水。
+## Mau cau truc tap
 
-## 长篇推荐规划顺序
+Moi tap nen hoat dong nhu mot "mua" cua cau chuyen:
 
-### 1. 作品卖点
+### Dac diem cua tap
 
-先明确：
+| Dac diem | Mo ta |
+|---|---|
+| **Trong tam chuyen de** | Moi tap co mot cau hoi hoac thach thuc trung tam |
+| **Chuc nang tu su rieng biet** | Cac tap khong nen lap lai "manh len roi danh trum" |
+| **Tien hoa quan he** | Quan he nhan vat thay doi qua moi tap |
+| **Quy mo hoac ben lien quan leo thang** | Xung dot mo rong ve pham vi hoac muc cuoc |
+| **Ket thoa dang** | Moi tap cung cap mot diem dung thoa man trong khi mo ra tap tiep theo |
 
-- 这本书最吸引读者的承诺是什么
-- 它和同题材常见写法最不同的点是什么
-- 读者为什么愿意跟随主角走到中后期
+### Chuc nang tap theo vi tri
 
-### 2. 长期冲突
+| Vi tri tap | Chuc nang dien hinh |
+|---|---|
+| Tap 1 | Thiet lap the gioi, gioi thieu nhan vat chinh, mau thuan ban dau, su menh dau tien |
+| Tap 2 | Mo rong the gioi, lam sau quan he, thach thuc lon hon, gioi thieu cac moi de doa rong hon |
+| Tap 3-4 (giua) | Xoay chuyen giua ky — thay doi huong, cac quy tac moi, dong co moi |
+| Tap cuoi | Hoi tu, thu hoach, tra loi cac luan de cot loi |
 
-不要只有一个“终极反派”。长篇更适合多阶段冲突：
+## Mau thiet ke arc
 
-- 近程冲突：当前生存、当前任务、当前阶段目标
-- 中程冲突：势力博弈、关系重组、身份变化
-- 远程冲突：世界真相、时代命题、终局选择
+### Vong doi arc
 
-### 3. 卷级设计
+Moi arc ly tuong nen theo mot duong cong tuong thuat:
 
-每一卷至少要有一个明确功能，常见功能包括：
+```
+Thiet lap → Leo thang → Khung hoang → Cao trao → Du ba
+```
 
-- 立足
-- 扩张
-- 试错
-- 反噬
-- 失去
-- 转向
-- 收束
-- 终局
+### Luan phien kieu arc
 
-每卷不只升级强度，还要升级问题类型。
+De duy tri su da dang nhip do, luan phien cac kieu arc:
 
-### 4. 弧级设计
+| Kieu arc | Dac diem nhip do | Dung khi |
+|---|---|---|
+| Tang truong / Dot pha | Tang truong deu dan, cao trao thoa man | Nhan vat can len cap hoac dat duoc |
+| Doi dau / Canh tranh | Do cang duy tri, ket qua nhi phan | Cac ben lien quan va cham |
+| Bi an / Kham pha | Tiet lo dan dan, xoay chuyen bat ngo | Can mo khoa thong tin moi |
+| Quan he / Chinh tri | Cam xuc phuc tap, ket cuc mo | Can thay doi lien minh hoac long tin |
+| Chuyen tiep / Tich suc | Nhip do thap, phat trien nhan vat | Chuan bi cho mot arc quan trong |
 
-每一弧都应该像“一个可独立成立的小故事”：
+### Do dai arc
 
-- 有明确目标
-- 有明确阻力
-- 有阶段转折
-- 有结果与代价
+Do dai arc thay doi theo chuc nang:
 
-### 5. 章节设计
+| Loai arc | So chuong dien hinh |
+|---|---|
+| Arc nho (van de phu, phat trien ky nang) | 5-8 chuong |
+| Arc chuan (doi dau chinh, nhiem vu) | 10-15 chuong |
+| Arc lon (nhieu giai doan, thay doi tap) | 15-25 chuong |
 
-章节不是平均分配事件，而是为弧服务：
+## Quy hoach xuyen tap
 
-- 关键推进章
-- 关系变化章
-- 代价兑现章
-- 误判与反噬章
-- 转折章
-- 收束与引出下弧章
+### Theo doi truc dai
 
-## 避免长篇同质化
+Duy tri mot ban ghi tinh than ve:
 
-### 错误做法
+- **Cac truc tinh tiet dang hoat dong**: nhung soi chi chua duoc giai quyet
+- **Tien hoa nhan vat**: moi nhan vat chinh dang o dau trong cung cua ho
+- **Cac diem hua hen**: nhung gi da duoc ngu y hoac goi y cho doc gia
+- **Cac quy tac the gioi**: nhung rang buoc nao van chua duoc kiem tra
 
-- 每一卷都只是“换地图 + 换敌人”
-- 每次升级都只是“主角更强了”
-- 中期仍然重复前期的爽点结构
-- 配角只在需要时出现，没有独立动机
-- 世界规则只在设定里写，剧情中不产生压力
+### Tai hop nhat dinh ky
 
-### 正确做法
+O moi ranh gioi tap:
 
-- 升级“冲突类型”，不只升级“敌人强度”
-- 升级“选择代价”，不只升级“资源规模”
-- 升级“关系复杂度”，不只升级“出场人数”
-- 升级“命题”，不只升级“舞台大小”
+1. Xem lai la ban — no co con chinh xac khong?
+2. Danh gia lai quy mo uoc tinh — co can dieu chinh khong?
+3. Kiem tra cac truc dai dang mo — co truc nao bi lang quen khong?
+4. Xac nhan huong — cau chuyen co con huong den ket thuc da dinh khong?
 
-## 中期转向必须提前规划
+## Cac cam bay thuong gap
 
-很多作品前 20 章能写，50 章后就开始重复，根因是没有中期转向。
-
-在规划时必须提前想清楚：
-
-- 第一次结构转向发生在什么时候
-- 为什么前期方法在中期失效
-- 主角到中期后必须学会什么新的思维方式
-- 中后期的核心吸引力与前期有什么不同
-
-## 弧级节奏密度
-
-每个弧应遵循”铺垫→积累→爆发→收获”的节奏循环。以下是通用弧型的参考密度（根据题材自行映射）：
-
-- **成长突破弧**（10-15 章）：3-4 章能力不足/准备 → 2-3 章外部考验/试炼 → 2-3 章关键突破 → 1-2 章展示+收获。适用于：修炼升级、技能习得、破案突破、职场晋升等
-- **竞技对抗弧**（12-20 章）：2-3 章赛前准备/情报 → 6-10 章多轮对决（穿插角色互动和意外） → 2-3 章决胜+奖惩。适用于：比武大会、商业竞标、法庭辩论、选拔赛等
-- **探索发现弧**（15-25 章）：2-3 章情报收集+组队 → 8-15 章层层深入（每层新挑战） → 2-3 章最终发现+收获。适用于：秘境探险、调查真相、解谜寻宝、深入敌后等
-- **恩怨冲突弧**（8-12 章）：2-3 章矛盾积累 → 1-2 章冲突爆发 → 3-5 章多方博弈 → 1-2 章解决+后果。适用于：仇敌对决、派系斗争、情感纠葛、权力争夺等
-- **日常过渡弧**（5-8 章）：角色发展/社交/伏笔布局/休整，为下一高潮弧蓄势
-
-关键原则：
-- 每次重大转折不是一章的事，而是整个弧的高潮
-- 弧的 estimated_chapters 不低于 8（太短无法展开节奏循环）
-- 弧内章节要有起伏，不是匀速推进
-- 不同类型的弧交替使用，避免节奏单调
-
-## 长篇通用检查清单
-
-- 这本书是否具备至少 3 个阶段性主矛盾？
-- 前 3 卷是否各自承担不同功能？
-- 主角的”得到”和”失去”是否同步增长？
-- 主要配角是否会改变主线，而不是只被主角改变？
-- 世界规则是否真的限制了剧情决策？
-- 中期转向后，作品是否仍然成立？
+| Cam bay | Trieu chung | Cach phong tranh |
+|---|---|---|
+| Lam phat suc manh | Cac moi de doa mat di y nghia | Neo nang luc voi gioi han ro rang va cai gia |
+| Ban do lap | Cac boi canh moi khong co gi khac biet | Trao cho moi cung mot ban sac giac quan doc dao |
+| Bi an can kiet | Cac bi mat bi tieu hao qua nhanh | Len ke hoach tiet lo theo tang; luon de danh mot it |
+| Quan he tri tre | Cac nhan vat ngung thay doi | Len ke hoach cac cot moc quan he giua cac tap |
+| Ket thuc troi dat | Huong ket thuc tro nen mo nhat | Dinh ky kiem tra lai la ban va ending_direction |
+| Quy mo phi thuc te | Len ke hoach 300 chuong truoc khi bat dau | Bat dau voi quy mo khiem ton; de cau chuyen chung minh no xung dang duoc mo rong |

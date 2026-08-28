@@ -1,25 +1,25 @@
-# 言情风格补充参考
+# Tham khảo bổ sung phong cách ngôn tình
 
-## 情感递进
+## Tiến triển cảm xúc
 
-- 感情发展遵循"排斥→好奇→动摇→确认→考验→稳固"曲线
-- 每章推进一个情感阶段，禁止跳跃式发展
-- 心动瞬间要通过具体细节呈现，不用"心跳加速"等抽象描写
+- Tình cảm phát triển theo đường cong "bài xích → tò mò → lung lay → xác nhận → thử thách → vững chắc"
+- Mỗi chương đẩy một giai đoạn cảm xúc, cấm phát triển nhảy vọt
+- Khoảnh khắc rung động phải hiện qua chi tiết cụ thể, không dùng mô tả trừu tượng kiểu "tim đập nhanh"
 
-## 关系张力
+## Độ căng quan hệ
 
-- 核心CP之间必须有持续的阻力源（性格、身份、误会、外部）
-- 阻力要合理且难以轻易解决，不能为虐而虐
-- 配角感情线不能抢主线篇幅，每章配角互动不超过 20%
+- Cặp chính phải có nguồn trở lực liên tục (tính cách, thân phận, hiểu lầm, bên ngoài)
+- Trở lực phải hợp lý và khó giải quyết ngay, không thể vì khổ mà khổ
+- Tuyến tình cảm phụ không được cướp thời lượng tuyến chính, tương tác phụ mỗi chương không quá 20%
 
-## 对话质量
+## Chất hội thoại
 
-- 暧昧期对话要有潜台词，角色说的和想的应该不一样
-- 吵架/冲突场景双方都要有道理，不能一方全错
-- 甜蜜场景要有克制，过度撒糖会降低读者感受
+- Hội thoại giai đoạn mập mờ phải có ngầm ý, cái nói và cái nghĩ nên khác nhau
+- Cảnh cãi nhau / xung đột cả hai bên đều phải có lý, không thể một bên sai hết
+- Cảnh ngọt phải kiềm chế, rắc đường quá đà sẽ hạ cảm nhận của độc giả
 
-## 常见陷阱
+## Cạm bẫy thường gặp
 
-- 降智推剧情：不让角色为了制造误会而突然变笨
-- 工具人配角：每个配角都应有自己的动机
-- 人设崩塌：感情中的行为必须符合角色已建立的性格特征
+- Hạ trí đẩy tình tiết: không để nhân vật đột nhiên ngốc để tạo hiểu lầm
+- Nhân vật phụ công cụ: mỗi nhân vật phụ nên có động cơ riêng
+- Sụp đổ nhân thiết: hành vi lúc yêu phải hợp đặc điểm tính cách đã dựng của nhân vật

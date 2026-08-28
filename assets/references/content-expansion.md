@@ -1,66 +1,59 @@
-# 内容扩充技巧
+# Hướng dẫn mở rộng nội dung
 
-当章节内容不足时，使用以下技巧自然扩充。
+Hướng dẫn này giúp xác định khi nào và làm thế nào để mở rộng hoặc làm dày nội dung chương mà không bị nhồi nước.
 
-## 1. 场景细节描写
+## Khi nào cần mở rộng
 
-不要只说"他走进房间"，描写：
-- 房间的布局、光线、气味
-- 物品的细节和质感
-- 环境对人物的影响
-- 人物在空间中的移动
+Mở rộng khi có ý định tường thuật thực sự, không phải để đáp ứng yêu cầu số từ.
 
-## 2. 人物内心活动
+### Các lý do hợp lệ để mở rộng
 
-展示而非讲述内心世界：
-- 角色的犹豫和纠结
-- 过去记忆的闪回（1-2段）
-- 对未来的担忧和期待
-- 道德选择的内心辩论
+| Lý do | Cách mở rộng |
+|---|---|
+| Cảnh quá gấp | Thêm vào các phản ứng giác quan, các beat cảm xúc, hành động vật lý |
+| Cần phát triển nhân vật | Thêm cảnh thể hiện tính cách, tiết lộ bối cảnh, hoặc kiểm tra giá trị |
+| Cần làm sâu thế giới | Phơi bày quy tắc thông qua tương tác, thể hiện các tầng văn hóa |
+| Độ phân giải quá dễ dàng | Thêm biến chứng, trở ngại, hoặc cái giá phải trả |
+| Thiếu nhịp cảm xúc | Thêm khoảnh khắc phản chiếu, hậu quả, hoặc xử lý cảm xúc |
 
-## 3. 对话扩展
+### Các lý do không hợp lệ (tránh)
 
-不要只推进剧情，让对话：
-- 展现人物性格和说话方式
-- 包含潜台词和暗示
-- 有来回交锋和试探
-- 偶尔跑题再拉回（更真实）
+| Lý do | Tại sao nên tránh |
+|---|---|
+| "Cần đủ số từ" | Nhồi nước — độc giả sẽ nhận ra |
+| "Có vẻ hơi ngắn" | Ngắn vẫn tốt hơn loãng. Tin vào nhịp điệu |
+| "Cần thêm mô tả" | Chỉ khi nó phục vụ bầu không khí hoặc tình tiết |
+| "Giới thiệu nhân vật phụ" | Trừ khi họ có chức năng tường thuật rõ ràng |
 
-## 4. 感官体验
+## Các kỹ thuật mở rộng có ý nghĩa
 
-调动五感描写：
-- 视觉：颜色、光影、形状
-- 听觉：声音、音乐、沉默
-- 触觉：温度、质感、疼痛
-- 嗅觉：气味、香味、腐臭
-- 味觉：食物、饮料、血腥味
+### 1. Làm sâu giác quan
+**Trước:** "Cô bước vào quán rượu. Nó ồn ào và đông đúc."
 
-## 5. 次要情节线
+**Sau:** "Cánh cửa mở ra, một bức tường của tiếng ồn đập vào cô — tiếng cốc va chạm bằng gỗ, những trận cười khàn khàn, tiếng leng keng của đồng xu rơi xuống quầy. Mùi mạch nha chua và mồ hôi cũ bám vào quần áo cô trước khi cô kịp bước ba bước."
 
-在主剧情中穿插：
-- 配角的小故事
-- 暗线的发展
-- 伏笔的埋设
-- 人物关系的微妙变化
+### 2. Làm sâu phản ứng cảm xúc
+**Trước:** "Anh tức giận trước tin đó."
 
-## 6. 节奏放慢
+**Sau:** "Những ngón tay anh đông cứng lại trên con chuột. Màn hình mờ đi ở rìa khi các con số trong báo cáo tự sắp xếp lại thành một điều gì đó xấu xí. Một cơ bắp ở quai hàm co giật — chỉ một lần — rồi anh buông tay ra khỏi bàn phím, cẩn thận, như thể nó có thể vỡ."
 
-关键时刻慢下来描写：
-- 动作场景的分解
-- 情感转变的过程
-- 发现真相的时刻
-- 紧张对峙的延展
+### 3. Thêm biến chứng
+**Trước:** "Anh vượt qua được lính canh và tiến vào phòng."
 
-## 7. 环境烘托
+**Sau:** "Anh vượt qua được lính canh và tiến vào phòng — rồi dừng lại. Trên bàn làm việc, bên cạnh tập tài liệu mà anh đến để lấy, là một tách cà phê vẫn còn bốc hơi. Ai đó đã ở đây cách đây chưa đầy một phút."
 
-用环境反映情绪：
-- 天气和氛围
-- 社会环境背景
-- 文化习俗细节
-- 时代特征展现
+### 4. Làm sâu bầu không khí
+**Thay vì kể về sự căng thẳng, hãy xây dựng nó qua môi trường:**
+- Các chi tiết giác quan trở nên sắc nét hơn hoặc biến dạng
+- Nhận thức về thời gian thay đổi (chậm lại hoặc tăng tốc)
+- Không gian vật lý tạo cảm giác chật hẹp hơn hoặc rộng hơn
+- Những âm thanh bình thường trở nên báo hiệu hoặc đe dọa
 
-## 扩充原则
+## Kiểm tra mở rộng
 
-- **自然融入** - 扩充内容要服务于故事，不要注水
-- **保持张力** - 即使扩充场景也不能失去冲突
-- **推进主线** - 所有扩充最终都要指向核心剧情
+Sau khi mở rộng một chương, hãy hỏi:
+1. Đoạn được thêm vào có thay đổi cách hiểu của độc giả về nhân vật hoặc tình huống không?
+2. Nếu cắt bỏ nó, có mất thứ gì ngoài số từ không?
+3. Nó có tạo ra hoặc trả giá cho một chi tiết gieo mầm, một đợt tiết lộ, hoặc một sự leo thang không?
+
+Nếu câu trả lời cho #1 là "không" và #2 là "không", thì đó là nước — hãy cắt bỏ.
