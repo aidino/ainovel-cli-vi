@@ -195,6 +195,69 @@ ToolResultMicrocompact → LightTrim → StoreSummaryCompact → FullSummary
 
 > **Đây là phiên bản Việt hóa** của [ainovel-cli gốc](https://github.com/voocel/ainovel-cli). Toàn bộ giao diện, thông báo lỗi, tài liệu và prompt đã được dịch sang tiếng Việt.
 
+### Yêu cầu: Cài đặt Go
+
+Dự án yêu cầu **Go 1.25.5** trở lên. Kiểm tra phiên bản hiện tại:
+
+```bash
+go version
+```
+
+Nếu chưa cài hoặc phiên bản quá cũ, cài đặt theo hệ điều hành:
+
+<details>
+<summary><b>Linux (Ubuntu/Debian)</b></summary>
+
+```bash
+# Tải Go 1.25.5
+wget https://go.dev/dl/go1.25.5.linux-amd64.tar.gz
+
+# Giải nén vào /usr/local (xóa bản cũ nếu có)
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf go1.25.5.linux-amd64.tar.gz
+
+# Thêm vào PATH (thêm dòng này vào ~/.bashrc hoặc ~/.zshrc)
+echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
+source ~/.bashrc
+
+# Kiểm tra
+go version
+# → go version go1.25.5 linux/amd64
+```
+
+</details>
+
+<details>
+<summary><b>macOS</b></summary>
+
+```bash
+# Cách 1: Homebrew
+brew install go
+
+# Cách 2: Tải trực tiếp
+wget https://go.dev/dl/go1.25.5.darwin-arm64.tar.gz   # Apple Silicon (M1/M2/M3/M4)
+wget https://go.dev/dl/go1.25.5.darwin-amd64.tar.gz   # Intel
+
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf go1.25.5.darwin-*.tar.gz
+
+echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.zshrc
+source ~/.zshrc
+```
+
+</details>
+
+<details>
+<summary><b>Windows</b></summary>
+
+1. Tải installer tại: https://go.dev/dl/go1.25.5.windows-amd64.msi
+2. Chạy file `.msi` và làm theo hướng dẫn
+3. Mở lại terminal, kiểm tra: `go version`
+
+</details>
+
+> Tham khảo thêm tại [go.dev/doc/install](https://go.dev/doc/install).
+
 ### Cài đặt từ source (khuyến nghị)
 
 ```bash
