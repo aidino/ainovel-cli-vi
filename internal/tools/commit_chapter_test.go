@@ -613,7 +613,7 @@ func TestCommitChapterRefreshesSharedStyleStatsAfterRewrite(t *testing.T) {
 	if err := s.Progress.SetFlow(domain.FlowRewriting); err != nil {
 		t.Fatal(err)
 	}
-	if err := s.Drafts.SaveDraft(2, "# 第二章\n他不是退缩，而是在等待。\n改写后的故事继续。"); err != nil {
+	if err := s.Drafts.SaveDraft(2, "# Chương 2\nAnh không phải lùi bước, mà là đang chờ đợi.\nCâu chuyện sau khi viết lại tiếp diễn."); err != nil {
 		t.Fatal(err)
 	}
 	args, _ := json.Marshal(map[string]any{
@@ -633,7 +633,7 @@ func TestCommitChapterRefreshesSharedStyleStatsAfterRewrite(t *testing.T) {
 	}
 	found := false
 	for _, pattern := range after.Patterns {
-		if strings.HasPrefix(pattern.Name, "矫正句") && pattern.Total == 1 {
+		if strings.HasPrefix(pattern.Name, "Câu chỉnh đính") && pattern.Total == 1 {
 			found = true
 			break
 		}

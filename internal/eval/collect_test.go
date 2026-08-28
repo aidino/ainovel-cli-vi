@@ -25,11 +25,11 @@ func TestCollectReadsStyleUsageAndToolCalls(t *testing.T) {
 		t.Fatalf("save progress: %v", err)
 	}
 	if err := s.Outline.SaveOutline([]domain.OutlineEntry{
-		{Chapter: 1, Title: "第一章 起风"},
-		{Chapter: 2, Title: "破局"},
-		{Chapter: 3, Title: "第三章 入局"},
-		{Chapter: 4, Title: "追问"},
-		{Chapter: 5, Title: "第五章 回声"},
+		{Chapter: 1, Title: "Chương 1 Gió nổi"},
+		{Chapter: 2, Title: "Phá thế"},
+		{Chapter: 3, Title: "Chương 3 Vào cục"},
+		{Chapter: 4, Title: "Truy vấn"},
+		{Chapter: 5, Title: "Chương 5 Tiếng vọng"},
 	}); err != nil {
 		t.Fatalf("save outline: %v", err)
 	}

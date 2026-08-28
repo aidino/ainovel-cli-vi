@@ -58,7 +58,7 @@ func TestContextToolInjectsStyleStats(t *testing.T) {
 	}
 
 	progress := &domain.Progress{TotalChapters: 10}
-	body := "# 第N章\n他不是迟疑，而是恐惧。沉默了几息。像一道光。\n夜色落下。\n他走了。"
+	body := "# Chương N\nAnh không phải do dự, mà là sợ hãi. Im lặng mấy nhịp hơi. Như một tia sáng.\nĐêm buông xuống.\nAnh bước đi."
 	for ch := 1; ch <= 6; ch++ {
 		if err := st.Drafts.SaveFinalChapter(ch, body); err != nil {
 			t.Fatalf("SaveFinalChapter: %v", err)

@@ -137,17 +137,17 @@ func NewChapterMemoryPolicy(progress *Progress, profile ContextProfile, currentO
 		SummaryWindow:       profile.SummaryWindow,
 		TimelineWindow:      profile.TimelineWindow,
 		LayeredSummaries:    profile.Layered,
-		WorkingRefresh:      "每次按章节加载时刷新",
-		EpisodicRefresh:     "随章节提交、评审和长篇状态变更刷新",
+		WorkingRefresh:      "làm mới mỗi lần tải theo chương",
+		EpisodicRefresh:     "làm mới theo nộp chương, đọc kiểm và thay đổi trạng thái trường thiên",
 		PreviousTailChars:   800,
 		ChapterPlanEnabled:  true,
 		CurrentOutlineBound: currentOutlineBound,
 		ReadOnlyThreshold:   5,
 	}
 	if profile.Layered {
-		policy.SummaryStrategy = "卷摘要+弧摘要+最近章节摘要"
+		policy.SummaryStrategy = "tóm tắt tập + tóm tắt arc + tóm tắt chương gần đây"
 	} else {
-		policy.SummaryStrategy = "最近章节摘要"
+		policy.SummaryStrategy = "tóm tắt chương gần đây"
 	}
 	if progress != nil {
 		if progress.TotalChapters > 30 {
@@ -176,10 +176,10 @@ func NewChapterMemoryPolicy(progress *Progress, profile ContextProfile, currentO
 func NewArchitectMemoryPolicy() MemoryPolicy {
 	return MemoryPolicy{
 		Mode:               "architect",
-		PlanningRefresh:    "卷弧结构、指南针或摘要更新时刷新",
-		FoundationRefresh:  "角色、伏笔、设定变更时刷新",
-		PlanningFocus:      "分层大纲、指南针、卷摘要",
-		FoundationFocus:    "角色设定、角色快照、伏笔台账",
+		PlanningRefresh:    "làm mới khi cấu trúc tập arc, la bàn hoặc tóm tắt cập nhật",
+		FoundationRefresh:  "làm mới khi nhân vật, chi tiết gieo mầm, thiết lập thay đổi",
+		PlanningFocus:      "đại cương phân tầng, la bàn, tóm tắt tập",
+		FoundationFocus:    "thiết lập nhân vật, ảnh chụp nhân vật, sổ chi tiết gieo mầm",
 		HandoffPreferred:   true,
 		ChapterPlanEnabled: false,
 		ReadOnlyThreshold:  4,
@@ -221,7 +221,7 @@ type UnsupportedAdvanceModeError struct {
 }
 
 func (e *UnsupportedAdvanceModeError) Error() string {
-	return fmt.Sprintf("不支持的章节推进模式 %q，请使用创建该项目的新版 ainovel", e.Mode)
+	return fmt.Sprintf("chế độ đẩy chương không được hỗ trợ %q, vui lòng dùng bản ainovel mới hơn đã tạo dự án này", e.Mode)
 }
 
 // AdvanceHoldAfter 是一次性暂停的确定性触发条件。
@@ -248,17 +248,17 @@ type AdvanceHold struct {
 // Validate 校验一次性暂停意图自身的结构约束。
 func (h AdvanceHold) Validate() error {
 	if !h.After.Valid() {
-		return fmt.Errorf("不支持的一次性暂停条件 %q", h.After)
+		return fmt.Errorf("điều kiện tạm dừng một lần không được hỗ trợ %q", h.After)
 	}
 	if h.After == AdvanceHoldAtChapter {
 		if h.TargetChapter <= 0 {
-			return fmt.Errorf("目标章节必须大于 0")
+			return fmt.Errorf("chương mục tiêu phải lớn hơn 0")
 		}
 	} else if h.TargetChapter != 0 {
-		return fmt.Errorf("暂停条件 %q 不能设置目标章节", h.After)
+		return fmt.Errorf("điều kiện tạm dừng %q không được đặt chương mục tiêu", h.After)
 	}
 	if strings.TrimSpace(h.Reason) == "" {
-		return fmt.Errorf("一次性暂停原因不能为空")
+		return fmt.Errorf("lý do tạm dừng một lần không được rỗng")
 	}
 	return nil
 }

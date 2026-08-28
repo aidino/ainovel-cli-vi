@@ -6,8 +6,8 @@ import (
 	"sync"
 )
 
-// Tracker 按章节维护全书风格统计。首次载入每章一次；新增或重写时只分析变化章节。
-// Snapshot 会缓存派生结果，同一书状态下 Writer/Editor 的重复读取不再重算。
+// Tracker bảo trì thống kê văn phong toàn thư theo từng chương. Lần nạp đầu phân tích mỗi chương một lần; thêm mới hoặc viết lại thì chỉ phân tích chương thay đổi.
+// Snapshot có cache kết quả suy sinh, cùng trạng thái sách thì Writer/Editor đọc lặp không phải tính lại.
 type Tracker struct {
 	mu sync.Mutex
 
@@ -46,7 +46,7 @@ func NewTracker() *Tracker {
 	}
 }
 
-// Upsert 新增或替换一章。正文未变化时不推进版本。
+// Upsert thêm mới hoặc thay thế một chương. Phần thân không đổi thì không đẩy version.
 func (t *Tracker) Upsert(chapter int, text string) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -65,7 +65,7 @@ func (t *Tracker) Upsert(chapter int, text string) {
 	t.cacheReady = false
 }
 
-// Remove 删除一章；不存在时无操作。
+// Remove xóa một chương; không tồn tại thì không làm gì.
 func (t *Tracker) Remove(chapter int) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -81,7 +81,7 @@ func (t *Tracker) Remove(chapter int) {
 	t.cacheReady = false
 }
 
-// Snapshot 返回与 Compute 等价的当前统计快照。
+// Snapshot trả về ảnh chụp thống kê hiện tại tương đương Compute.
 func (t *Tracker) Snapshot(titles, stopwords []string) *Stats {
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -185,7 +185,7 @@ func (t *Tracker) snapshot(titles, stopwords []string) *Stats {
 			continue
 		}
 		stats.RepeatedSentences = append(stats.RepeatedSentences, SentenceStat{
-			Text:     truncateRunes(sentence, 40),
+			Text:     truncateRunes(sentence, repeatDisplayRunes),
 			Chapters: aggregate.chapters,
 			Count:    aggregate.count,
 		})
@@ -245,7 +245,7 @@ func chapterSentenceCounts(text string) map[string]int {
 	counts := make(map[string]int)
 	for _, sentence := range sentenceSplit.Split(text, -1) {
 		sentence = trimWrappedQuotes(sentence)
-		if len([]rune(sentence)) < 12 {
+		if len([]rune(sentence)) < minRepeatRunes {
 			continue
 		}
 		counts[sentence]++
