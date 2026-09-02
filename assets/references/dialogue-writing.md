@@ -1,317 +1,131 @@
-# Quy phạm viết hội thoại
+# Quy phạm viết hội thoại & Hệ thống Xưng hô tiếng Việt
 
-Hội thoại hay là công cụ mạnh mẽ để hé lộ nhân vật, đẩy tình tiết và tạo xung đột.
+Hội thoại hay là công cụ mạnh mẽ bậc nhất để hé lộ nhân vật, đẩy nhanh tình tiết và tạo xung đột kịch tính. Trong văn học tiếng Việt, hội thoại đòi hỏi sự chính xác tuyệt đối về đại từ xưng hô và quy cách trình bày dấu câu.
 
-## Nguyên tắc cốt lõi về hội thoại
+---
+
+## I. Nguyên tắc Cốt Lõi về Hội Thoại
 
 ### 1. Hội thoại nhất định phải có mục đích
+Mỗi câu hội thoại nên hoàn thành ít nhất một trong những nhiệm vụ sau:
+- **Đẩy tình tiết:** "Tôi tìm thấy hung khí rồi, giấu ngay dưới chân cầu cạn."
+- **Hé lộ nhân vật:** "Tôi không tin mấy tay quan chức. Xưa nay họ có ngó ngàng gì tới dân nghèo tụi tôi đâu."
+- **Tạo xung đột:** "Mày lừa tao. Mày đã gài bẫy tao ngay từ đầu!"
+- **Truyền tin quan trọng:** "Hợp đồng bị hủy rồi. Đối tác đã rút vốn trưa nay."
+- **Biểu đạt cảm xúc:** "Em... em thực sự không biết phải làm sao nữa."
+- **Tạo hồi hộp, bí ẩn:** "Cậu có chắc người đêm qua cậu gặp là ông ấy không?"
 
-Mỗi câu hội thoại nên hoàn thành ít nhất một trong những việc sau:
+*Hội thoại vô hiệu cần xóa bỏ:* Những câu chào hỏi, tán gẫu xã giao lê thê ("Chào anh" - "Chào chị" - "Anh ăn cơm chưa?" - "Tôi ăn rồi, còn chị?").
 
-| Mục đích | Ví dụ |
-|-----|------|
-| **Đẩy tình tiết** | "Tôi tìm thấy hung khí rồi, trong bụi cỏ ven sông." |
-| **Hé lộ nhân vật** | "Tôi không tin công an. Họ chưa bao giờ giúp người như tôi." |
-| **Tạo xung đột** | "Anh lừa tôi. Anh lừa tôi ngay từ đầu đến cuối." |
-| **Truyền tin** | "Quả bom sẽ nổ lúc ba giờ." |
-| **Biểu đạt cảm xúc** | "Tôi... tôi không biết nói gì." |
-| **Tạo hồi hộp** | "Anh biết chuyện gì thực sự xảy ra đêm đó không?" |
+### 2. Hội thoại phải cô đọng và mang hơi thở đời sống
+Con người thật không nói chuyện như đang đọc diễn văn. Hãy cắt bỏ các từ ngữ dư thừa và liên từ rườm rà.
+- *Dông dài (văn viết luận):* "Tôi muốn nói với anh rằng, theo quan điểm của tôi thì chúng ta nên rời khỏi đây càng sớm càng tốt."
+- *Cô đọng (văn thoại thật):* "Đi ngay thôi. Ở đây không ổn đâu."
 
-**Hội thoại vô hiệu:**
-> "Chào."
-> "Chào."
-> "Ăn chưa?"
-> "Rồi."
-> "Ừ, vậy thì tốt."
-
-### 2. Hội thoại nên cô đọng
-
-Con người không nói chuyện như đang viết luận. Xóa bớt những từ dư thừa.
-
-| Dông dài | Cô đọng |
-|-----|------|
-| "Tôi muốn nói với anh rằng, tôi cho rằng chúng ta nên rời khỏi đây ngay lập tức." | "Đi ngay." |
-| "Tôi rất xin lỗi, nhưng tôi thực sự không biết câu trả lời cho việc anh vừa nói." | "Tôi không biết." |
-| "Nếu anh không phiền, tôi có thể nhờ anh đưa cho tôi cái đó được không?" | "Đưa tôi cái đó." |
-
-### 3. Con người thật không diễn đạt trọn vẹn
-
-Hội thoại thật đầy:
-- Ngắt lời
-- Ngập ngừng
-- Chuyển chủ đề
-- Nói chưa hết câu
-- Ám chỉ thay vì nói thẳng
-
-**Ví dụ:**
-> "Tôi vốn định nói với anh, nhưng mà—"
-> "Nhưng mà sao?"
-> "Thôi bỏ đi, có gì đâu."
-> "Không, anh nói đi."
-> "Thật sự không có gì."
+### 3. Hội thoại chứa ngầm ý (Subtext) và sự bất toàn
+Hội thoại sinh động luôn có ngắt lời, ngập ngừng, nói lảng sang chuyện khác hoặc che giấu cảm xúc thật:
+- "Cậu còn giận tôi không?"
+- "Trời sắp mưa rồi đấy, mau về đi." (Nói lảng để che giấu sự chưa sẵn sàng tha thứ).
 
 ---
 
-## Quy phạm định dạng hội thoại
+## II. Quy Cách Định Dạng & Dấu Câu Hội Thoại (Typography)
 
-### Dấu câu trong hội thoại
+Tiểu thuyết tiếng Việt hỗ trợ hai chuẩn trình bày hội thoại. **Bắt buộc áp dụng đồng nhất một chuẩn trong toàn bộ chương và tác phẩm, không được dùng lẫn lộn cả hai.**
 
-**Định dạng cơ sở:**
-```
-"Nội dung lời nói," anh ấy nói.
-"Nội dung lời nói?" cô ấy hỏi.
-"Nội dung lời nói!" anh ấy hét lên.
-```
+### Chuẩn 1: Gạch đầu dòng (`- `) — Chuẩn Xuất Bản Truyền Thống Việt Nam
+Thích hợp cho phong cách văn học trang trọng, văn học hiện đại, đô thị thuần Việt, truyện đời sống.
 
-**Hội thoại nhiều dòng:**
-```
-"Câu đầu tiên," anh ấy nói, "câu thứ hai."
+- **Quy tắc cơ bản:** Lời thoại luôn bắt đầu bằng dấu gạch ngang đầu dòng (`- `) và viết hoa chữ cái đầu.
+- **Lời dẫn nằm sau lời thoại:** Dùng dấu gạch nối để ngăn cách lời thoại và lời dẫn:
+  ```markdown
+  - Cậu chắc chắn về việc này chứ? - Nam hạ giọng hỏi.
+  - Chắc chắn một trăm phần trăm. - Bắc quả quyết gật đầu.
+  ```
+- **Lời dẫn chèn vào giữa hai vế thoại của cùng một nhân vật:**
+  ```markdown
+  - Đi lối này, - ông lão ngoái lại vẫy tay, - cẩn thận đá trơn trượt đấy!
+  ```
+- **Hành động độc lập đi kèm lời thoại:**
+  ```markdown
+  - Đừng lại gần đây!
+  Thảo lùi vội ra sau, hai tay ôm chặt lấy bọc đồ.
+  ```
 
-"Câu đầu tiên.
-Câu thứ hai," anh ấy nói, "câu thứ ba."
-```
+### Chuẩn 2: Dấu ngoặc kép (`"..."`) — Chuẩn Tiểu Thuyết Mạng & Dịch Thuật
+Thích hợp cho tiểu thuyết mạng, thể loại kỳ ảo, tiên hiệp, huyền huyễn, trinh thám hành động.
 
-**Hành động trong hội thoại:**
-```
-"Nội dung lời nói." Anh ấy ra một cử chỉ.
-Anh ấy ra một cử chỉ. "Nội dung lời nói."
-```
-
-### Dùng nhãn hội thoại
-
-**Quy tắc:**
-- Khi đã nhận ra được ai nói, bỏ nhãn
-- Dùng các nhãn trung tính như "nói", "hỏi"
-- Tránh lạm dụng trạng từ bổ nghĩa
-
-| Lạm dụng | Cải tiến |
-|---------|--------|
-| "Anh lừa tôi," anh ấy giận dữ nói. | "Anh lừa tôi." Giọng anh run run. |
-| "Được," cô ấy vui vẻ đồng ý. | Mắt cô ấy sáng lên. "Được." |
-| "Tôi không biết," anh ấy buồn bã trả lời. | Anh cúi đầu. "Tôi không biết." |
-
-**Vị trí nhãn:**
-- Trước hội thoại: [nhãn] "Hội thoại."
-- Sau hội thoại: "Hội thoại." [nhãn]
-- Hội thoại bị ngắt: "Hội thoại," [nhãn] "hội thoại."
-
-### Phân đoạn
-
-**Quy tắc:** Mỗi người nói bắt đầu đoạn mới.
-
-```
-Đúng:
-"Câu đầu," Giáp nói.
-"Câu thứ hai," Ất trả lời.
-"Câu thứ ba." Giáp gật đầu.
-
-Sai:
-"Câu đầu," Giáp nói. "Câu thứ hai," Ất trả lời. "Câu thứ ba." Giáp gật đầu.
-```
+- **Lời dẫn nằm sau câu thoại:** Đặt dấu phẩy/chấm/hỏi/than bên trong hoặc trước ngoặc kép theo chuẩn ngữ pháp:
+  ```markdown
+  "Cậu chắc chắn về việc này chứ?" Nam hạ giọng hỏi.
+  "Chắc chắn một trăm phần trăm," Bắc quả quyết gật đầu.
+  ```
+- **Lời dẫn nằm trước câu thoại:**
+  ```markdown
+  Bắc quả quyết gật đầu: "Chắc chắn một trăm phần trăm."
+  ```
+- **Lời dẫn chèn giữa câu thoại:**
+  ```markdown
+  "Đi lối này," ông lão ngoái lại vẫy tay, "cẩn thận đá trơn trượt đấy!"
+  ```
 
 ---
 
-## Phân biệt giọng hội thoại
+## III. Cẩm Nang Hệ Thống Xưng Hô Tiếng Việt (Forms of Address)
 
-Mỗi nhân vật nên có cách nói riêng.
+Hệ thống đại từ nhân xưng là "linh hồn" của tiếng Việt. Một sai lầm nhỏ về xưng hô sẽ phá hỏng toàn bộ cảm xúc và tính xác thực của nhân vật.
 
-### Chiều phân biệt
+### 1. Phân tầng Đại từ theo Bối cảnh
 
-| Chiều | Ví dụ |
-|-----|------|
-| **Dùng từ** | Trang trọng / suồng sã / phương ngữ / thuật ngữ chuyên ngành |
-| **Câu thức** | Câu dài / câu ngắn / câu vỡ |
-| **Ngắt nghỉ** | Trôi chảy / ngập ngừng / thường xuyên ngắt lời |
-| **Ngữ khí** | Dịu dàng / gay gắt / giễu cợt châm chọc / nhạt nhẽo |
-| **Thói quen lời nói** | Từ khóa đặc trưng hoặc thói quen dùng từ |
+#### A. Khối Thuần Việt / Đô thị / Đời sống Hiện đại
+- **Gia đình & Họ hàng:** Theo tôn ti tuổi tác và vai vế (ông/bà, bác/chú/cô/dì, anh/chị/em, cha/mẹ - con, con/cháu).
+- **Bạn bè thân thiết:** "cậu - tớ", "mày - tao", "anh bạn", "ông/bà" (gọi bạn bè cùng trang lứa).
+- **Xã hội lịch thiệp:** "tôi - anh/chị", "em - anh", "cháu - chú/bác".
+- **Góc nhìn thứ ba khi miêu tả:** "gã", "hắn", "y", "thị", "ả", "nó", "chàng", "nàng".
 
-### Ví dụ giọng nhân vật
+#### B. Khối Cổ phong / Kiếm hiệp / Tiên hiệp Phương Đông
+- **Môn phái & Sư đồ:** "Sư phụ - Đồ nhi", "Sư tôn - Đệ tử", "Sư huynh / Sư đệ", "Sư tỷ / Sư muội", "Chưởng môn", "Trưởng lão".
+- **Bằng hữu & Giang hồ:** "Các hạ", "Tại hạ", "Huynh đài", "Đạo hữu", "Tiền bối - Vãn bối", "Bằng hữu".
+- **Tự xưng quyền thế:** "Bản tọa", "Bản tôn", "Lão phu", "Bản cung", "Trẫm - Khanh / Vi thần".
+- **Thù địch / Đối đầu:** "Ngươi - Ta", "Lũ chuột nhắt", "Nghiệt súc", "Gian tặc".
 
-**Kiểu giáo sư:**
-> "Xét từ góc độ lý thuyết, giả thiết này tồn tại ba khiếm khuyết chính. Thứ nhất, mẫu dữ liệu chưa đủ; thứ hai, điều kiện thí nghiệm chưa được kiểm soát; cuối cùng, kết luận quá cấp tiến."
+### 2. Quy Tắc Bất Biến Về Xưng Hô
 
-**Kiểu giang hồ vỉa hè:**
-> "Vớ vẩn. Bọn ấy xàm đấy, muốn lòe mình thôi. Tao nói mày nghe, chuyện này không đơn giản đâu."
-
-**Kiểu nhút nhát hướng nội:**
-> "Tôi... ý tôi là, nếu... nếu bạn không phiền... cái đó..."
-
-**Kiểu kiêu ngạo tự cao:**
-> "Để tôi nói cho các bạn biết thế nào là chuyên nghiệp. Mấy bạn tay mơ căn bản không hiểu."
+1. **Tuyệt đối chống "Nhảy ngôi" (Pronoun Slippage):**
+   - Không để hai nhân vật đang xưng "anh - em" tự nhiên nhảy sang "tôi - cô", hoặc đang "ngươi - ta" lại nhảy sang "cậu - tớ".
+   - Editor bắt buộc phải phạt nặng lỗi này nếu phát hiện trong bản thảo.
+2. **Chuyển đổi xưng hô phải có "Ngòi nổ sự kiện" (Emotional Trigger):**
+   - Xưng hô chỉ được phép thay đổi khi mối quan hệ biến chuyển:
+     - *Từ xa lạ sang gắn kết:* "tôi - cô" $\to$ "anh - em" (sau khi trải qua sinh tử cùng nhau).
+     - *Từ tôn trọng sang thù địch:* "sư huynh - sư đệ" $\to$ "ngươi - ta" (khi phát hiện kẻ kia phản bội sư môn).
+3. **Tra cứu Ma trận Xưng hô (Address Matrix):**
+   - Writer trước khi viết bất kỳ cảnh đối thoại nào bắt buộc phải tra cứu ma trận xưng hô được định nghĩa trong `characters.md`.
 
 ---
 
-## Ngầm ý (Subtext)
+## IV. Kết Hợp Hội Thoại Với Ngôn Ngữ Cơ Thể & Hành Động
 
-Hội thoại hay, ý nghĩa thật nằm bên dưới bề mặt.
+Hội thoại không bao giờ tồn tại trơ trọi trong chân không. Hãy lồng ghép cử chỉ, ánh mắt và phản ứng sinh lý:
 
-### Nói thẳng vs ngầm ý
+### 1. Dùng hành động thay thế nhãn thoại khô khan
+- *Khô khan:* "Anh nói dối," cô giận dữ nói.
+- *Sống động:* Cô đập mạnh tập tài liệu xuống bàn, mắt long lên: "Anh còn định giấu tôi đến bao giờ?"
 
-| Nói thẳng (nhạt) | Ngầm ý (thú vị) |
-|-------------|---------------|
-| "Tôi tức lắm." | "Không sao. Tôi ổn mà. Thật đấy." |
-| "Tôi thích bạn." | "Hôm nay bạn trông... cũng ổn đấy." |
-| "Tôi không tin bạn." | "Cảm ơn bạn đã nói với tôi. Tôi sẽ nhớ." |
-| "Tôi muốn đi." | "Ở đây không khí hơi ngột ngột." |
-
-### Thủ pháp ngầm ý
-
-**1. Chuyển chủ đề**
-```
-"Bạn có yêu tôi không?"
-"Bạn xem dự báo thời tiết chưa? Mai có mưa đấy."
-```
-
-**2. Hỏi ngược thay vì trả lời**
-```
-"Anh đã giết ông ấy phải không?"
-"Anh nghĩ một người như tôi sẽ làm chuyện đó sao?"
-```
-
-**3. Nói về chuyện khác**
-```
-"Bạn có nhớ tôi không?"
-"Mẹ tôi hôm qua gọi điện."
-```
-
-**4. Im lặng và hành động**
-```
-"Bạn có sẵn lòng tha thứ cho tôi không?"
-Cô tiếp tục xem tạp chí, lật một trang.
+### 2. Dùng hành động để kiểm soát nhịp điệu (Beats)
+Chèn một cử chỉ vào giữa câu nói để tạo khoảng lặng hồi hộp hoặc thăm dò:
+```markdown
+- Tôi biết kẻ chủ mưu là ai rồi.
+Hắn châm một điếu thuốc, tia lửa lập lòe soi rõ gương mặt đanh lại trong bóng tối, rồi mới nhả khói tiếp lời:
+- Chính là người đêm qua ngồi ăn cùng chúng ta.
 ```
 
 ---
 
-## Kết hợp hội thoại với hành động
+## V. Bảng Tự Kiểm Tra Viết Hội Thoại
 
-Hội thoại kết hợp ngôn ngữ cơ thể sẽ tăng sức biểu đạt.
-
-### Nguyên tắc đồng bộ
-
-Hành động đồng nhất hay mâu thuẫn với hội thoại đều có hiệu quả kịch.
-
-**Đồng nhất (tăng cường):**
-> "Em yêu anh." Cô siết chặt lấy anh, nước mắt lăn xuống.
-
-**Mâu thuẫn (hé lộ sự thật):**
-> "Tôi hoàn toàn ủng hộ anh." Ánh mắt anh nhìn sang chỗ khác, tay trong túi nắm chặt nắm đấm.
-
-### Hành động ngắt
-
-Hành động chen vào để kiểm soát nhịp.
-
-```
-"Tôi vốn định nói với anh," anh dừng bước, xoay người lại, "nhưng tôi nghĩ anh đã biết rồi."
-```
-
-### Hành động thay nhãn
-
-Dùng hành động thay cho "anh ấy nói".
-
-```
-"Anh đang nói dối." Cô đập bàn đứng dậy.
-"Ngồi xuống." Anh không ngẩng đầu lên.
-```
-
----
-
-## Loại cảnh hội thoại
-
-### Cảnh cãi vã
-
-**Đặc điểm:**
-- Câu ngắn
-- Ngắt lời
-- Nhắc đi nhắc lại để nhấn mạnh
-- Cảm xúc leo thang
-
-**Ví dụ:**
-> "Anh đã hứa rồi!"
-> "Tình huống thay đổi rồi!"
-> "Đó là lý do của anh!"
-> "Em không hiểu gì hết!"
-> "Tất nhiên em không hiểu! Anh chưa bao giờ nói gì với em!"
-
-### Cảnh tỏ tình
-
-**Đặc điểm:**
-- Ngập ngừng
-- Ngắt quãng
-- Tìm từ
-- Chân thành hoặc ngại ngùng
-
-**Ví dụ:**
-> "Em... em muốn nói... bao năm nay, em vẫn luôn nghĩ... nếu chúng ta..."
-> Cô cúi đầu, giọng nhỏ dần.
-> "Nếu chúng ta sao?"
-> "Nếu chúng ta gặp nhau sớm hơn một chút."
-
-### Cảnh tra vấn
-
-**Đặc điểm:**
-- Khống chế câu hỏi
-- Chênh lệch thông tin
-- Gây áp lực
-- Thao tác hội thoại
-
-**Ví dụ:**
-> "Tối hôm đó anh ở đâu?"
-> "Ở nhà."
-> "Có ai làm chứng không?"
-> "... Không."
-> "Anh ở một mình?"
-> "Phải."
-> "Cả tối?"
-
-### Cảnh tán tỉnh
-
-**Đặc điểm:**
-- Từ hai nghĩa
-- Thăm dò
-- Gần gũi cơ thể
-- Ám chỉ
-
-**Ví dụ:**
-> "Hôm nay em rất đẹp."
-> "Chỉ hôm nay thôi sao?"
-> "Ừm... hôm nay đặc biệt đẹp."
-> "Vậy ngày mai em đáng lo rồi?"
-> "Ngày mai... ngày mai rồi xem tiếp."
->
-
----
-
-## Các vấn đề thường gặp trong hội thoại
-
-### Tránh
-
-1. **Đổ thông tin** — nhân vật nói cho nhau những điều đã biết
-   > Sai: "Như anh đã biết, công ty chúng ta thành lập năm 1995..."
-   > Đúng: hé lộ thông tin tự nhiên qua tình tiết
-
-2. **Mọi người nói giống hệt** — không phân biệt được nhân vật
-   > Giải pháp: trao cho mỗi nhân vật cách nói riêng
-
-3. **Quá lịch sự** — hội thoại thật thô ráp hơn
-   > Sai: "Tôi rất xin lỗi đã làm phiền bạn, có thể xin bạn..."
-   > Đúng: "Này. Giúp tôi một việc."
-
-4. **Tán gẫu vô nghĩa** — trừ phi có mục đích đặc thù
-   > Xóa các hội thoại không liên quan về thời tiết, ăn uống, trừ khi hé lộ nhân vật / đẩy tình tiết
-
-5. **Thuyết giáo** — nhân vật biểu diễn luận thuyết triết học dài
-   > Chuyển sang thể hiện quan điểm qua xung đột và hành động
-
----
-
-## Tự kiểm viết hội thoại
-
-Sau khi viết xong hội thoại, kiểm tra:
-
-- [ ] Mỗi câu hội thoại có mục đích không?
-- [ ] Xóa đi thì tình tiết có bị ảnh hưởng không?
-- [ ] Có nhận ra được ai nói không (không nhìn nhãn)?
-- [ ] Có ngầm ý không?
-- [ ] Nhịp đã phù hợp chưa (nhanh / chậm)?
-- [ ] Có hợp tính cách nhân vật không?
-- [ ] Nhãn dùng có đúng không?
+Trước khi hoàn thành chương, hãy tự rà soát:
+- [ ] Lời thoại đã tuân thủ đồng nhất 1 chuẩn typography (gạch đầu dòng hoặc ngoặc kép) chưa?
+- [ ] Đại từ xưng hô của các nhân vật có đúng theo Ma trận xưng hô trong `characters.md` không?
+- [ ] Có bị lỗi "nhảy ngôi" vô lý giữa các đoạn không?
+- [ ] Mỗi nhân vật có ngữ điệu, vốn từ phù hợp với lứa tuổi, địa vị, tính cách không?
+- [ ] Có câu thoại nào dông dài, sáo rỗng hay mang tính "thuyết giáo" cần gọt giũa không?
