@@ -111,7 +111,37 @@
   //   "architect": { "provider": "openrouter", "model": "google/gemini-3.1-pro" }
   // },
 
-  // Phong cách viết: default / suspense / fantasy / romance.
+  // Tùy chọn. Quy tắc sáng tác & Bộ lọc kiểm duyệt tiếng Việt cấp dự án.
+  // "user_rules": {
+  //   "structured": {
+  //     // Danh sách cụm từ sáo ngữ convert cấm kỵ (vi phạm sẽ bị chặn commit chương)
+  //     "forbidden_phrases": [
+  //       "hít một ngụm khí lạnh",
+  //       "hít vào một ngụm khí lạnh",
+  //       "khóe miệng co giật",
+  //       "khóe miệng nhếch lên",
+  //       "đáy mắt xẹt qua một tia",
+  //       "trong lòng không khỏi",
+  //       "sắc mặt đại biến",
+  //       "nói thì chậm nhưng xảy ra rất nhanh",
+  //       "dưới chân bỗng nhiên mềm nhũn",
+  //       "dưới chân mềm nhũn"
+  //     ],
+  //     // Danh sách từ mệt mỏi và giới hạn số lần xuất hiện tối đa mỗi chương (vượt quá sẽ cảnh báo)
+  //     "fatigue_words": [
+  //       { "word": "dường như", "max_per_chapter": 2 },
+  //       { "word": "tựa hồ", "max_per_chapter": 1 },
+  //       { "word": "bỗng nhiên", "max_per_chapter": 3 },
+  //       { "word": "thế nhưng", "max_per_chapter": 3 },
+  //       { "word": "không khỏi", "max_per_chapter": 1 }
+  //     ]
+  //   },
+  //   // Sở thích sáng tác bằng ngôn ngữ tự nhiên:
+  //   // Quy ước hội thoại: "dialogue_style: dash" (gạch đầu dòng) hoặc "dialogue_style: quote" (ngoặc kép)
+  //   "preferences": "Trình bày hội thoại dùng dấu gạch đầu dòng; câu văn tự nhiên thuần Việt, nhịp câu gãy gọn; tuân thủ nghiêm ngặt ma trận xưng hô."
+  // },
+
+  // Phong cách viết: default / urban_vietnam / oriental_cultivation / suspense / fantasy / romance.
   "style": "default"
 
   // Cửa sổ ngữ cảnh toàn cục kiểu cũ, giữ làm dự phòng cho mọi model. Mức ưu tiên thấp hơn models[].context_window,
