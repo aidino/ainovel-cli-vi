@@ -48,7 +48,7 @@ func Scan(st *store.Store) ([]Change, error) {
 		if digest == record.ContentSHA256 {
 			continue
 		}
-		// 已接纳的正文为空时文件缺失不算改动；把非空正文删空则仍需用户处理。
+		// khi nội dung đã nghiệm thu rỗng thì file thiếu không tính là thay đổi; xóa nội dung không rỗng thành rỗng vẫn cần người dùng xử lý.
 		if strings.TrimSpace(content) == "" {
 			return nil, fmt.Errorf("chính văn không gian làm việc chương %d trống, từ chối tiếp nhận", chapter)
 		}

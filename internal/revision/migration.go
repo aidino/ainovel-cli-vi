@@ -13,13 +13,13 @@ import (
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
-// MigrateLegacyBaseline 从旧版业务投影逆向生成章节记录。会话日志不是作品事实，
-// 因此不参与迁移。保存前正向投影一次与原状态比对，有出入只记日志：升级不改磁盘上的
-// 世界状态，也不因此拦住用户。
+// MigrateLegacyBaseline từ bản chiếu nghiệp vụ phiên bản cũ sinh ngược bản ghi chương. Nhật ký hội thoại không phải sự kiện tác phẩm,
+// nên không tham gia di chuyển. Trước khi lưu sẽ chiếu thuận một lần so với trạng thái gốc, có sai biệt chỉ ghi log: nâng cấp không thay đổi
+// trạng thái thế giới trên đĩa, cũng không vì thế mà chặn người dùng.
 func MigrateLegacyBaseline(st *store.Store) error {
 	progress, err := st.Progress.Load()
 	if err != nil {
-		return fmt.Errorf("读取进度: %w", err)
+		return fmt.Errorf("đọc tiến độ: %w", err)
 	}
 	if progress == nil || len(progress.CompletedChapters) == 0 {
 		return nil
@@ -32,7 +32,7 @@ func MigrateLegacyBaseline(st *store.Store) error {
 	for _, chapter := range chapters {
 		record, err := st.ChapterRecords.Load(chapter)
 		if err != nil {
-			return fmt.Errorf("读取第 %d 章接纳记录: %w", chapter, err)
+			return fmt.Errorf("đọc bản ghi nghiệm thu chương %d: %w", chapter, err)
 		}
 		if record != nil {
 			existing = append(existing, *record)
@@ -69,15 +69,15 @@ func MigrateLegacyBaseline(st *store.Store) error {
 	}
 	projected, err := NewProjector(st).build(records)
 	if err != nil {
-		return fmt.Errorf("旧版章节事实无法重放: %w", err)
+		return fmt.Errorf("sự kiện chương phiên bản cũ không thể phát lại: %w", err)
 	}
 	if err := compareProjection(previous, projected); err != nil {
-		slog.Warn("旧数据重建结果与原状态有出入，下次重建世界状态时以记录为准", "module", "migration", "err", err)
+		slog.Warn("kết quả tái tạo dữ liệu cũ có sai biệt với trạng thái gốc, lần tái tạo thế giới tiếp theo sẽ lấy bản ghi làm chuẩn", "module", "migration", "err", err)
 	}
 	for _, chapter := range chapters {
 		if record := pending[chapter]; record != nil {
 			if err := st.ChapterRecords.Save(*record); err != nil {
-				return fmt.Errorf("保存第 %d 章修订基线: %w", chapter, err)
+				return fmt.Errorf("lưu baseline sửa đổi chương %d: %w", chapter, err)
 			}
 		}
 	}
@@ -91,10 +91,10 @@ func loadLegacyProjection(st *store.Store, chapters []int, progress *domain.Prog
 	for _, chapter := range chapters {
 		summary, err := st.Summaries.LoadSummary(chapter)
 		if err != nil {
-			return result, fmt.Errorf("读取第 %d 章摘要: %w", chapter, err)
+			return result, fmt.Errorf("đọc tóm tắt chương %d: %w", chapter, err)
 		}
 		if summary == nil {
-			slog.Warn("旧章节缺少摘要，以空事实建立基线", "module", "migration", "chapter", chapter)
+			slog.Warn("chương cũ thiếu tóm tắt, thiết lập baseline bằng sự kiện rỗng", "module", "migration", "chapter", chapter)
 			summary = &domain.ChapterSummary{}
 		}
 		summary.Chapter = chapter
@@ -102,23 +102,23 @@ func loadLegacyProjection(st *store.Store, chapters []int, progress *domain.Prog
 	}
 	var err error
 	if result.timeline, err = st.World.LoadTimeline(); err != nil {
-		return result, fmt.Errorf("读取时间线: %w", err)
+		return result, fmt.Errorf("đọc dòng thời gian: %w", err)
 	}
 	if result.foreshadow, err = st.World.LoadForeshadowLedger(); err != nil {
-		return result, fmt.Errorf("读取伏笔账本: %w", err)
+		return result, fmt.Errorf("đọc sổ chi tiết gieo mầm: %w", err)
 	}
 	if result.relationships, err = st.World.LoadRelationships(); err != nil {
-		return result, fmt.Errorf("读取人物关系: %w", err)
+		return result, fmt.Errorf("đọc quan hệ nhân vật: %w", err)
 	}
 	if result.stateChanges, err = st.World.LoadStateChanges(); err != nil {
-		return result, fmt.Errorf("读取状态变化: %w", err)
+		return result, fmt.Errorf("đọc thay đổi trạng thái: %w", err)
 	}
 	if result.cast, err = st.Cast.Load(); err != nil {
-		return result, fmt.Errorf("读取配角名册: %w", err)
+		return result, fmt.Errorf("đọc danh sách nhân vật phụ: %w", err)
 	}
 	style, err := st.World.LoadAuthorRevisionStyle()
 	if err != nil {
-		return result, fmt.Errorf("读取用户修订风格: %w", err)
+		return result, fmt.Errorf("đọc phong cách chỉnh sửa người dùng: %w", err)
 	}
 	if style != nil {
 		result.style = *style
@@ -127,8 +127,8 @@ func loadLegacyProjection(st *store.Store, chapters []int, progress *domain.Prog
 	return result, nil
 }
 
-// normalizeLegacy 去掉旧版数据里不属于基线的条目：提交中途崩溃留下的未完成章引用、
-// 早期版本允许的空 ID 与重复埋设。它们不影响写作，待恢复的提交会在迁移后重新写入。
+// normalizeLegacy loại bỏ các mục trong dữ liệu cũ không thuộc baseline: tham chiếu chương chưa hoàn thành do crash giữa chừng commit,
+// ID rỗng và gieo trùng lặp mà phiên bản cũ cho phép. Chúng không ảnh hưởng viết, commit đợi khôi phục sẽ ghi lại sau di chuyển.
 func (p *projection) normalizeLegacy(chapters []int) {
 	completed := func(chapter int) bool {
 		_, ok := slices.BinarySearch(chapters, chapter)
@@ -148,7 +148,7 @@ func (p *projection) normalizeLegacy(chapters []int) {
 		if entry.Status == "resolved" && !completed(entry.ResolvedAt) {
 			entry.Status, entry.ResolvedAt = "advanced", 0
 		}
-		// 早期重复埋设会追加同 ID 条目，后一条才是当时的活动状态。
+		// gieo trùng lặp phiên bản cũ sẽ thêm mục cùng ID, mục sau mới là trạng thái hoạt động thời điểm đó.
 		if i, seen := index[entry.ID]; seen {
 			ledger[i] = entry
 			continue
@@ -158,7 +158,7 @@ func (p *projection) normalizeLegacy(chapters []int) {
 	}
 	p.foreshadow = ledger
 	if after := len(p.timeline) + len(p.stateChanges) + len(p.relationships) + len(p.foreshadow); after < before {
-		slog.Warn("忽略不属于基线的旧数据条目", "module", "migration", "count", before-after)
+		slog.Warn("bỏ qua các mục dữ liệu cũ không thuộc baseline", "module", "migration", "count", before-after)
 	}
 }
 
@@ -166,29 +166,29 @@ func buildLegacyRecord(st *store.Store, summary domain.ChapterSummary) (domain.C
 	chapter := summary.Chapter
 	final, err := st.Drafts.LoadChapterText(chapter)
 	if err != nil {
-		return domain.ChapterRecord{}, fmt.Errorf("读取第 %d 章正文: %w", chapter, err)
+		return domain.ChapterRecord{}, fmt.Errorf("đọc nội dung chương %d: %w", chapter, err)
 	}
 	draft, err := st.Drafts.LoadDraft(chapter)
 	if err != nil {
-		return domain.ChapterRecord{}, fmt.Errorf("读取第 %d 章历史草稿: %w", chapter, err)
+		return domain.ChapterRecord{}, fmt.Errorf("đọc bản thảo lịch sử chương %d: %w", chapter, err)
 	}
 	hasFinal, hasDraft := strings.TrimSpace(final) != "", strings.TrimSpace(draft) != ""
 	content := draft
 	switch {
 	case !hasFinal && !hasDraft:
 		content = ""
-		slog.Warn("旧章节正文与草稿都缺失，以空正文建立基线，请用重写重新生成", "module", "migration", "chapter", chapter)
+		slog.Warn("cả nội dung lẫn bản thảo chương cũ đều thiếu, thiết lập baseline bằng nội dung rỗng, vui lòng dùng viết lại để tái tạo", "module", "migration", "chapter", chapter)
 	case !hasDraft:
 		content = final
-		slog.Info("旧章节无历史草稿，以当前正文建立 legacy 基线", "module", "migration", "chapter", chapter)
+		slog.Info("chương cũ không có bản thảo lịch sử, thiết lập baseline legacy bằng nội dung hiện tại", "module", "migration", "chapter", chapter)
 	case !hasFinal:
-		// 草稿就是当年提交的正文，写回是确定性还原。
+		// bản thảo chính là nội dung đã commit lúc đó, ghi lại là khôi phục xác định.
 		if err := st.Drafts.SaveFinalChapter(chapter, draft); err != nil {
-			return domain.ChapterRecord{}, fmt.Errorf("恢复第 %d 章正文: %w", chapter, err)
+			return domain.ChapterRecord{}, fmt.Errorf("khôi phục nội dung chương %d: %w", chapter, err)
 		}
-		slog.Warn("旧章节正文缺失，已从草稿恢复", "module", "migration", "chapter", chapter)
+		slog.Warn("nội dung chương cũ thiếu, đã khôi phục từ bản thảo", "module", "migration", "chapter", chapter)
 	case domain.NormalizeChapterContent(draft) != domain.NormalizeChapterContent(final):
-		slog.Info("旧章节正文有外部修订，迁移后需执行 /sync", "module", "migration", "chapter", chapter)
+		slog.Info("nội dung chương cũ có chỉnh sửa bên ngoài, sau di chuyển cần chạy /sync", "module", "migration", "chapter", chapter)
 	}
 	content = domain.NormalizeChapterContent(content)
 
@@ -247,13 +247,13 @@ func restoreLegacyFacts(existing []domain.ChapterRecord, pending map[int]*domain
 	restoreForeshadow(existing, pending, chapters, previous)
 }
 
-// restoreForeshadow 把账本条目还原成各章的 plant/advance/resolve。还原不了的条目
-// 说明已有记录与账本矛盾，丢弃并记日志，不让一条伏笔挡住升级。
+// restoreForeshadow khôi phục mục sổ thành plant/advance/resolve từng chương. Mục không khôi phục được
+// cho thấy bản ghi hiện có mâu thuẫn với sổ, loại bỏ và ghi log, không để một chi tiết gieo mầm chặn nâng cấp.
 func restoreForeshadow(existing []domain.ChapterRecord, pending map[int]*domain.ChapterRecord, chapters []int, previous *projection) {
 	kept := previous.foreshadow[:0]
 	for _, entry := range previous.foreshadow {
 		if !restoreForeshadowEntry(existing, pending, chapters, entry) {
-			slog.Warn("伏笔无法从旧数据还原，已忽略", "module", "migration", "id", entry.ID, "status", entry.Status)
+			slog.Warn("chi tiết gieo mầm không thể khôi phục từ dữ liệu cũ, đã bỏ qua", "module", "migration", "id", entry.ID, "status", entry.Status)
 			continue
 		}
 		kept = append(kept, entry)
@@ -293,7 +293,7 @@ func restoreForeshadowEntry(existing []domain.ChapterRecord, pending map[int]*do
 	default:
 		return false
 	}
-	// 全部落点确认后再写入，避免半还原的条目混进记录。
+	// xác nhận tất cả điểm rơi rồi mới ghi, tránh mục khôi phục dở dang lẫn vào bản ghi.
 	for _, p := range placements {
 		record := pending[p.chapter]
 		record.Facts.ForeshadowUpdates = append(record.Facts.ForeshadowUpdates, p.update)
@@ -354,37 +354,37 @@ func compareProjection(previous, projected projection) error {
 			return a.Chapter == b.Chapter && a.Title == b.Title && a.Summary == b.Summary &&
 				slices.Equal(a.Characters, b.Characters) && slices.Equal(a.KeyEvents, b.KeyEvents)
 		}, func(value domain.ChapterSummary) int { return value.Chapter }); ok {
-		return fmt.Errorf("第 %d 章摘要不一致", chapter)
+		return fmt.Errorf("tóm tắt chương %d không nhất quán", chapter)
 	}
 	if chapter, ok := mismatchedChapter(previous.timeline, projected.timeline,
 		func(a, b domain.TimelineEvent) bool {
 			return a.Chapter == b.Chapter && a.Time == b.Time && a.Event == b.Event && slices.Equal(a.Characters, b.Characters)
 		}, func(value domain.TimelineEvent) int { return value.Chapter }); ok {
-		return fmt.Errorf("第 %d 章时间线不一致", chapter)
+		return fmt.Errorf("dòng thời gian chương %d không nhất quán", chapter)
 	}
 	if id, ok := mismatchedKey(previous.foreshadow, projected.foreshadow,
 		func(value domain.ForeshadowEntry) string { return value.ID }); ok {
-		return fmt.Errorf("伏笔 %q 不一致", id)
+		return fmt.Errorf("chi tiết gieo mầm %q không nhất quán", id)
 	}
 	if key, ok := mismatchedKey(previous.relationships, projected.relationships,
 		func(value domain.RelationshipEntry) string {
 			return relationshipKey(value.CharacterA, value.CharacterB)
 		}); ok {
-		return fmt.Errorf("人物关系 %q 不一致", key)
+		return fmt.Errorf("quan hệ nhân vật %q không nhất quán", key)
 	}
 	if chapter, ok := mismatchedChapter(previous.stateChanges, projected.stateChanges,
 		func(a, b domain.StateChange) bool { return a == b },
 		func(value domain.StateChange) int { return value.Chapter }); ok {
-		return fmt.Errorf("第 %d 章状态变化不一致", chapter)
+		return fmt.Errorf("thay đổi trạng thái chương %d không nhất quán", chapter)
 	}
 	if chapter := mismatchedHistory(previous.hookHistory, projected.hookHistory); chapter != 0 {
-		return fmt.Errorf("第 %d 章 hook_type 不一致", chapter)
+		return fmt.Errorf("hook_type chương %d không nhất quán", chapter)
 	}
 	if chapter := mismatchedHistory(previous.strandHistory, projected.strandHistory); chapter != 0 {
-		return fmt.Errorf("第 %d 章 dominant_strand 不一致", chapter)
+		return fmt.Errorf("dominant_strand chương %d không nhất quán", chapter)
 	}
 	if !equalStyle(previous.style, projected.style) {
-		return fmt.Errorf("用户修订风格不一致")
+		return fmt.Errorf("phong cách chỉnh sửa người dùng không nhất quán")
 	}
 	return nil
 }

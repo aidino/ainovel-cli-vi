@@ -36,8 +36,8 @@ type architectContextEnvelope struct {
 	References map[string]any
 }
 
-// planningVolumeOutline 是 Architect 的只读结构投影。全局保留卷弧骨架，
-// 仅当前弧或显式聚焦弧携带章节详情，避免章节详情随规划规模线性膨胀。
+// planningVolumeOutline là phép chiếu cấu trúc chỉ đọc của Architect. Giữ bộ khung tập-arc toàn cục,
+// chỉ arc hiện tại hoặc arc được chỉ định đọc tập trung mới mang chi tiết chương, tránh chi tiết chương phình tuyến tính theo quy mô quy hoạch.
 type planningVolumeOutline struct {
 	Index int                  `json:"index"`
 	Title string               `json:"title"`
@@ -781,8 +781,8 @@ func (t *ContextTool) buildArchitectPlanning(envelope *architectContextEnvelope,
 	envelope.Planning["completion_signals"] = t.completionSignals(layered, compass, reads)
 }
 
-// planningDetailScope 选择本轮唯一携带完整章节的大纲弧。显式请求优先；
-// 默认使用当前进度弧，状态尚未建立时选择首个已展开弧。
+// planningDetailScope chọn arc đại cương duy nhất mang đầy đủ chương trong lượt này. Yêu cầu chỉ định ưu tiên;
+// mặc định dùng arc tiến độ hiện tại, khi trạng thái chưa thiết lập thì chọn arc đã triển khai đầu tiên.
 func planningDetailScope(volumes []domain.VolumeOutline, progress *domain.Progress, requestedVolume, requestedArc int) (int, int) {
 	if requestedVolume > 0 {
 		return requestedVolume, requestedArc

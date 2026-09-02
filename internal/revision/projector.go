@@ -45,12 +45,12 @@ func prepareRecords(records []domain.ChapterRecord) ([]domain.ChapterRecord, err
 	records = slices.Clone(records)
 	slices.SortFunc(records, func(a, b domain.ChapterRecord) int { return a.Chapter - b.Chapter })
 	for _, record := range records {
-		// legacy 记录由旧版 store 状态重建，只受当时的合同约束；Validate 是新模型输出的合同。
+		// bản ghi legacy được tái tạo từ trạng thái store phiên bản cũ, chỉ chịu ràng buộc hợp đồng thời điểm đó; Validate là hợp đồng đầu ra model mới.
 		if record.Origin == domain.ChapterOriginLegacy {
 			continue
 		}
 		if err := chapterfacts.Validate(record.Facts); err != nil {
-			return nil, fmt.Errorf("第 %d 章事实无效: %w", record.Chapter, err)
+			return nil, fmt.Errorf("sự thật chương %d không hợp lệ: %w", record.Chapter, err)
 		}
 	}
 	return records, nil
@@ -68,7 +68,7 @@ func (p *Projector) build(records []domain.ChapterRecord) (projection, error) {
 	}
 	characters, err := p.store.Characters.Load()
 	if err != nil {
-		return projection{}, fmt.Errorf("读取核心角色: %w", err)
+		return projection{}, fmt.Errorf("đọc nhân vật cốt lõi: %w", err)
 	}
 
 	result := projection{
@@ -99,7 +99,7 @@ func (p *Projector) Apply(records []domain.ChapterRecord) error {
 
 	for _, summary := range result.summaries {
 		if err := p.store.Summaries.SaveSummary(summary); err != nil {
-			return fmt.Errorf("保存第 %d 章摘要: %w", summary.Chapter, err)
+			return fmt.Errorf("lưu tóm tắt chương %d: %w", summary.Chapter, err)
 		}
 	}
 	if err := p.store.World.SaveTimeline(result.timeline); err != nil {
@@ -152,7 +152,7 @@ func projectWorld(records []domain.ChapterRecord) ([]domain.TimelineEvent, []dom
 			switch update.Action {
 			case "plant":
 				if strings.TrimSpace(update.ID) == "" {
-					return nil, nil, nil, nil, fmt.Errorf("第 %d 章伏笔 plant 缺少 id", chapter)
+					return nil, nil, nil, nil, fmt.Errorf("plant chi tiết gieo mầm chương %d thiếu id", chapter)
 				}
 				if exists {
 					if ledger[idx].Description == "" {

@@ -68,13 +68,13 @@ type (
 
 // --- Hàm Cmd ---
 
-// checkForUpdate 后台查询上游新版本（5s 超时，24h 缓存节流）。错误随消息
-// 返回，由 Update 写日志但不打扰用户界面。
+// checkForUpdate truy vấn nền phiên bản mới từ upstream (5s quá hạn, 24h cache tiết lưu). Lỗi đi kèm tin nhắn
+// trả về, do Update ghi log nhưng không làm phiền giao diện người dùng.
 func checkForUpdate(currentVersion string) tea.Cmd {
 	return func() tea.Msg {
 		configDir := bootstrap.DefaultConfigDir()
 		if configDir == "" {
-			return updateCheckMsg{err: fmt.Errorf("无法确定更新检查缓存目录")}
+			return updateCheckMsg{err: fmt.Errorf("không thể xác định thư mục cache kiểm tra cập nhật")}
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
@@ -86,16 +86,16 @@ func checkForUpdate(currentVersion string) tea.Cmd {
 	}
 }
 
-// updateNotesPreviewWidth 是欢迎页与事件流共用的单行摘要宽度。远端 release
-// 文本不直接进入终端：先移除 ANSI/控制字符，再显式截断，避免终端控制序列和超长行。
+// updateNotesPreviewWidth là chiều rộng tóm tắt một dòng dùng chung cho trang chào và luồng sự kiện. Release từ xa
+// không đưa trực tiếp vào terminal: trước tiên xóa ANSI/ký tự điều khiển, sau đó cắt ngắn tường minh, tránh chuỗi điều khiển terminal và dòng quá dài.
 const updateNotesPreviewWidth = 56
 
 func formatUpdateNotice(result *buildversion.CheckResult) string {
-	notice := fmt.Sprintf("新版本 %s 已发布", result.Latest)
+	notice := fmt.Sprintf("Phiên bản mới %s đã phát hành", result.Latest)
 	if preview := updateNotesPreview(result.Notes); preview != "" {
 		notice += " · " + preview
 	}
-	return notice + " · 运行 ainovel-cli update 升级"
+	return notice + " · chạy ainovel-cli update để nâng cấp"
 }
 
 func updateNotesPreview(notes string) string {

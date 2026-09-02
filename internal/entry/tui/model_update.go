@@ -575,9 +575,9 @@ func (m Model) handleRuntimeMsg(msg tea.Msg) (tea.Model, tea.Cmd, bool) {
 		return m, nil, true
 	case updateCheckMsg:
 		if msg.err != nil {
-			message := "启动版本检查失败"
+			message := "kiểm tra phiên bản khởi động thất bại"
 			if msg.result != nil {
-				message = "启动版本检查完成，但缓存存在异常"
+				message = "kiểm tra phiên bản khởi động hoàn tất, nhưng cache có bất thường"
 			}
 			slog.Warn(message, "module", "version", "err", msg.err)
 		}

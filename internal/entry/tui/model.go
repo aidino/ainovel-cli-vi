@@ -65,47 +65,47 @@ type Model struct {
 	compItems          []commandPaletteItem
 	compIdx            int
 	compActive         bool
-	commandToken       string // 当前已注册的命令 token；仅渲染该段，不染参数
+	commandToken       string // token lệnh đã đăng ký hiện tại; chỉ render phần đó, không tô màu tham số
 	snapshot           host.UISnapshot
 	events             []host.Event
-	eventIndex         map[string]int   // event.ID → m.events 下标；调用类事件到达时原地更新
-	viewport           viewport.Model   // 事件流 viewport
-	streamVP           viewport.Model   // 流式输出 viewport
-	detailVP           viewport.Model   // 右侧详情 viewport
-	stateVP            viewport.Model   // 左侧状态侧栏 viewport（可滚动）
-	streamBuf          *strings.Builder // 流式文本累积缓冲
+	eventIndex         map[string]int   // event.ID → chỉ số m.events; sự kiện dạng gọi đến cập nhật tại chỗ
+	viewport           viewport.Model   // viewport luồng sự kiện
+	streamVP           viewport.Model   // viewport đầu ra stream
+	detailVP           viewport.Model   // viewport chi tiết bên phải
+	stateVP            viewport.Model   // viewport thanh bên trạng thái bên trái (có thể cuộn)
+	streamBuf          *strings.Builder // bộ đệm tích lũy văn bản stream
 	streamRounds       []string
 	textarea           textarea.Model
 	width              int
 	height             int
 	autoScroll         bool
-	streamScroll       bool      // 流式面板自动跟随
-	streamDirty        bool      // streamRounds 有尚未刷新的 delta
-	flushPending       bool      // 已调度一次流式刷新，避免每个 delta 重复启动 timer
-	lastKeyAt          time.Time // 上次非 Enter 按键时间；KeyEnter 节流防粘贴 \n 流误触发提交
-	inputHistory       []string  // 已提交的输入历史（去重：相邻不重复）
-	historyIdx         int       // 当前浏览索引；== len(inputHistory) 表示"未浏览，正在编辑草稿"
-	historyDraft       string    // 进入历史浏览前保存的草稿，回到末端时恢复
+	streamScroll       bool      // panel stream tự động bám theo
+	streamDirty        bool      // streamRounds có delta chưa refresh
+	flushPending       bool      // đã lên lịch refresh stream một lần, tránh mỗi delta khởi động lại timer
+	lastKeyAt          time.Time // thời gian nhấn phím không phải Enter lần cuối; điều tiết KeyEnter chống dán luồng \n kích hoạt nộp nhầm
+	inputHistory       []string  // lịch sử nhập liệu đã nộp (khử trùng lặp: liền kề không trùng lặp)
+	historyIdx         int       // chỉ số duyệt hiện tại; == len(inputHistory) có nghĩa là "chưa duyệt, đang sửa bản thảo"
+	historyDraft       string    // bản thảo được lưu trước khi vào duyệt lịch sử, khôi phục khi quay lại cuối
 	focusPane          focusPane
 	hoverPane          focusPane
 	hoverActive        bool
 	mode               appMode
-	starting           bool // UI 已进入工作台，Host 正在执行启动初始化
+	starting           bool // UI đã vào bàn làm việc, Host đang thực hiện khởi tạo lúc khởi động
 	startupMode        startupMode
-	importHint         string // 启动时检测到未完成导入的提示（欢迎屏显示；发起导入后清空）
-	updateHint         string // 启动版本检查发现新版本的提示（欢迎屏与事件流显示）
-	disableUpdateCheck bool   // 配置关闭启动版本检查（bootstrap.Config.DisableUpdateCheck）
+	importHint         string // gợi ý phát hiện nhập chưa hoàn thành khi khởi động (hiển thị trên màn hình chào mừng; xóa sau khi bắt đầu nhập)
+	updateHint         string // gợi ý khi kiểm tra phiên bản khởi động phát hiện bản mới (hiển thị trên màn chào và luồng sự kiện)
+	disableUpdateCheck bool   // cấu hình tắt kiểm tra phiên bản khi khởi động (bootstrap.Config.DisableUpdateCheck)
 	cocreateSeq        int
 	reportSeq          int
 	err                error
 	spinnerIdx         int
-	toolSpinnerIdx     int  // 事件流进行中行的独立帧索引（150ms tick，不影响顶栏/星星）
-	toolTicking        bool // 已启动工具动画 timer；无运行事件时自动停止
-	cursorIdx          int  // 流式光标帧索引（随主动画推进）
-	streamRound        int  // 流式输出轮次计数
-	quitPending        bool // 双次 Ctrl+C 退出确认
-	abortPending       bool // 等待 Done 回来的手动暂停
-	mouseOff           bool // true 时已禁用鼠标上报，让用户原生拖拽选中复制；再次切换恢复
+	toolSpinnerIdx     int  // chỉ số frame độc lập của dòng đang chạy trong luồng sự kiện (tick 150ms, không ảnh hưởng đến thanh trên/sao)
+	toolTicking        bool // đã khởi động timer animation công cụ; tự động dừng khi không có sự kiện đang chạy
+	cursorIdx          int  // chỉ số frame con trỏ stream (tiến theo animation chính)
+	streamRound        int  // đếm số vòng đầu ra stream
+	quitPending        bool // nhấn đúp Ctrl+C xác nhận thoát
+	abortPending       bool // chờ Done trả về khi tạm dừng thủ công
+	mouseOff           bool // khi true đã vô hiệu hóa báo cáo chuột, để người dùng tự do kéo thả chọn copy; chuyển đổi lại để khôi phục
 }
 
 // NewModel tạo TUI Model.
@@ -171,7 +171,7 @@ func (m Model) Init() tea.Cmd {
 		bootstrapRuntime(m.runtime),
 		tickSpinner(),
 	}
-	// 启动版本检查：后台一次；错误仅写日志，命中新版本才浮出提醒。
+	// kiểm tra phiên bản khởi động: chạy nền một lần; lỗi chỉ ghi log, phát hiện phiên bản mới mới hiện nhắc nhở.
 	if !m.disableUpdateCheck {
 		cmds = append(cmds, checkForUpdate(m.version))
 	}

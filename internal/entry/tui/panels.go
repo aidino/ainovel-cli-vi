@@ -230,7 +230,7 @@ func renderWelcome(width, height int, errMsg string, mode startupMode, importHin
 			Render("Đã có thiết lập/đại cương? /start <đường_dẫn_file> để tạo sách mới · Đã có bản thảo? /import <đường_dẫn_file> để nhập và viết tiếp"))
 	}
 	if updateHint != "" {
-		// 启动版本检查命中新版本：与 importHint 同款强调样式追加一行。
+		// kiểm tra phiên bản khởi động phát hiện bản mới: thêm một dòng với cùng kiểu nhấn mạnh như importHint.
 		b.WriteString("\n")
 		b.WriteString(lipgloss.NewStyle().Foreground(colorAccent2).Bold(true).
 			Render("! " + updateHint))
