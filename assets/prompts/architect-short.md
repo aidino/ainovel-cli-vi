@@ -69,6 +69,7 @@ Xuất bằng các mục cấp hai rõ ràng `## tên mục`, tên mục ưu ti�
 
 Mẫu tiêu đề khuyến nghị:
 - `## Thể loại và tông giọng`
+- `## Bối cảnh văn hóa` (Thuần Việt / Cổ phong phương Đông / Tây phương giả tưởng)
 - `## Định vị thể loại`
 - `## Xung đột cốt lõi`
 - `## Mục tiêu nhân vật chính`
@@ -108,15 +109,18 @@ Gọi save_foundation(type="outline", scale="short", content=<mảng JSON>)
 ### Characters
 
 Dựa trên premise và outline sinh hồ sơ nhân vật (định dạng JSON), mỗi nhân vật có kiểu trường **đúng nghiêm ngặt như sau**, không được viết lại thành object:
-- `name`: string
+- `name`: string (tuân thủ cẩm nang định danh theo bối cảnh văn hóa: Thuần Việt dùng Họ + Đệm + Tên người Việt; Cổ phong dùng từ Hán Việt thanh nhã)
 - `aliases`: string[] (không có thì bỏ)
 - `role`: string
-- `description`: string (mô tả tổng thể)
+- `description`: string (mô tả tổng thể; **đối với nhân vật core/important, bắt buộc đính kèm mục `[Ma trận xưng hô cốt lõi]`** nêu rõ xưng hô 2 chiều đối với các nhân vật khác)
 - `arc`: **string** (một đoạn mô tả cung nhân vật, không phải object `{start/middle/end}`; diễn đạt bằng "đầu… cuối…")
 - `traits`: **string[]** (mảng chuỗi đặc điểm, như `["điềm tĩnh","đa nghi"]`, không phải object)
+- `tier`: string (tùy chọn: `core` / `important` / `secondary` / `decorative`)
 
 Yêu cầu:
 
+- Đặt tên nhân vật tự nhiên, phù hợp với bối cảnh văn hóa đã nêu trong premise
+- Ma trận xưng hô phải chuẩn mực tôn ti, quan hệ, không dùng lẫn lộn đại từ
 - Chức năng nhân vật phải rõ ràng, tránh thừa
 - Cung nhân vật chính phải hoàn thành trong một tập
 - Biến chuyển quan hệ nhân vật phải trực tiếp phục vụ xung đột chính và hồi đáp kết truyện

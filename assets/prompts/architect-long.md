@@ -54,15 +54,15 @@ Gọi `save_foundation(type="premise", scale="long", content=<Markdown>)`.
 
 Mảng JSON, kiểu trường của mỗi nhân vật **nghiêm ngặt như sau**, không được đổi thành object:
 
-- `name`: string
+- `name`: string (tuân thủ cẩm nang định danh theo bối cảnh văn hóa: Thuần Việt dùng Họ + Đệm + Tên người Việt; Cổ phong dùng từ Hán Việt thanh nhã)
 - `aliases`: string[] (biệt danh / danh hiệu, không có thì bỏ qua)
 - `role`: string (nhân vật chính / phản diện / người dẫn dắt / nhân vật phụ, v.v.)
-- `description`: string (một đoạn mô tả tổng thể, cung bậc xuyên tập cũng gói gọn vào đây kể hết)
+- `description`: string (một đoạn mô tả tổng thể; **đối với nhân vật core/important, bắt buộc đính kèm mục `[Ma trận xưng hô cốt lõi]`** định nghĩa xưng hô 2 chiều đối với các nhân vật khác)
 - `arc`: **string** (mô tả toàn bộ cung bậc nhân vật, không phải object `{start/middle/end}`. Cung bậc xuyên tập dùng "giai đoạn đầu... giai đoạn giữa... giai đoạn cuối..." trong cùng một đoạn văn bản)
 - `traits`: **string[]** (mảng chuỗi đặc điểm, ví dụ `["điềm tĩnh","đa nghi","trọng tình"]`, không phải object `{trait: ...}`)
 - `tier`: string (tùy chọn, `core` / `important` / `secondary` / `decorative`)
 
-Yêu cầu: Cung bậc của nhân vật chính và nhân vật phụ quan trọng có thể tiến hóa xuyên tập; tuyến quan hệ phải có độ căng dài hạn; xoay quanh lời hứa cốt lõi để thiết kế, tránh nhồi nhét danh từ thiết lập.
+Yêu cầu: Đặt tên nhân vật tự nhiên, phù hợp bối cảnh văn hóa (xác định trong Thể loại và tông giọng); ma trận xưng hô chuẩn mực tôn ti, không dùng lẫn lộn đại từ; cung bậc của nhân vật chính và nhân vật phụ quan trọng có thể tiến hóa xuyên tập; tuyến quan hệ phải có độ căng dài hạn; xoay quanh lời hứa cốt lõi để thiết kế, tránh nhồi nhét danh từ thiết lập.
 
 Gọi `save_foundation(type="characters", scale="long", content=<mảng JSON>)`.
 
