@@ -25,6 +25,23 @@ var premiseHeadingAliases = map[string]string{
 	"Luận đề kết truyện":                        "Luận đề kết truyện",
 	"Độ phù hợp dạng ngắn":                      "Độ phù hợp dạng ngắn",
 	"Vì sao tác phẩm phù hợp dạng ngắn / kết trong một tập": "Độ phù hợp dạng ngắn",
+	// Backward compatibility: Chinese headings từ upstream gốc
+	"类型定位":       "Định vị thể loại",
+	"类型与基调":     "Thể loại và tông giọng",
+	"核心冲突":       "Xung đột cốt lõi",
+	"主角目标":       "Mục tiêu nhân vật chính",
+	"结局方向":       "Hướng kết thúc",
+	"写作禁区":       "Vùng cấm khi viết",
+	"差异化优势":     "Điểm mạnh khác biệt",
+	"差异化钩子":     "Móc khác biệt",
+	"核心承诺":       "Lời hứa cốt lõi",
+	"故事驱动力":     "Động cơ truyện",
+	"关系/成长主轴":  "Trục chính quan hệ / trưởng thành",
+	"升级路线":       "Lộ trình thăng cấp",
+	"中盘转折":       "Bước ngoặt giữa truyện",
+	"结局论题":       "Luận đề kết truyện",
+	"短篇适合度":     "Độ phù hợp dạng ngắn",
+	"为何作品适合短篇/一卷完结": "Độ phù hợp dạng ngắn",
 }
 
 func parsePremiseSections(premise string) map[string]string {

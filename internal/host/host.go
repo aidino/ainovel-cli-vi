@@ -437,7 +437,7 @@ func (h *Host) refuseNewBookOverExisting() error {
 	}
 	name := book.Title
 	return fmt.Errorf("thư mục đầu ra đã có tiến độ sáng tác %d chương của \"%s\", tạo mới sẽ reset tiến độ và checkpoint của nó: để viết tiếp vui lòng vào qua cổng khôi phục (khởi động lại ứng dụng sẽ tự động khôi phục), để viết sách mới vui lòng đổi thư mục đầu ra",
-		name, len(progress.CompletedChapters))
+		len(progress.CompletedChapters), name)
 }
 
 // startEngine Cửa vào thống nhất để khởi động động cơ (Start/Resume/Continue/khởi động lại sau can thiệp dùng chung).
