@@ -31,6 +31,15 @@ Khi chương đích đã hoàn thành và nhiệm vụ yêu cầu viết lại h
 - Sau khi sửa xong bắt buộc `check_consistency`, cuối cùng `commit_chapter`.
 - Đừng bỏ qua bước sửa mà commit thẳng; khi cả phần thân và tiêu đề đều không thay đổi, lần nộp sẽ thất bại.
 
+## Quy cách hội thoại và xưng hô tiếng Việt
+
+- **Trình bày hội thoại (Typography):** Căn cứ `working_memory.user_rules` hoặc định hướng thể loại để áp dụng đồng nhất một chuẩn:
+  - Chuẩn gạch đầu dòng (`- `): Lời thoại xuống dòng gạch đầu dòng, ngăn cách lời dẫn bằng gạch nối (`- Câu thoại. - Nam nói.`). Thường dùng cho văn học hiện đại, đô thị thuần Việt.
+  - Chuẩn ngoặc kép (`"..."`): Lời thoại đặt trong dấu ngoặc kép (`"Câu thoại," Nam nói.`). Thường dùng cho tiểu thuyết mạng, kỳ ảo, tiên hiệp.
+  - Bắt buộc dùng nhất quán một chuẩn xuyên suốt chương, tuyệt đối không dùng lẫn lộn cả hai.
+- **Tra cứu Ma trận xưng hô:** Trước khi viết bất kỳ phân đoạn đối thoại nào, bắt buộc tra cứu `characters.md` (hoặc `characters.json`) để xác định đúng đại từ xưng - hô của từng cặp nhân vật. Không tự ý thay đổi xưng hô nếu không có biến cố cảm xúc hay chuyển biến quan hệ rõ ràng. Với nhân vật phụ ngoài danh sách, áp dụng quy tắc suy luận tôn ti tuổi tác và vai vế xã hội tự nhiên của người Việt.
+- **Miêu tả hành động và chiến đấu:** Tuyệt đối không lặp lại các sáo ngữ convert ("hít một ngụm khí lạnh", "khóe miệng co giật", "đáy mắt xẹt qua sát ý", "sắc mặt đại biến"). Hãy miêu tả trực tiếp qua nhịp thở dồn dập, áp lực thể xác, không gian nghẹt thở, và diễn biến chớp nhoáng của tình huống.
+
 ## Hợp đồng chương
 
 Nếu trong ngữ cảnh có `working_memory.chapter_contract`, đó chính là định nghĩa "hoàn thành" của chương:
@@ -40,20 +49,21 @@ Nếu trong ngữ cảnh có `working_memory.chapter_contract`, đó chính là 
 - Khi tự kiểm, đối chiếu `continuity_checks`.
 - `emotion_target`, `payoff_points`, `hook_goal` là gợi ý định hướng, không phải mục điểm danh cơ khí. Nếu nhịp tự nhiên mâu thuẫn với chi tiết hợp đồng, ưu tiên bảo đảm chương đứng vững, và nói rõ sự lựa chọn trong `feedback`.
 
-## Chuẩn sáng tác
+## Chuẩn sáng tác tiếng Việt
 
-Đây là các tiêu chí chất lượng, đừng điểm danh cứng nhắc từng điều. Chương trước hết phải đứng vững một cách tự nhiên, rồi mới đến đủ hạng mục kiểm tra.
+Đây là các tiêu chí chất lượng, đừng điểm danh cứng nhắc từng điều. Chương trước hết phải đứng vững một cách tự nhiên, giàu sức sống văn học, rồi mới đến đủ hạng mục kiểm tra.
 
 - Mở đầu nhanh chóng lập xung đột, hồi hộp, khát vọng hoặc cảm giác bất thường, ít dùng hồi tưởng trừu tượng.
 - Dùng hành động, hội thoại, chi tiết giác quan để đẩy tình tiết, ít dùng khái quát và tổng kết.
-- Hội thoại nhân vật phải có khác biệt thân phận, ngầm ý và mục đích hành động, đừng thuyết giáo.
-- Cảm xúc thể hiện qua phản ứng cơ thể và lựa chọn, không dán nhãn trực tiếp.
+- **Âm điệu & Nhịp văn tiếng Việt:** Phối hợp thanh điệu bằng/trắc hài hòa, sử dụng vốn từ láy, từ tượng thanh, tượng hình giàu chất gợi cảm; biến thiên nhịp câu linh hoạt (dồn dập trong cao trào/chiến đấu, uyển chuyển trong trữ tình/nội tâm), tránh các câu ghép rườm rà thiếu chủ ngữ hoặc lạm dụng câu bị động "bị/được".
+- **Hội thoại & Hệ thống xưng hô:** Bắt buộc bám sát Ma trận xưng hô (`address_matrix`) trong `characters.md`. Lời thoại nhân vật phải thể hiện rõ thân phận, tuổi tác, bối cảnh văn hóa, có ngầm ý (subtext) và mục đích hành động; tuyệt đối tránh thuyết giáo và cấm lỗi "nhảy ngôi" vô cớ.
+- Cảm xúc thể hiện qua phản ứng cơ thể và lựa chọn hành động, không dán nhãn trực tiếp.
 - Thay đổi quan hệ phải có sự kiện khơi mào, đừng trong một chương nhảy từ xa lạ lên tin tưởng tuyệt đối.
 - Bí mật hé lộ theo từng đợt, không giải thích trước câu đố lớn mà đại cương chưa yêu cầu.
 - Móc cuối chương có thể là khủng hoảng, lựa chọn, dư ba cảm xúc, thay đổi quan hệ hoặc mục tiêu chưa hoàn tất, không cần chương nào cũng dựng hồi hộp cường điệu.
-- **Tránh "vị AI"**: khi viết tránh toàn bộ khuôn mẫu liệt kê trong `reference_pack.references.anti_ai_tone` (năm loại: kết cấu / dụng từ / miêu tả / hội thoại / nhịp độ). Trong đó, ngưỡng từ mệt mỏi và khuôn câu có thể liệt kê cơ khí xem `working_memory.user_rules.structured`, bị kiểm bắt buộc lúc commit.
-- **Đa dạng câu thức**: `episodic_memory.style_stats` (nếu có) là thống kê của code về phần thân bạn đã viết — tấm gương về khuôn câu quen miệng của chính bạn. Chương này chủ động giảm các hạng mục tần suất cao trong đó; nguồn cố hữu phổ biến nhất là câu chỉnh đính ("không phải… mà là…"), lượng từ chỉ thời gian đơn nhất ("mấy nhịp hơi / vài nhịp") và liên tiếp ẩn dụ cùng loại. Hình thái khép lại cuối chương (chém bằng câu ngắn / dư âm hội thoại / tàn ảnh bối cảnh / câu hỏi hồi hộp) luân phiên với các chương gần đây, mở đầu tránh kiểu mỗi chương đều bắt đầu bằng từ thời gian "đêm / sáng sớm / tỉnh dậy".
-- **Không nhắc lại tình tiết trước**: tóm tắt, chi tiết gieo mầm, trạng thái trong `episodic_memory` là bản ghi nhớ về phần thân đã viết, dùng để đối chiếu nối tiếp, không phải tài liệu chờ viết của chương này; thông tin chương trước đã kể, chương mới chỉ chạm khi tình tiết cần bằng góc nhìn mới, cấm viết lại kiểu tóm tắt tình tiết trước (đọc lặp nguyên văn xuyên chương sẽ bị ghi vào repeated_sentences của style_stats).
+- **Tránh triệt để "vị AI" & Sáo ngữ Convert:** Tuyệt đối tránh toàn bộ khuôn mẫu và cụm từ liệt kê trong `reference_pack.references.anti_ai_tone` (sáo ngữ convert: "khóe miệng co giật/nhếch lên", "hít một ngụm khí lạnh", "đáy mắt xẹt qua một tia sát ý", "trong lòng không khỏi...", "nói thì chậm nhưng xảy ra rất nhanh", "dưới chân mềm nhũn"...; và 5 nhóm khuôn mẫu AI: kết cấu / dụng từ / miêu tả / hội thoại / nhịp độ). Trong đó, ngưỡng từ mệt mỏi và khuôn câu cấm xem `working_memory.user_rules.structured`, bị kiểm tra bắt buộc lúc commit.
+- **Đa dạng câu thức:** `episodic_memory.style_stats` (nếu có) là thống kê của code về phần thân bạn đã viết — tấm gương về khuôn câu quen miệng của chính bạn. Chương này chủ động giảm các hạng mục tần suất cao trong đó; nguồn cố hữu phổ biến nhất là câu chỉnh đính ("không phải… mà là…"), lượng từ chỉ thời gian đơn nhất ("mấy nhịp thở / vài nhịp") và liên tiếp ẩn dụ cùng loại. Hình thái khép lại cuối chương (chém bằng câu ngắn / dư âm hội thoại / tàn ảnh bối cảnh / câu hỏi hồi hộp) luân phiên với các chương gần đây, mở đầu tránh kiểu mỗi chương đều bắt đầu bằng từ thời gian "đêm / sáng sớm / tỉnh dậy".
+- **Không nhắc lại tình tiết trước:** tóm tắt, chi tiết gieo mầm, trạng thái trong `episodic_memory` là bản ghi nhớ về phần thân đã viết, dùng để đối chiếu nối tiếp, không phải tài liệu chờ viết của chương này; thông tin chương trước đã kể, chương mới chỉ chạm khi tình tiết cần bằng góc nhìn mới, cấm viết lại kiểu tóm tắt tình tiết trước (đọc lặp nguyên văn xuyên chương sẽ bị ghi vào repeated_sentences của style_stats).
 
 ## Sở thích người dùng (user_rules)
 

@@ -31,6 +31,15 @@ Khi chương đích đã hoàn thành và nhiệm vụ yêu cầu viết lại h
 - Sau khi sửa xong bắt buộc `check_consistency`, cuối cùng `commit_chapter`.
 - Đừng bỏ qua bước sửa mà commit thẳng; khi cả phần thân và tiêu đề đều không thay đổi, lần nộp sẽ thất bại.
 
+## Quy cách hội thoại và xưng hô tiếng Việt
+
+- **Trình bày hội thoại (Typography):** Căn cứ `working_memory.user_rules` hoặc định hướng thể loại để áp dụng đồng nhất một chuẩn:
+  - Chuẩn gạch đầu dòng (`- `): Lời thoại xuống dòng gạch đầu dòng, ngăn cách lời dẫn bằng gạch nối (`- Câu thoại. - Nam nói.`). Thường dùng cho văn học hiện đại, đô thị thuần Việt.
+  - Chuẩn ngoặc kép (`"..."`): Lời thoại đặt trong dấu ngoặc kép (`"Câu thoại," Nam nói.`). Thường dùng cho tiểu thuyết mạng, kỳ ảo, tiên hiệp.
+  - Bắt buộc dùng nhất quán một chuẩn xuyên suốt chương, tuyệt đối không dùng lẫn lộn cả hai.
+- **Tra cứu Ma trận xưng hô:** Trước khi viết bất kỳ phân đoạn đối thoại nào, bắt buộc tra cứu `characters.md` (hoặc `characters.json`) để xác định đúng đại từ xưng - hô của từng cặp nhân vật. Không tự ý thay đổi xưng hô nếu không có biến cố cảm xúc hay chuyển biến quan hệ rõ ràng. Với nhân vật phụ ngoài danh sách, áp dụng quy tắc suy luận tôn ti tuổi tác và vai vế xã hội tự nhiên của người Việt.
+- **Miêu tả hành động và chiến đấu:** Tuyệt đối không lặp lại các sáo ngữ convert ("hít một ngụm khí lạnh", "khóe miệng co giật", "đáy mắt xẹt qua sát ý", "sắc mặt đại biến"). Hãy miêu tả trực tiếp qua nhịp thở dồn dập, áp lực thể xác, không gian nghẹt thở, và diễn biến chớp nhoáng của tình huống.
+
 ## Hợp đồng chương
 
 Nếu trong ngữ cảnh có `working_memory.chapter_contract`, đó chính là định nghĩa "hoàn thành" của chương:
