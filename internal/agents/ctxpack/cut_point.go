@@ -41,6 +41,8 @@ func FindCutPoint(msgs []agentcore.AgentMessage, keepTokens int) CutResult {
 		return CutResult{}
 	}
 
+	rawCut := cutIndex // ghi lại vị trí cắt thô để fallback
+
 	// Căn chỉnh đến điểm cắt hợp lệ: đi tới tìm biên giới tin nhắn user.
 	// Không bao giờ cắt cặp tool (assistant có toolCalls + kết quả tool phía sau).
 	for cutIndex < len(msgs) {
@@ -71,8 +73,20 @@ func FindCutPoint(msgs []agentcore.AgentMessage, keepTokens int) CutResult {
 		break
 	}
 
+	// Fallback: nếu forward alignment vượt quá end (ví dụ toàn tool groups),
+	// đi ngược từ rawCut tìm đầu tool group gần nhất (biên assistant có toolCalls).
 	if cutIndex >= len(msgs) {
-		return CutResult{}
+		cutIndex = -1
+		for i := rawCut; i >= 1; i-- {
+			m, ok := msgs[i].(agentcore.Message)
+			if ok && m.Role == agentcore.RoleAssistant && m.HasToolCalls() {
+				cutIndex = i
+				break
+			}
+		}
+		if cutIndex <= 0 {
+			return CutResult{}
+		}
 	}
 
 	// Phát hiện lượt bị chia: nếu điểm cắt không ở tin nhắn user, tìm đầu lượt.

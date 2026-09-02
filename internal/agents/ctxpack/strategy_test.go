@@ -22,10 +22,10 @@ func TestWriterRestoreIncludesOptionalDataWarnings(t *testing.T) {
 
 	text, ok, err := buildWriterRestoreText(s, restoreBudgetTokens)
 	if err != nil {
-		t.Fatalf("辅助数据损坏不应阻止恢复上下文: %v", err)
+		t.Fatalf("dữ liệu phụ hư hỏng không nên chặn việc khôi phục ngữ cảnh: %v", err)
 	}
-	if !ok || !strings.Contains(text, "数据告警") || !strings.Contains(text, "style_rules") {
-		t.Fatalf("恢复上下文应向模型暴露读取告警: %q", text)
+	if !ok || !strings.Contains(text, "Cảnh báo dữ liệu") || !strings.Contains(text, "style_rules") {
+		t.Fatalf("ngữ cảnh khôi phục nên phơi bày cảnh báo đọc cho model: %q", text)
 	}
 }
 
@@ -85,10 +85,10 @@ func TestWriterRestorePackRefreshReusesStoreBuilder(t *testing.T) {
 	if !strings.Contains(text, "<post-compact-context>") {
 		t.Fatalf("expected wrapped restore context, got %q", text)
 	}
-	if !strings.Contains(text, "待修审稿问题") {
+	if !strings.Contains(text, "Vấn đề đọc kiểm chờ sửa") {
 		t.Fatalf("expected pending review section, got %q", text)
 	}
-	if !strings.Contains(text, "当前章节计划") {
+	if !strings.Contains(text, "Kế hoạch chương hiện tại") {
 		t.Fatalf("expected chapter plan section, got %q", text)
 	}
 
@@ -228,7 +228,7 @@ func TestStoreSummaryCompactCompactsToolLoop(t *testing.T) {
 		if !ok || !strings.Contains(summary.Summary, taskHeading+task+"\n\n## ") {
 			t.Fatalf("summary must carry the task section verbatim, got %T", out[0])
 		}
-		for _, want := range []string{"最近章节摘要", "当前章节计划", "活跃伏笔", "待修审稿问题", "仓库线索需要再蓄压一拍"} {
+		for _, want := range []string{"Tóm tắt chương gần đây", "Kế hoạch chương hiện tại", "Chi tiết gieo mầm đang hoạt động", "Vấn đề đọc kiểm chờ sửa", "仓库线索需要再蓄压一拍"} {
 			if !strings.Contains(summary.Summary, want) {
 				t.Fatalf("expected %q in store checkpoint", want)
 			}
