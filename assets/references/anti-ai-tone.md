@@ -14,29 +14,29 @@ Editor dùng các tiêu chí này khi đánh giá phạm trù `aesthetic` và `s
 
 | Sáo ngữ Convert thô | Vấn đề | Cách diễn đạt tiếng Việt tự nhiên |
 |---|---|---|
-| **"Khóe miệng co giật" / "Khóe miệng nhếch lên"** | Dịch thô từ 嘴角抽搐 / 嘴角微扬, lặp lại vô thức khi nhân vật cạn lời hoặc đắc ý. | "Nhếch mép", "bật cười cay đắng", "khóe môi thoáng giật", "cười khẩy", "cười trừ". |
-| **"Đáy mắt xẹt qua một tia [sát ý / lạnh lẽo / trêu tức]"** | Dịch thô từ 眼底闪过一丝... Cực kỳ sáo rỗng và kịch tính hóa giả tạo. | "Ánh mắt thoáng đanh lại", "trong mắt lộ vẻ hung quang", "ánh nhìn lạnh tanh", "đôi mắt sắc như dao". |
-| **"Sắc mặt đại biến" / "Sắc mặt cực kỳ khó coi"** | Dịch thô từ 脸色大变 / 脸色难看, dán nhãn bề mặt. | "Mặt biến sắc", "mặt tái mét", "sắc mặt sầm xuống", "mặt mày xám ngoét", "sững người tái mặt". |
-| **"Hung hăng trợn mắt" / "Hung hăng trừng hắn một cái"** | Dịch thô từ 狠狠瞪了一眼. | "Trừng mắt lườm", "ném cho một cái nhìn tóe lửa", "lườm rách mắt". |
+| **"Khóe miệng co giật" / "Khóe miệng nhếch lên"** | Dịch thô theo lối convert webnovel, lặp lại vô thức khi nhân vật cạn lời hoặc đắc ý. | "Nhếch mép", "bật cười cay đắng", "khóe môi thoáng giật", "cười khẩy", "cười trừ". |
+| **"Đáy mắt xẹt qua một tia [sát ý / lạnh lẽo / trêu tức]"** | Dịch thô kiểu convert CJK. Cực kỳ sáo rỗng và kịch tính hóa giả tạo. | "Ánh mắt thoáng đanh lại", "trong mắt lộ vẻ hung quang", "ánh nhìn lạnh tanh", "đôi mắt sắc như dao". |
+| **"Sắc mặt đại biến" / "Sắc mặt cực kỳ khó coi"** | Dịch thô kiểu convert CJK, dán nhãn bề mặt thay vì tả biến sắc thật sự. | "Mặt biến sắc", "mặt tái mét", "sắc mặt sầm xuống", "mặt mày xám ngoét", "sững người tái mặt". |
+| **"Hung hăng trợn mắt" / "Hung hăng trừng hắn một cái"** | Dịch thô máy móc, câu văn vụng về. | "Trừng mắt lườm", "ném cho một cái nhìn tóe lửa", "lườm rách mắt". |
 | **"Đồng tử bỗng nhiên co rút lại"** | Lạm dụng phản ứng nhãn cầu cơ học. | "Bàng hoàng", "chết lặng", "tim thắt lại", "giật thót", "chết trân nhìn...". |
 
 ### 2. Phản ứng Cơ thể & Tình huống Hành động
 
 | Sáo ngữ Convert thô | Vấn đề | Cách diễn đạt tiếng Việt tự nhiên |
 |---|---|---|
-| **"Hít vào một ngụm khí lạnh"** | Dịch thô từ 倒吸一口凉气. Rất ngô nghê trong văn phong tiếng Việt. | "Rùng mình ớn lạnh", "lạnh sống lưng", "sững sờ nín thở", "đứng tim", "rợn tóc gáy". |
-| **"Dưới chân bỗng nhiên mềm nhũn" / "Dưới chân mềm nhũn"** | Dịch thô từ 脚下一软, diễn đạt gượng gạo. | "Khuỵu xuống", "lảo đảo đứng không vững", "bủn rủn chân tay", "ngã sụp xuống". |
-| **"Nói thì chậm nhưng xảy ra rất nhanh"** | Dịch thô từ 说时迟那时快, câu chêm sáo rỗng phá vỡ nhịp kịch tính. | Dùng các câu ngắn, dồn dập, nhịp động từ nhanh: "Trong chớp mắt...", "Chưa dứt câu, lưỡi đao đã xé gió ập tới." |
-| **"Liền tại lúc này" / "Ngay tại lúc này"** | Dịch thô từ 就在这时. Lặp từ vô nghĩa làm loãng nhịp. | "Đúng lúc đó", "Bất thần", "Giữa lúc ấy", hoặc vào thẳng hành động mới mà không cần từ nối. |
-| **"Tất cả mọi người đều ngây dại"** | Dịch thô từ 众人都看呆了, kể lể khái quát. | Tả phản ứng cụ thể: "Cả căn phòng im phăng phắc, không một tiếng thở." |
+| **"Hít vào một ngụm khí lạnh"** | Dịch thô từ thành ngữ truyện mạng CJK. Rất ngô nghê trong văn phong tiếng Việt. | "Rùng mình ớn lạnh", "lạnh sống lưng", "sững sờ nín thở", "đứng tim", "rợn tóc gáy". |
+| **"Dưới chân bỗng nhiên mềm nhũn" / "Dưới chân mềm nhũn"** | Dịch thô kiểu convert, diễn đạt gượng gạo. | "Khuỵu xuống", "lảo đảo đứng không vững", "bủn rủn chân tay", "ngã sụp xuống". |
+| **"Nói thì chậm nhưng xảy ra rất nhanh"** | Câu chêm sáo rỗng thường thấy trong truyện convert, phá vỡ nhịp kịch tính. | Dùng các câu ngắn, dồn dập, nhịp động từ nhanh: "Trong chớp mắt...", "Chưa dứt câu, lưỡi đao đã xé gió ập tới." |
+| **"Liền tại lúc này" / "Ngay tại lúc này"** | Lặp từ vô nghĩa kiểu dịch thô làm loãng nhịp. | "Đúng lúc đó", "Bất thần", "Giữa lúc ấy", hoặc vào thẳng hành động mới mà không cần từ nối. |
+| **"Tất cả mọi người đều ngây dại"** | Dịch thô kiểu convert, kể lể khái quát. | Tả phản ứng cụ thể: "Cả căn phòng im phăng phắc, không một tiếng thở." |
 
 ### 3. Cảm xúc Nội tâm & Tâm lý
 
 | Sáo ngữ Convert thô | Vấn đề | Cách diễn đạt tiếng Việt tự nhiên |
 |---|---|---|
-| **"Trong lòng không khỏi [dâng lên / kinh hãi]"** | Dịch thô từ 心中不禁..., dán nhãn cảm xúc thay vì miêu tả. | Bỏ cụm "không khỏi", miêu tả trực tiếp: "Lòng gã chộn rộn bồn chồn", "Tim đập thình thịch như trống điểm." |
-| **"Trong mắt tràn đầy vẻ khó tin"** | Diễn đạt rườm rà, công thức. | "Không dám tin vào mắt mình", "sững sờ", "ngỡ như đang nằm mơ". |
-| **"Trong lúc nhất thời không biết nên làm thế nào"** | Dịch thô từ 一时之间不知如何是好. | "Lúng túng không biết tính sao", "tiến thoái lưỡng nan", "đứng chết trân bối rối". |
+| **"Trong lòng không khỏi [dâng lên / kinh hãi]"** | Dịch thô công thức, dán nhãn cảm xúc thay vì miêu tả sinh động. | Bỏ cụm "không khỏi", miêu tả trực tiếp: "Lòng gã chộn rộn bồn chồn", "Tim đập thình thịch như trống điểm." |
+| **"Trong mắt tràn đầy vẻ khó tin"** | Diễn đạt rườm rà, sáo rỗng. | "Không dám tin vào mắt mình", "sững sờ", "ngỡ như đang nằm mơ". |
+| **"Trong lúc nhất thời không biết nên làm thế nào"** | Dịch thô kiểu convert, thiếu tự nhiên. | "Lúng túng không biết tính sao", "tiến thoái lưỡng nan", "đứng chết trân bối rối". |
 
 ### 4. Cú pháp Dịch máy & Lỗi Ngữ pháp CJK/Anh
 
