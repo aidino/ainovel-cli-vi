@@ -1,220 +1,104 @@
-# Nguyên tắc dựng nhân vật
+# Nguyên tắc dựng nhân vật & Cẩm nang Định danh tiếng Việt
 
-Nhân vật hay là linh hồn của truyện. Độc giả nhớ người, không nhớ tình tiết.
+Nhân vật hay là linh hồn của truyện. Độc giả nhớ số phận, tính cách và tiếng nói của nhân vật, không chỉ nhớ tình tiết cơ học.
 
-## Mẫu hồ sơ nhân vật
+---
 
-Mỗi nhân vật chính nên lập hồ sơ đầy đủ:
+## I. Mẫu Hồ Sơ Nhân Vật Chuẩn
 
-### Thông tin cơ bản
+Mỗi nhân vật thuộc nhóm `core` (nòng cốt) và `important` (quan trọng) phải lập hồ sơ đầy đủ:
 
+### 1. Thông tin cơ bản
 ```text
-Tên: (tên có ý nghĩa càng tốt)
+Tên: (Tuân thủ cẩm nang định danh theo khối văn hóa)
+Biệt danh / Danh hiệu: (Nếu có)
 Tuổi:
-Nghề nghiệp:
-Đặc điểm ngoại hình: (2-3 đặc điểm nổi bật, tránh nói chung chung)
+Vai trò / Cấp bậc: (core / important / secondary)
+Nghề nghiệp / Thân phận:
+Đặc điểm ngoại hình: (2-3 nét nhận diện độc đáo, tránh mô tả chung chung)
 ```
 
-### Lõi tính cách
-
+### 2. Lõi tính cách
 ```text
-Giá trị cốt lõi: (điều anh ta tin tưởng nhất)
-Nỗi sợ lớn nhất: (điều anh ta sợ nhất)
-Khuyết điểm chí mạng: (điều gì sẽ khiến anh ta thất bại)
-Khát vọng nội tâm: (điều anh ta thực sự muốn)
+Giá trị cốt lõi: (Điều nhân vật tin tưởng và bảo vệ bằng mọi giá)
+Nỗi sợ lớn nhất: (Gót chân Asin khiến nhân vật chùn bước)
+Khuyết điểm chí mạng: (Tính kiêu ngạo, cả tin, nóng nảy, do dự...)
+Khát vọng sâu kín: (Động lực nội tại thực sự thúc đẩy hành động)
 ```
 
-### Bối cảnh quá khứ
-
+### 3. Bối cảnh quá khứ
 ```text
 Môi trường trưởng thành:
-Trải nghiệm tổn thương: (việc quá khứ làm tổn thương anh ta)
-Ký ức then chốt: (sự kiện then chốt tạo nên anh ta hôm nay)
-Bí mật: (điều người khác không biết)
+Biến cố định hình: (Sự kiện quá khứ để lại vết hằn tâm lý hoặc thể xác)
+Bí mật: (Điều giấu kín không ai hay biết)
 ```
 
-### Khuôn mẫu hành vi
-
+### 4. Ma trận xưng hô cốt lõi (Address Matrix)
 ```text
-Cách nói chuyện: (từ khóa, tốc độ nói, thói quen dùng từ)
-Ngôn ngữ cơ thể: (động tác quen, động tác nhỏ khi căng thẳng)
-Kiểu xã giao: (hướng nội / hướng ngoại, đối xử người lạ thế nào)
-Phản ứng dưới áp lực: (biểu hiện thế nào khi chịu áp lực)
+- Với [Nhân vật B]: xưng "X", gọi "Y" (hoàn cảnh đặc biệt: xưng "X'", gọi "Y'")
+- Với [Nhân vật C]: xưng "A", gọi "B"
+- Ngôi thứ ba người kể chuyện dùng: "hắn" / "chàng" / "gã" / "y" / "cô" / "nàng"
 ```
 
 ---
 
-## Dựng kiểu nhân vật
+## II. Phân Cấp Nhân Vật (Tiers)
 
-### Nhân vật chính (Protagonist)
-
-**Bắt buộc có:**
-- **Mục tiêu rõ ràng** - hắn muốn gì
-- **Động cơ mạnh** - vì sao muốn
-- **Tính dễ đồng cảm** - độc giả hiểu được cảm giác của hắn
-- **Không gian trưởng thành** - sẽ thay đổi trong truyện
-
-**Nguyên mẫu nhân vật chính:**
-| Kiểu | Đặc điểm | Vai trò trong truyện |
-|-----|------|---------|
-| Kiểu anh hùng | Dũng cảm, chính nghĩa, vị tha | Đánh bại uy hiếp bên ngoài |
-| Kiểu trưởng thành | Từ yếu đến mạnh | Vượt qua khuyết điểm nội tại |
-| Kiểu phản anh hùng | Xám đạo đức, phức tạp | Thách thức đạo đức truyền thống |
-| Kiểu bình thường | Người thường cuốn vào chuyện phi thường | Người đọc dễ nhập vai |
-
-### Phản diện (Antagonist)
-
-**Đặc điểm phản diện hay:**
-- **Mạnh đáng tin** - không nên là đám ô hợp
-- **Có logic riêng** - hắn tin mình đang làm điều đúng
-- **Có liên hệ sâu với nhân vật chính** - không phải thuần túy để làm ác
-- **Hé lộ chủ đề** - thách thức niềm tin nhân vật chính
-
-**Kiểu động cơ phản diện:**
-- Chủ nghĩa lý tưởng bị bóp méo ("vì đại cục phải hy sinh")
-- Tổn thương quá khứ ("thế giới làm tôi tổn thương, tôi phải trả thù")
-- Khát vọng quyền lực ("tôi xứng đáng nhiều hơn")
-- Cùng mục tiêu với nhân vật chính (cách làm khác)
-
-### Nhân vật phụ (Supporting Characters)
-
-**Chức năng nhân vật phụ:**
-- **Kiểu đạo sư** - dẫn dắt nhân vật chính, truyền thông tin
-- **Kiểu đồng minh** - trợ giúp nhân vật chính, hỗ trợ cảm xúc
-- **Kiểu hài hước** - giải tỏa căng thẳng, yếu tố hài
-- **Kiểu tình cảm** - tạo tuyến lãng mạn, tăng lợi ích cá nhân
-- **Kiểu phản đồ** - tạo phản bội và bước ngoặt
-
-**Nguyên tắc nhân vật phụ:**
-- Mỗi nhân vật phụ phải có vai trò rõ ràng
-- Xóa bỏ nhân vật "chỉ tồn tại"
-- Tránh rập khuôn (trừ khi cố ý)
+- **`core` (Nòng cốt):** Nhân vật chính và đối trọng trực tiếp. Bắt buộc có arc nhân vật hoàn chỉnh, ma trận xưng hô với tất cả nhân vật liên quan, chiều sâu động cơ và sự biến chuyển tâm lý.
+- **`important` (Quan trọng):** Đạo sư, đồng minh nòng cốt, phản diện hồi/arc. Có xưng hô cố định với nhóm core, ảnh hưởng then chốt tới mạch truyện.
+- **`secondary` (Phụ):** Xuất hiện theo nhiệm vụ cốt truyện cụ thể (chủ quán, thuộc hạ, người đưa tin).
+- **`decorative` (Quần chúng):** Làm nền cho thế giới quan sống động. Áp dụng quy tắc suy luận xưng hô xã hội tự nhiên.
 
 ---
 
-## Kỹ thuật dựng chiều sâu nhân vật
+## III. Cẩm Nang Định Danh Theo 3 Khối Văn Hóa (Naming Conventions)
 
-### 1. Tính mâu thuẫn
+Tên nhân vật và địa danh là điểm chạm đầu tiên tạo nên sự nhập tâm của độc giả:
 
-Người thật phức tạp, đầy mâu thuẫn.
+### 1. Khối Cổ Phong / Tiên Hiệp / Huyền Huyễn Phương Đông
+- **Họ & Tên:** Sử dụng từ Hán Việt thanh nhã, giàu sức gợi, hài hòa thanh điệu bằng trắc.
+  - *Ví dụ họ phổ biến:* Tiêu, Lâm, Lục, Sở, Diệp, Cố, Bạch, Tạ, Thẩm, Giang.
+  - *Ví dụ tên nam:* Tiêu Lam, Sở Huyền, Lục Thanh Vân, Bạch Vô Nhai, Tạ Mặc.
+  - *Ví dụ tên nữ:* Diệp Thanh Vi, Cố Vân Thư, Thẩm Dao, Tô Mộng Ly.
+- **Môn phái, Bang hội & Địa danh:** Mang âm hưởng triết lý, phong thủy, ngũ hành hoặc cảnh sắc thần tiên.
+  - *Ví dụ:* Thanh Vân Môn, Thái Huyền Tông, Vạn Kiếm Nhai, U Minh Cốc, Phù Dao Đảo.
+- **Tránh:** Ghép bừa các từ Hán Việt tối nghĩa, ngô nghê hoặc tạo cảm giác kỳ quặc (như "Bá Đạo Thiên Tôn", "Siêu Cấp Thần Vương").
 
-**Ví dụ:**
-- Thành viên bang đảng bạo lực nhưng thương yêu mèo hoang
-- Linh mục vô thần
-- Thám tử sợ bóng tối
-- Coi trọng tình bạn nhưng luôn phản bội bạn bè
+### 2. Khối Thuần Việt / Đô Thị / Đời Sống Hiện Đại
+- **Họ & Tên:** Tuân thủ cấu trúc Họ + Tên đệm + Tên chính tự nhiên của người Việt.
+  - *Ví dụ họ phổ biến:* Nguyễn, Trần, Lê, Phạm, Hoàng/Huỳnh, Vũ/Võ, Đặng, Bùi, Đỗ.
+  - *Ví dụ tên hiện đại:* Nguyễn Hoàng Nam, Lê Thảo Linh, Trần Tuấn Anh, Đặng Minh Khang, Phạm Hải Yến.
+- **Biệt danh & Cách gọi dân dã:** Mang đậm hơi thở đời sống người Việt:
+  - Gọi theo thứ bậc trong Nam: chú Ba, anh Tư, bác Năm, thím Bảy.
+  - Gọi theo đặc điểm tính cách / ngoại hình: Hùng "chó con", Nam "sứt", Thảo "mèo", Tuấn "cận", lão Đại.
+- **Địa danh & Bối cảnh:** Gắn liền với các địa danh thực hoặc hư cấu nhưng mang phong vị Việt (phố cổ, ngõ nhỏ, chung cư cũ, quán cà phê cóc, miền Tây sông nước, xứ chè trung du).
 
-### 2. Hé lộ từ cạnh bên
-
-Không tuyên bố thẳng tính cách, thể hiện qua hành vi.
-
-| Sai (tuyên bố thẳng) | Đúng (hé lộ cạnh bên) |
-|----------------|----------------|
-| Anh ta rất giận dữ | Anh vò nát ly giấy trong tay |
-| Cô ta rất căng thẳng | Cô chỉnh kính hết lần này đến lần khác |
-| Anh ta rất kiêu căng | Anh không bao giờ nhìn thẳng mắt cấp dưới |
-| Cô ta rất tốt bụng | Cô lén cho mèo hoang ăn ba năm nay |
-
-### 3. Giọng độc đáo
-
-Mỗi người nói khác nhau, trong hội thoại phân biệt được nhân vật.
-
-**Yếu tố phân biệt:**
-- Lựa chọn từ ngữ (trang trọng / suồng sã / phương ngữ)
-- Độ dài câu
-- Có ngắt lời người khác không
-- Có thích dùng ẩn dụ không
-- Cách biểu đạt cảm xúc
-
-### 4. Hợp lý hóa động cơ
-
-Mỗi hành vi nhân vật phải có động cơ hợp lý, dù động cơ bị bóp méo.
-
-**Ví dụ hợp lý hóa động cơ phản diện:**
-- "Tôi muốn hủy diệt thế giới" → nhạt
-- "Tôi mất tất cả, thế giới với tôi vô nghĩa" → hiểu được nhưng bóp méo
-- "Loài người là virus của Trái Đất, tôi phải dọn sạch" → có chống đỡ triết học
-
-### 5. Khuyết điểm chí mạng hóa
-
-Nhân vật chính phải có khuyết điểm, khuyết điểm dẫn đến thất bại ở thời khắc then chốt.
-
-**Khuôn mẫu khuyết điểm kinh điển:**
-| Khuyết điểm | Thất bại dẫn đến |
-|-----|----------|
-| Kiêu ngạo | Coi thường đối thủ, rơi vào bẫy |
-| Vấn đề lòng tin | Từ chối giúp đỡ, cô lập vô viện |
-| Cầu toàn | Không kịp hành động, lỡ cơ hội |
-| Lòng báo thù | Bị lợi dụng, mất lý trí |
+### 3. Khối Tây Phương / Giả Tưởng / Sci-Fi
+- Sử dụng tên La-tinh chuẩn hoặc phiên âm quen thuộc: Arthur, Victor, Elena, Lucas, Roland, Anya.
+- Tránh phiên âm nửa vời kiểu CJK (như "A Nhĩ Thác" thay vì "Arthur").
 
 ---
 
-## Thiết kế quan hệ nhân vật
+## IV. Thiết Kế Ma Trận Xưng Hô (Address Matrix)
 
-### Kiểu quan hệ
+### 1. Nguyên tắc thiết lập
+Mỗi khi khởi tạo một cặp nhân vật có tương tác thường xuyên, Architect và Writer phải xác định ngay:
+1. **Khoảng cách quyền lực & vai vế:** Ai trên, ai dưới, hay bình đẳng?
+2. **Khoảng cách tình cảm:** Xa lạ, thù địch, đồng nghiệp, hay tri kỷ?
+3. **Cặp từ xưng - hô tương ứng:**
+   - *Ví dụ sư đồ:* Đồ nhi gọi "Sư tôn", tự xưng "Đệ tử". Sư tôn gọi "Tên / Đồ nhi", tự xưng "Vi sư".
+   - *Ví dụ thanh mai trúc mã:* Gọi "Anh / Em", tự xưng "Anh / Em". Khi giận dỗi gọi "Cậu / Tớ" hoặc "Tôi / Anh".
+   - *Ví dụ huynh đệ giang hồ:* Gọi "Huynh đài / Hiền đệ", tự xưng "Tại hạ / Vi huynh".
 
-| Quan hệ | Tiềm năng kịch | Ứng dụng |
-|-----|---------|-----|
-| Vừa địch vừa bạn | Cao | Huyền nghi, hành động |
-| Tình cấm kỵ | Cao | Ngôn tình, bi kịch |
-| Quan hệ thầy trò | Trung | Truyện trưởng thành |
-| Anh em cạnh tranh | Trung | Kịch gia đình |
-| Liên minh người lạ | Trung | Mạo hiểm, huyền nghi |
-
-### Biến đổi động thái quan hệ
-
-**Quan hệ tốt sẽ phát triển theo truyện:**
-```text
-Chương 1: người lạ
-Chương 3: đồng minh miễn cưỡng
-Chương 5: dựng lòng tin
-Chương 7: phản bội / thử thách
-Chương cuối: tình bạn thật sự (hoặc tuyệt giao)
-```
-
-### Hé lộ quan hệ
-
-**Từng bước hé lộ chiều sâu quan hệ:**
-- Tầng mặt: tương tác bề mặt
-- Tầng giữa: trải nghiệm chung
-- Tầng sâu: cảm xúc thật / bí mật
+### 2. Bắt buộc chống "Nhảy ngôi"
+Editor sẽ kiểm tra từng đoạn đối thoại. Nếu nhân vật A gọi nhân vật B khác với Ma trận xưng hô mà không có lý do tình tiết cụ thể, bản thảo sẽ bị coi là lỗi thẩm mỹ nghiêm trọng.
 
 ---
 
-## Kiểm nhất quán nhân vật
+## V. Quy Tắc Suy Luận Xưng Hô Ngữ Cảnh (Cho Nhân Vật Phụ & Quần Chúng)
 
-Hành vi nhân vật phải hợp tính cách đã dựng.
-
-**Câu hỏi kiểm:**
-- Việc này có hợp giá trị cốt lõi của hắn không?
-- Với bối cảnh của hắn, sẽ phản ứng thế này không?
-- Nỗi sợ của hắn ảnh hưởng quyết định này thế nào?
-- Khuyết điểm khiến hắn mắc lỗi gì?
-
-**Xử lý ngoại lệ:**
-- Nếu nhân vật hành xử "trái tính cách", phải có nguyên nhân
-- Giải thích nên có trong cùng hoặc chương kế
-- Có thể là dấu hiệu trưởng thành (nhân vật vượt qua khuyết điểm)
-
----
-
-## Thiết kế ra mắt nhân vật
-
-### Nguyên tắc ra mắt lần đầu
-
-**Cách ra mắt hiệu quả:**
-- **Trong hành động** - phô diễn năng lực hoặc tính cách
-- **Trong xung đột** - lập quan hệ / đối lập ngay
-- **Trong hiểu lầm** - dựng hồi hộp
-
-**Tránh:**
-- Tự soi gương mô tả ngoại hình
-- Giới thiệu kiểu hồ sơ "tên + tuổi + nghề"
-- Hoạt động thường ngày vô nghĩa
-
-### So sánh ví dụ ra mắt
-
-| Ra mắt vô hiệu | Ra mắt hiệu quả |
-|---------|---------|
-| Lý Minh, 28 tuổi, là thám tử. Anh bước vào văn phòng. | Lý Minh vượt qua dây cảnh giới, viên cảnh sát cố ngăn anh. "Đội hình sự thành phố, Lý Minh." Anh giơ thẻ, đi thẳng về phía thi thể. |
-| Cô gái xinh đẹp ngồi bên cửa sổ, tên là Tiểu Hồng. | Cô đã ba ngày không ngủ, thứ chất lỏng trong ly cà phê đang run. Khi chuông cửa vang, cô suýt làm rơi ly xuống đất. |
+Với nhân vật `secondary` và `decorative` chưa có trong ma trận, Writer áp dụng quy tắc suy luận xã hội:
+- **Chênh lệch tuổi tác rõ rệt:** Xưng hô theo phép lịch sự tiếng Việt (Cháu - Bác/Chú/Cô; Em - Anh/Chị).
+- **Cùng lứa tuổi trong môi trường công sở / xã giao:** Xưng "Tôi - Anh/Chị", "Bạn - Mình".
+- **Kẻ thù / Va chạm đường phố:** Bắt đầu bằng thăm dò ("Anh - Tôi"), khi xung đột nổ ra chuyển thành "Mày - Tao", "Thằng kia - Bố mày".
+- **Chốn giang hồ / Cổ phong:** Luôn bắt đầu bằng "Các hạ - Tại hạ" hoặc "Đạo hữu - Bần đạo" trước khi biết rõ môn phái, tu vi.
