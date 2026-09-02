@@ -49,6 +49,9 @@ Kiểm tra lần lượt từng phạm trù; mỗi phạm trù chỉ cần đưa
 - Hành vi nhân vật có phù hợp với thiết lập tính cách và cung nhân vật không
 - Phong thái hội thoại có khớp với thân phận nhân vật không
 - Động cơ nhân vật có hợp lý và liền mạch không
+- **Kiểm toán xưng hô (Pronoun Audit):** Đối thoại giữa các nhân vật cốt lõi có tuân thủ nghiêm ngặt Ma trận xưng hô (`address_matrix`) trong `characters.md` không? Bắt buộc phạt lỗi nếu phát hiện:
+  - "Nhảy ngôi" vô cớ giữa chừng (đang xưng "anh - em" tự dưng đổi sang "tôi - cô", đang "ngươi - ta" nhảy sang "cậu - tớ").
+  - Xưng hô sai vai vế môn phái hoặc tôn ti gia đình/xã hội.
 
 #### Phạm trù 3: cân bằng nhịp độ (pacing)
 - Có nhiều chương liên tiếp cùng một kiểu không
@@ -75,11 +78,17 @@ Kiểm tra lần lượt từng phạm trù; mỗi phạm trù chỉ cần đưa
 #### Phạm trù 7: phẩm chất thẩm mỹ (aesthetic)
 Đọc kiểm phẩm chất văn học của nguyên văn. Mỗi mục con **bắt buộc trích dẫn nguyên văn** để chứng minh vấn đề, không chấp nhận kết luận chung chung.
 
-- **Tiêu chí "vị AI"**: chất mô tả (khái quát trừu tượng vs năm giác quan cụ thể, dán nhãn cảm xúc bằng từ), mức phân biệt hội thoại (bỏ tên người nói còn nhận ra được ai không), chất dùng từ (điệp ba câu / chất thành ngữ / khuôn mẫu "như thể…" / lặp từ) — thống nhất lấy `reference_pack.references.anti_ai_tone` làm chuẩn, đối chiếu từng loại với nguyên văn, trích đoạn vi phạm và chỉ ra cách sửa. Tần suất từ mệt mỏi và khuôn mẫu đã được kiểm cơ khí bởi `working_memory.user_rules.structured`; issue trích thẳng `rule_violations.target`, không liệt kê từ ngữ riêng nữa.
+- **Tiêu chí "vị AI" & Sáo ngữ Convert (Zero-Convert Gate)**: 
+  - Quét kỹ và phát hiện các cụm sáo ngữ convert thô từ tiếng Trung hoặc dịch máy tiếng Anh liệt kê trong `reference_pack.references.anti_ai_tone` (ví dụ: "hít một ngụm khí lạnh", "khóe miệng co giật/nhếch lên", "đáy mắt xẹt qua một tia...", "trong lòng không khỏi...", "sắc mặt đại biến", "dưới chân mềm nhũn", "nói thì chậm nhưng xảy ra rất nhanh", lạm dụng câu bị động "bị/được").
+  - Khi phát hiện sáo ngữ convert: bắt buộc trích nguyên văn câu lỗi, đánh giá mức độ nghiêm trọng (nếu lặp lại hoặc dùng sáo ngữ cấm $\to$ xếp loại lỗi cần viết lại) và yêu cầu Writer viết lại bằng tiếng Việt tự nhiên, giàu sức gợi.
+  - Tần suất từ mệt mỏi và khuôn mẫu đã được kiểm cơ khí bởi `working_memory.user_rules.structured`; issue trích thẳng `rule_violations.target`, không liệt kê từ ngữ riêng nữa.
+
+- **Kiểm toán định dạng hội thoại (Typography Consistency)**: 
+  - Toàn bộ lời thoại trong chương phải đồng nhất 100% theo một chuẩn: hoặc toàn bộ dùng gạch đầu dòng (`- `), hoặc toàn bộ dùng ngoặc kép (`"..."`). Nếu phát hiện dùng lẫn lộn cả hai $\to$ tạo issue yêu cầu đồng bộ.
 
 - **Thủ pháp tường thuật**: góc nhìn có thống nhất hoặc chuyển có chủ đích không? Xử lý thời gian (hồi tưởng / dự báo / để trống) có tự nhiên không? Nhịp tiết lộ thông tin có hợp lý không (cần giấu thì giấu, cần lộ thì lộ)? Trích đoạn rối góc nhìn hoặc tiết lộ thông tin sai lúc.
 
-- **Sức lay động cảm xúc**: có đoạn nào khiến tim độc giả đập nhanh, cổ họng nghẹn đọng hay khóe miệng nhếch lên không? Nếu cả chương cảm xúc phẳng lặng, chỉ ra 1-2 vị trí đáng tăng cường nhất và thủ pháp đề xuất (như tiết lộ hoãn lại, đặc tả giác quan, đột biến nhịp độ).
+- **Sức lay động cảm xúc**: câu văn có nhịp điệu thanh điệu hài hòa, giàu hình ảnh gợi cảm không? Nếu cả chương cảm xúc phẳng lặng, khô cứng như báo cáo hoặc văn dịch máy, chỉ ra 1-2 vị trí đáng tăng cường nhất và thủ pháp đề xuất (như tiết lộ hoãn lại, đặc tả giác quan, đột biến nhịp độ).
 
 - **Quá cố định cấp toàn truyện (style_stats)**: `episodic_memory.style_stats` (nếu có) là thống kê tất định của code trên toàn bộ chương đã viết: đếm các mẫu câu thức (patterns, gồm trung bình mỗi chương per_chapter), cụm từ tần suất cao gần đây (top_phrases), câu lặp nguyên văn xuyên chương (repeated_sentences), hình thái cuối chương (ending.short_ratio là tỷ lệ chương kết bằng câu ngắn), tỷ lệ từ thời gian mở đầu (opening_time_rate), định dạng tiêu đề lẫn lộn (title_formats). Mẫu câu thức nào "bình thường" trong cửa sổ đọc kiểm nhưng trung bình vài chục lần mỗi chương trên toàn truyện là bệnh — khi số lần trung bình mỗi chương của một mẫu rõ ràng bất thường, tỷ lệ câu ngắn cuối chương tiệm cận 1, cùng một câu dài tái xuất xuyên nhiều chương, định dạng tiêu đề lẫn lộn, bắt buộc phải có issue trong aesthetic (vấn đề tiêu đề quy về consistency) và trích thẳng số liệu thống kê. Thống kê chỉ đưa sự thật; có thành bệnh hay không do bạn phán quyết theo thể loại và văn phong.
 
