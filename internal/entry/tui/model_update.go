@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"slices"
 	"strings"
 	"time"
@@ -570,6 +571,26 @@ func (m Model) handleRuntimeMsg(msg tea.Msg) (tea.Model, tea.Cmd, bool) {
 				Time: time.Now(), Category: "SYSTEM", Summary: formatExportSuccess(msg.result), Level: "success",
 			})
 		}
+		m.refreshEventViewport()
+		return m, nil, true
+	case updateCheckMsg:
+		if msg.err != nil {
+			message := "启动版本检查失败"
+			if msg.result != nil {
+				message = "启动版本检查完成，但缓存存在异常"
+			}
+			slog.Warn(message, "module", "version", "err", msg.err)
+		}
+		if msg.result == nil || !msg.result.UpdateAvailable {
+			return m, nil, true
+		}
+		notice := formatUpdateNotice(msg.result)
+		m.updateHint = notice
+		ev := host.Event{
+			Time: time.Now(), Category: "SYSTEM", Level: "info",
+			Summary: notice,
+		}
+		m.applyEvent(ev)
 		m.refreshEventViewport()
 		return m, nil, true
 	case revisionDoneMsg:

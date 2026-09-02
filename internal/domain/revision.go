@@ -14,6 +14,7 @@ type ChapterOrigin string
 const (
 	ChapterOriginGenerated ChapterOrigin = "generated"
 	ChapterOriginUser      ChapterOrigin = "user"
+	ChapterOriginLegacy    ChapterOrigin = "legacy"
 )
 
 // ChapterFacts là sự thật cấu trúc hóa hoàn chỉnh tương ứng với chính văn của một chương, đồng thời cũng là đầu vào cho tất cả trạng thái phái sinh.

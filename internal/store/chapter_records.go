@@ -29,10 +29,10 @@ func (s *ChapterRecordStore) Load(chapter int) (*domain.ChapterRecord, error) {
 		return nil, err
 	}
 	if err := validateChapterRecord(record); err != nil {
-		return nil, fmt.Errorf("đọc bản ghi chấp nhận chương %d: %w", chapter, err)
+		return nil, fmt.Errorf("读取第 %d 章接纳记录: %w", chapter, err)
 	}
 	if record.Chapter != chapter {
-		return nil, fmt.Errorf("đọc bản ghi chấp nhận chương %d: số chương của bản ghi là %d", chapter, record.Chapter)
+		return nil, fmt.Errorf("读取第 %d 章接纳记录: 记录章节号为 %d", chapter, record.Chapter)
 	}
 	return &record, nil
 }
@@ -44,7 +44,7 @@ func (s *ChapterRecordStore) Save(record domain.ChapterRecord) error {
 	return s.io.WriteJSON(ChapterRecordPath(record.Chapter), record)
 }
 
-// Prepare xây dựng bản ghi chương phiên bản tiếp theo nhưng không ghi vào đĩa, cho phép xác nhận bất biến trên các bản ghi trước khi ghi.
+// Prepare 构造下一版章节记录但不落盘，供跨记录不变量在写入前完成校验。
 func (s *ChapterRecordStore) Prepare(chapter int, origin domain.ChapterOrigin, content string, facts domain.ChapterFacts, style domain.StyleDelta) (*domain.ChapterRecord, error) {
 	existing, err := s.Load(chapter)
 	if err != nil {
@@ -73,7 +73,7 @@ func prepareChapterRecord(existing *domain.ChapterRecord, chapter int, origin do
 	digest := domain.ChapterContentSHA256(content)
 	revision := 1
 	if existing != nil {
-		// Khi ghi đè bản ghi cũ, giữ lại chi tiết gieo mầm mà chương này đã tự gieo: viết lại chỉ thay thế chính văn, không nên xóa bỏ dữ kiện đã chôn giấu của chương này.
+		// 覆盖旧记录时保住本章自己种下的伏笔：重写只换正文，不该抹掉这一章的埋设事实。
 		facts.ForeshadowUpdates = domain.RestoreOwnPlants(existing.Facts.ForeshadowUpdates, facts.ForeshadowUpdates)
 		if existing.ContentSHA256 == digest && existing.Origin == origin && reflect.DeepEqual(existing.Facts, facts) && reflect.DeepEqual(existing.StyleDelta, style) {
 			return existing, false
@@ -104,7 +104,7 @@ func (s *ChapterRecordStore) LoadCompleted(chapters []int) ([]domain.ChapterReco
 			return nil, err
 		}
 		if record == nil {
-			return nil, fmt.Errorf("chương %d thiếu bản ghi chấp nhận", chapter)
+			return nil, fmt.Errorf("第 %d 章缺少接纳记录", chapter)
 		}
 		records = append(records, *record)
 	}
@@ -119,7 +119,7 @@ func validateChapterRecord(record domain.ChapterRecord) error {
 		return fmt.Errorf("chapter must be > 0")
 	case record.Revision <= 0:
 		return fmt.Errorf("revision must be > 0")
-	case record.Origin != domain.ChapterOriginGenerated && record.Origin != domain.ChapterOriginUser:
+	case record.Origin != domain.ChapterOriginGenerated && record.Origin != domain.ChapterOriginUser && record.Origin != domain.ChapterOriginLegacy:
 		return fmt.Errorf("invalid chapter origin %q", record.Origin)
 	case record.ContentSHA256 != domain.ChapterContentSHA256(record.Content):
 		return fmt.Errorf("content digest mismatch")

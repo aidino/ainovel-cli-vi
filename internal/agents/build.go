@@ -104,7 +104,7 @@ func resolvedRoleThinking(model agentcore.ChatModel, cfg bootstrap.Config, role 
 // subagent.Runner gọi lập trình được. Engine gọi trực tiếp lối vào có định kiểu của nó, không có tầng công cụ LLM
 // (docs/engine-rfc.md §1).
 // Trả về Runner, WriterRestorePack và ApplyThinking (liên kết cường độ suy luận các vai trò với /model lúc chạy;
-// ContextManager của writer/architect/editor do factory tự động tạo lại).
+// ContextManager của từng Worker do factory tự động tạo lại).
 // onGuardBlock tùy chọn (nil an toàn): callback kiểm toán chặn/nâng cấp của StopGuard từng Worker.
 func BuildWorkers(
 	cfg bootstrap.Config,
@@ -160,10 +160,18 @@ func BuildWorkers(
 	writerModel := models.ForRoleWithFailover("writer", reportFailover)
 	editorModel := models.ForRoleWithFailover("editor", reportFailover)
 
-	// ContextManager của Writer do factory tạo lại mỗi lần gọi, cửa sổ bám theo swap model tự động (xem factory bên dưới).
+	// ContextManager do factory tạo lại mỗi lần gọi, cửa sổ bám theo swap model tự động (xem factory bên dưới).
+	architectProvider, architectModelName, _ := models.CurrentSelection("architect")
+	architectContextWindow, architectSource := cfg.ResolveContextWindow(architectProvider, architectModelName)
+	bootstrap.LogContextWindowChoice("architect", architectModelName, architectContextWindow, architectSource)
+
 	writerProvider, writerModelName, _ := models.CurrentSelection("writer")
 	writerContextWindow, writerSource := cfg.ResolveContextWindow(writerProvider, writerModelName)
 	bootstrap.LogContextWindowChoice("writer", writerModelName, writerContextWindow, writerSource)
+
+	editorProvider, editorModelName, _ := models.CurrentSelection("editor")
+	editorContextWindow, editorSource := cfg.ResolveContextWindow(editorProvider, editorModelName)
+	bootstrap.LogContextWindowChoice("editor", editorModelName, editorContextWindow, editorSource)
 
 	// modelLookup khi ghi vào session sẽ đính kèm _meta:{provider,model} cho mỗi tin nhắn assistant,
 	// giúp replay không còn phụ thuộc "ModelSet hiện tại" để tính lại chi phí lịch sử, chuyển đổi model trong lúc chạy cũng tính chính xác.
@@ -189,38 +197,47 @@ func BuildWorkers(
 	architectStopGuardFactory := func(_, _ string) agentcore.StopGuard {
 		return guard.NewArchitectStopGuard(store, onGuardBlock)
 	}
+	// ContextManager của Architect / Editor mỗi lần chạy đều tạo lại theo model hiện tại, cửa sổ bám theo swap model.
+	roleContextFactory := func(profile roleContextProfile) func(agentcore.ChatModel) agentcore.ContextManager {
+		return func(model agentcore.ChatModel) agentcore.ContextManager {
+			window, _ := models.ResolveContextWindow(bootstrap.ModelProvider(model), bootstrap.ModelName(model))
+			return newRoleContextManager(profile, model, window, contextTool.Name())
+		}
+	}
 	architectThinking, _ := ResolveThinkingForModel(architectModel, roleThinking(cfg, "architect"))
 	architectShort := subagent.Config{
-		Name:             "architect_short",
-		Description:      "Quy hoạch sư truyện ngắn: sinh thiết lập đặc chắc và đại cương phẳng cho truyện một tập, một xung đột, mật độ cao",
-		Model:            architectModel,
-		SystemPrompt:     bundle.Prompts.ArchitectShort,
-		Tools:            architectTools,
-		MaxTurns:         15,
-		MaxRetries:       subagentMaxRetries,
-		ThinkingLevel:    architectThinking,
-		OnMessage:        onMsg,
-		CacheLastMessage: "ephemeral",
-		PromptCacheKey:   cacheBase + "-architect_short",
+		Name:                  "architect_short",
+		Description:           "Quy hoạch sư truyện ngắn: sinh thiết lập đặc chắc và đại cương phẳng cho truyện một tập, một xung đột, mật độ cao",
+		Model:                 architectModel,
+		SystemPrompt:          bundle.Prompts.ArchitectShort,
+		Tools:                 architectTools,
+		MaxTurns:              15,
+		MaxRetries:            subagentMaxRetries,
+		ThinkingLevel:         architectThinking,
+		OnMessage:             onMsg,
+		CacheLastMessage:      "ephemeral",
+		PromptCacheKey:        cacheBase + "-architect_short",
+		ContextManagerFactory: roleContextFactory(architectContextProfile),
 		StopAfterToolResult: func(toolName string, result json.RawMessage) bool {
 			return foundationReadyResult(toolName, result)
 		},
 		StopGuardFactory: architectStopGuardFactory,
 	}
 	architectLong := subagent.Config{
-		Name:                "architect_long",
-		Description:         "Quy hoạch sư trường thiên: sinh thiết lập phân tầng và đại cương tập arc cho truyện dài kỳ nâng cấp bền vững",
-		Model:               architectModel,
-		SystemPrompt:        bundle.Prompts.ArchitectLong,
-		Tools:               architectTools,
-		MaxTurns:            20,
-		MaxRetries:          subagentMaxRetries,
-		ThinkingLevel:       architectThinking,
-		OnMessage:           onMsg,
-		CacheLastMessage:    "ephemeral",
-		PromptCacheKey:      cacheBase + "-architect_long",
-		StopAfterToolResult: architectLongShouldStopAfterToolResult,
-		StopGuardFactory:    architectStopGuardFactory,
+		Name:                  "architect_long",
+		Description:           "Quy hoạch sư trường thiên: sinh thiết lập phân tầng và đại cương tập arc cho truyện dài kỳ nâng cấp bền vững",
+		Model:                 architectModel,
+		SystemPrompt:          bundle.Prompts.ArchitectLong,
+		Tools:                 architectTools,
+		MaxTurns:              20,
+		MaxRetries:            subagentMaxRetries,
+		ThinkingLevel:         architectThinking,
+		OnMessage:             onMsg,
+		CacheLastMessage:      "ephemeral",
+		PromptCacheKey:        cacheBase + "-architect_long",
+		ContextManagerFactory: roleContextFactory(architectContextProfile),
+		StopAfterToolResult:   architectLongShouldStopAfterToolResult,
+		StopGuardFactory:      architectStopGuardFactory,
 	}
 
 	// Tuyến đường lắp ráp duy nhất: mẫu giao thức {{VOICE}} điền lại đoạn văn phong tại chỗ, sau đó nối thêm preset phong cách.
@@ -277,17 +294,18 @@ func BuildWorkers(
 	}
 
 	editor := subagent.Config{
-		Name:             "editor",
-		Description:      "Người đọc kiểm: đọc nguyên văn, phát hiện vấn đề ở hai tầng kết cấu và thẩm mỹ",
-		Model:            editorModel,
-		SystemPrompt:     bundle.Prompts.Editor,
-		Tools:            editorTools,
-		MaxTurns:         20,
-		MaxRetries:       subagentMaxRetries,
-		ThinkingLevel:    resolvedRoleThinking(editorModel, cfg, "editor"),
-		OnMessage:        onMsg,
-		CacheLastMessage: "ephemeral",
-		PromptCacheKey:   cacheBase + "-editor",
+		Name:                  "editor",
+		Description:           "Người đọc kiểm: đọc nguyên văn, phát hiện vấn đề ở hai tầng kết cấu và thẩm mỹ",
+		Model:                 editorModel,
+		SystemPrompt:          bundle.Prompts.Editor,
+		Tools:                 editorTools,
+		MaxTurns:              20,
+		MaxRetries:            subagentMaxRetries,
+		ThinkingLevel:         resolvedRoleThinking(editorModel, cfg, "editor"),
+		OnMessage:             onMsg,
+		CacheLastMessage:      "ephemeral",
+		PromptCacheKey:        cacheBase + "-editor",
+		ContextManagerFactory: roleContextFactory(editorContextProfile),
 		// Trúng sản phẩm trạng thái cuối thì dừng ngay. Thoát trạng thái cuối vẫn sẽ tham vấn StopGuard (test hợp đồng TestContract_
 		// TerminalToolExitConsultsStopGuard), NewEditorStopGuard nhận biết nhiệm vụ sẽ chịu trách nhiệm
 		// phủ quyết việc thoát sớm "bị phái đi sinh tóm tắt nhưng chỉ làm đọc kiểm lại", nên save_review có thể dừng cứng an toàn.

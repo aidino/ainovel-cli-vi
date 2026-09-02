@@ -13,7 +13,16 @@ import (
 	storepkg "github.com/voocel/ainovel-cli/internal/store"
 )
 
+// upgradeProject 把老项目数据升到当前格式，并把同一个根错误同时交给界面和日志。
 func upgradeProject(st *storepkg.Store) error {
+	if err := runProjectUpgrades(st); err != nil {
+		slog.Error("项目数据升级失败", "module", "migration", "err", err)
+		return err
+	}
+	return nil
+}
+
+func runProjectUpgrades(st *storepkg.Store) error {
 	version, err := st.LoadProjectFormatVersion()
 	if err != nil {
 		return fmt.Errorf("đọc phiên bản định dạng dự án: %w", err)
@@ -28,6 +37,8 @@ func upgradeProject(st *storepkg.Store) error {
 			if err := migrateLegacyBook(st); err != nil {
 				return fmt.Errorf("nâng cấp dữ liệu dự án v%d→v%d: %w", version, next, err)
 			}
+		case storepkg.ChapterRecordProjectFormatVersion:
+			// v3 补齐 v2 可能遗漏的接纳记录；已有记录由迁移函数原样保留。
 			if err := revision.MigrateLegacyBaseline(st); err != nil {
 				return fmt.Errorf("nâng cấp dữ liệu dự án v%d→v%d: %w", version, next, err)
 			}

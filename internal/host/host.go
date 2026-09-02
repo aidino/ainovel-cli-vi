@@ -134,18 +134,20 @@ func New(cfg bootstrap.Config, bundle assets.Bundle, options ...NewOption) (*Hos
 
 	slog.Info("khởi động", "module", "boot", "provider", cfg.Provider, "model", cfg.ModelName, "output", cfg.OutputDir)
 
-	// Khởi chạy goroutine nền để làm mới metadata model (cửa sổ/giá cả) từ OpenRouter, cache trên đĩa 24 giờ.
-	modelreg.StartPricingRefresh(modelreg.DefaultRegistry(), bootstrap.DefaultConfigDir())
-
 	store := storepkg.NewStore(cfg.OutputDir)
 	if err := store.Init(); err != nil {
 		return nil, fmt.Errorf("init store: %w", err)
+	}
+	if err := upgradeProject(store); err != nil {
+		return nil, err
 	}
 	// RunMeta là nguồn sự thật cho mọi ngữ nghĩa kiểm soát, bắt buộc phải hoàn thành kiểm tra hợp lệ trước khi cấu trúc model/tác vụ nền.
 	// Advance mode không xác định sẽ trực tiếp trả về lỗi cấu trúc; cấm việc phỏng đoán giáng cấp rồi tiếp tục ghi đĩa.
 	if err := store.RunMeta.Init(cfg.Style, cfg.Provider, cfg.ModelName); err != nil {
 		return nil, fmt.Errorf("init run meta: %w", err)
 	}
+	// Khởi chạy goroutine nền để làm mới metadata model (cửa sổ/giá cả) từ OpenRouter, cache trên đĩa 24 giờ.
+	modelreg.StartPricingRefresh(modelreg.DefaultRegistry(), bootstrap.DefaultConfigDir())
 
 	models, err := bootstrap.NewModelSet(cfg)
 	if err != nil {
@@ -363,9 +365,6 @@ func (h *Host) StartPrepared(rawRequirement string) error {
 	if err := h.refuseNewBookOverExisting(); err != nil {
 		return err
 	}
-	if err := upgradeProject(h.store); err != nil {
-		return err
-	}
 	if err := h.budget.Refuse(); err != nil {
 		return err
 	}
@@ -438,7 +437,7 @@ func (h *Host) refuseNewBookOverExisting() error {
 	}
 	name := book.Title
 	return fmt.Errorf("thư mục đầu ra đã có tiến độ sáng tác %d chương của \"%s\", tạo mới sẽ reset tiến độ và checkpoint của nó: để viết tiếp vui lòng vào qua cổng khôi phục (khởi động lại ứng dụng sẽ tự động khôi phục), để viết sách mới vui lòng đổi thư mục đầu ra",
-		len(progress.CompletedChapters), name)
+		name, len(progress.CompletedChapters))
 }
 
 // startEngine Cửa vào thống nhất để khởi động động cơ (Start/Resume/Continue/khởi động lại sau can thiệp dùng chung).
@@ -539,10 +538,6 @@ func (h *Host) Resume() (string, error) {
 		return "", fmt.Errorf("%s đang diễn ra, vui lòng hoàn thành trước khi khôi phục sáng tác", ex)
 	}
 	h.mu.Unlock()
-	if err := upgradeProject(h.store); err != nil {
-		return "", err
-	}
-
 	label, err := resumeLabel(h.store)
 	if err != nil {
 		return "", err
@@ -1043,7 +1038,7 @@ func (h *Host) runEnded() {
 // runEndBody lắp ráp nội dung thông báo run_end: tên sách + tóm tắt tiến độ + chi phí tích lũy.
 func (h *Host) runEndBody(title, summary string) string {
 	if name := strings.TrimSpace(title); name != "" {
-		summary = "\"" + name + "\" " + summary
+		summary = "《" + name + "》" + summary
 	}
 	cost, _, _, _, _ := h.usage.Totals()
 	if cost > 0 {

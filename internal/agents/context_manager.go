@@ -5,6 +5,7 @@ import (
 
 	"github.com/voocel/agentcore"
 	corecontext "github.com/voocel/agentcore/context"
+	"github.com/voocel/ainovel-cli/internal/bootstrap"
 )
 
 // contextManagerConfig tập hợp toàn bộ tham số cấu hình của ContextManager.
@@ -56,6 +57,34 @@ func newContextManager(cfg contextManagerConfig) *corecontext.ContextEngine {
 	engine.SetProjectHook(callback)
 	engine.SetRecoverHook(callback)
 	return engine
+}
+
+// roleContextProfile mô tả hồ sơ nén ngữ cảnh cho các Worker kiểu "một nhiệm vụ,
+// nhiều lần đọc" như Architect / Editor: chỉ dọn kết quả novel_context cũ (dữ liệu
+// đã lưu đĩa có thể đọc lại bất cứ lúc nào), giữ kết quả tool ghi và nguyên văn chương;
+// nếu vẫn vượt giới hạn thì dùng prompt chuyên biệt theo vai trò để tóm tắt toàn phần.
+type roleContextProfile struct {
+	Agent           string
+	KeepRecentReads int // giữ lại bao nhiêu kết quả novel_context gần nhất không dọn
+	Summary         corecontext.FullSummaryConfig
+}
+
+// newRoleContextManager xây dựng ContextManager cho hồ sơ theo cửa sổ model hiện tại.
+func newRoleContextManager(p roleContextProfile, model agentcore.ChatModel, window int, contextToolName string) *corecontext.ContextEngine {
+	summary := p.Summary
+	return newContextManager(contextManagerConfig{
+		Model:           model,
+		ContextWindow:   window,
+		ReserveTokens:   bootstrap.CompactReserveTokens(window),
+		Agent:           p.Agent,
+		CommitProjected: true,
+		ToolMicrocompact: &corecontext.ToolResultMicrocompactConfig{
+			KeepRecent:      p.KeepRecentReads,
+			MinResultTokens: 200,
+			Classifier:      func(toolName string) bool { return toolName == contextToolName },
+		},
+		Summary: &summary,
+	})
 }
 
 // contextRewriteCallback tạo callback log cho việc viết lại ngữ cảnh.

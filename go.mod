@@ -11,6 +11,7 @@ require (
 	github.com/muesli/termenv v0.16.0
 	github.com/voocel/agentcore v1.8.2
 	github.com/voocel/litellm v1.8.10
+	golang.org/x/mod v0.38.0
 	golang.org/x/text v0.41.0
 )
 

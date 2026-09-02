@@ -45,6 +45,58 @@ func TestUpgradeProjectMigratesLegacyBook(t *testing.T) {
 	}
 }
 
+func TestUpgradeProjectRepairsMissingV2ChapterRecord(t *testing.T) {
+	dir := t.TempDir()
+	st := storepkg.NewStore(dir)
+	if err := st.Init(); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.SaveProjectFormatVersion(storepkg.ChapterRecordProjectFormatVersion); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.Progress.Init(1); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.Progress.UpdatePhase(domain.PhaseWriting); err != nil {
+		t.Fatal(err)
+	}
+	facts := domain.ChapterFacts{
+		Title: "第一章", Summary: "旧书开篇", KeyEvents: []string{"启程"},
+		HookType: "mystery", DominantStrand: "quest",
+	}
+	if err := st.Drafts.SaveDraft(1, "历史接纳正文"); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.Drafts.SaveFinalChapter(1, "历史接纳正文"); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.Summaries.SaveSummary(domain.ChapterSummary{
+		Chapter: 1, Title: facts.Title, Summary: facts.Summary, KeyEvents: facts.KeyEvents,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.Progress.StartChapter(1); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.Progress.MarkChapterComplete(1, 6, facts.HookType, facts.DominantStrand); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := st.Checkpoints.AppendArtifact(domain.ChapterScope(1), "commit", "chapters/01.md"); err != nil {
+		t.Fatal(err)
+	}
+	if err := upgradeProject(st); err != nil {
+		t.Fatal(err)
+	}
+	version, err := st.LoadProjectFormatVersion()
+	if err != nil || version != storepkg.CurrentProjectFormatVersion {
+		t.Fatalf("format version = %d, err = %v", version, err)
+	}
+	record, err := st.ChapterRecords.Load(1)
+	if err != nil || record == nil || record.Content != "历史接纳正文" {
+		t.Fatalf("chapter record = %+v, err = %v", record, err)
+	}
+}
+
 func TestInterventionStopsWhenPersistenceFails(t *testing.T) {
 	dir := t.TempDir()
 	st := storepkg.NewStore(dir)

@@ -12,7 +12,7 @@ import (
 	"github.com/voocel/ainovel-cli/internal/errs"
 )
 
-// Store là root kết hợp của quản lý trạng thái, giữ tất cả các sub-store.
+// Store 是状态管理的组合根，持有所有子存储。
 type Store struct {
 	dir string
 
@@ -36,20 +36,21 @@ type Store struct {
 	ChapterRecords *ChapterRecordStore
 	Revisions      *RevisionStore
 
-	crossMu sync.Mutex // Điều phối chéo miền nối tiếp; không có nghĩa là nhiều tệp có tính nguyên tử giao dịch
+	crossMu sync.Mutex // 串行化跨域协调；不代表多个文件具备事务原子性
 }
 
 const (
-	LegacyProjectFormatVersion  = 1
-	CurrentProjectFormatVersion = 2
-	projectFormatPath           = "meta/format.json"
+	LegacyProjectFormatVersion        = 1
+	ChapterRecordProjectFormatVersion = 2
+	CurrentProjectFormatVersion       = 3
+	projectFormatPath                 = "meta/format.json"
 )
 
 type projectFormat struct {
 	Version int `json:"version"`
 }
 
-// NewStore tạo trình quản lý trạng thái, dir là thư mục gốc đầu ra của tiểu thuyết.
+// NewStore 创建状态管理器，dir 为小说输出根目录。
 func NewStore(dir string) *Store {
 	io := newIO(dir)
 	outline := NewOutlineStore(io)
@@ -77,11 +78,11 @@ func NewStore(dir string) *Store {
 	}
 }
 
-// Dir trả về thư mục gốc đầu ra.
+// Dir 返回输出根目录。
 func (s *Store) Dir() string { return s.dir }
 
-// LoadProjectFormatVersion trả về phiên bản định dạng dữ liệu của thư mục tác phẩm. Tác phẩm cũ không có tệp phiên bản,
-// coi như v1, được nâng cấp thống nhất bởi di trú khởi động, mã nghiệp vụ không cần giữ nhánh định dạng cũ.
+// LoadProjectFormatVersion 返回作品目录的数据格式版本。旧作品没有版本文件，
+// 视为 v1，由启动迁移统一升级，业务代码无需保留旧格式分支。
 func (s *Store) LoadProjectFormatVersion() (int, error) {
 	var format projectFormat
 	if err := s.Progress.io.ReadJSON(projectFormatPath, &format); err != nil {
@@ -91,29 +92,29 @@ func (s *Store) LoadProjectFormatVersion() (int, error) {
 		return 0, err
 	}
 	if format.Version <= 0 {
-		return 0, fmt.Errorf("phiên bản định dạng dự án không hợp lệ: %d", format.Version)
+		return 0, fmt.Errorf("项目格式版本无效: %d", format.Version)
 	}
 	return format.Version, nil
 }
 
-// SaveProjectFormatVersion cập nhật nguyên tử phiên bản định dạng dự án sau khi hoàn thành toàn bộ một đợt di trú.
+// SaveProjectFormatVersion 在一次迁移全部完成后原子更新项目格式版本。
 func (s *Store) SaveProjectFormatVersion(version int) error {
 	if version <= 0 {
-		return fmt.Errorf("phiên bản định dạng dự án phải lớn hơn 0: %d", version)
+		return fmt.Errorf("项目格式版本必须大于 0: %d", version)
 	}
 	return s.Progress.io.WriteJSON(projectFormatPath, projectFormat{Version: version})
 }
 
-// CheckConsistency thực hiện xác nhận tầng dữ kiện một cách nông cạn, dùng để tạo warning khi khởi động/phục hồi.
-// Thuần chỉ đọc: không sửa dữ liệu, chỉ trả về mô tả vấn đề có thể đọc được. Bên gọi quyết định cách hiển thị (log / UI).
-// Để tránh chi phí IO từ việc quét toàn bộ thư mục, chỉ xác nhận các điểm chính của Progress:
-//   - Chương hoàn thành cuối cùng phải có bản cuối trong chapters/
-//   - Dưới chế độ Layered, Volume/Arc hiện tại phải tìm thấy được trong layered_outline
+// CheckConsistency 对事实层做一次浅层校验，用于启动/恢复时生成 warning。
+// 纯只读：不修正数据，仅返回可读的问题描述。调用方决定如何展示（log / UI）。
+// 为避免扫全目录带来的 IO 开销，只校验 Progress 的关键点：
+//   - 最后一个完成章节必须在 chapters/ 下存在终稿
+//   - Layered 模式下，当前 Volume/Arc 必须能在 layered_outline 中找到
 func (s *Store) CheckConsistency() []string {
 	var warnings []string
 	progress, err := s.Progress.Load()
 	if err != nil {
-		return append(warnings, fmt.Sprintf("đọc progress thất bại: %v", err))
+		return append(warnings, fmt.Sprintf("progress 读取失败: %v", err))
 	}
 	if progress == nil {
 		return warnings
@@ -121,15 +122,15 @@ func (s *Store) CheckConsistency() []string {
 	if n := len(progress.CompletedChapters); n > 0 {
 		lastCh := progress.CompletedChapters[n-1]
 		if text, err := s.Drafts.LoadChapterText(lastCh); err != nil {
-			warnings = append(warnings, fmt.Sprintf("đọc bản cuối chương %d thất bại: %v", lastCh, err))
+			warnings = append(warnings, fmt.Sprintf("第 %d 章终稿读取失败: %v", lastCh, err))
 		} else if text == "" {
-			warnings = append(warnings, fmt.Sprintf("progress đánh dấu chương %d đã hoàn thành, nhưng chapters/%02d.md không tồn tại hoặc trống", lastCh, lastCh))
+			warnings = append(warnings, fmt.Sprintf("progress 标记第 %d 章已完成，但 chapters/%02d.md 不存在或为空", lastCh, lastCh))
 		}
 	}
 	if progress.Layered && progress.CurrentVolume > 0 && progress.CurrentArc > 0 {
 		volumes, err := s.Outline.LoadLayeredOutline()
 		if err != nil {
-			warnings = append(warnings, fmt.Sprintf("đọc đại cương phân tầng thất bại: %v", err))
+			warnings = append(warnings, fmt.Sprintf("分层大纲读取失败: %v", err))
 		} else if len(volumes) > 0 {
 			found := false
 			for _, v := range volumes {
@@ -145,16 +146,16 @@ func (s *Store) CheckConsistency() []string {
 				break
 			}
 			if !found {
-				warnings = append(warnings, fmt.Sprintf("progress hiện tại V%d A%d không tìm thấy mục tương ứng trong đại cương phân tầng", progress.CurrentVolume, progress.CurrentArc))
+				warnings = append(warnings, fmt.Sprintf("progress 当前 V%d A%d 在分层大纲中找不到对应条目", progress.CurrentVolume, progress.CurrentArc))
 			}
 		}
 	}
 	return warnings
 }
 
-// FoundationMissing trả về thông tin tác phẩm và thiết lập cơ sở còn thiếu trong quy hoạch ban đầu, thứ tự ổn định.
-// Chế độ truyện dài (đã có layered_outline) yêu cầu thêm compass. Đọc thất bại phải trả về nguyên trạng, không thể coi
-// các artifact bị hỏng hoặc không có quyền đọc bị đánh giá nhầm thành "chưa được tạo", nếu không bên gọi có thể ghi đè dữ liệu thực tế.
+// FoundationMissing 返回初始规划中尚缺的作品信息与基础设定，顺序稳定。
+// 长篇模式（已有 layered_outline）额外要求 compass。读取失败必须原样返回，不能把
+// 损坏或无权限读取的工件误判成“尚未创建”，否则调用方可能覆盖真实数据。
 func (s *Store) FoundationMissing() ([]string, error) {
 	var missing []string
 	book, err := s.Book.Load()
@@ -205,9 +206,9 @@ func (s *Store) FoundationMissing() ([]string, error) {
 			missing = append(missing, "compass")
 		}
 	}
-	// Sách mới chỉ được phép từ quy hoạch vào viết sau khi trải qua thẩm định ngữ nghĩa rõ ràng của model đối với các artifact đã ghi đĩa.
-	// PhaseWriting/Complete đại diện cho sách cũ hoặc sách mới đã thẩm định, duy trì khả năng tương thích của dự án lịch sử; bản thân việc thẩm định
-	// là một hành động chứ không phải thiếu tệp, do đó chỉ được nối thêm khi các artifact khác đầy đủ.
+	// 新书只有经过模型对已落盘工件的显式语义审查，才允许从规划进入写作。
+	// PhaseWriting/Complete 代表旧书或已审查的新书，保持历史项目兼容；审查本身
+	// 是一个动作而非文件缺失，因此只在其它工件齐全时追加。
 	if len(missing) == 0 {
 		progress, err := s.Progress.Load()
 		if err != nil {
@@ -220,9 +221,9 @@ func (s *Store) FoundationMissing() ([]string, error) {
 	return missing, nil
 }
 
-// FoundationFingerprint trả về dấu vân tay nội dung của các artifact thiết lập cơ sở hiện tại. Architect phải đưa lại
-// giá trị này được đọc bởi novel_context cho công cụ thẩm định nguyên vẹn, để đảm bảo kết luận là dựa trên phiên bản thực tế ghi đĩa,
-// chứ không phải nội dung chưa lưu hoặc đã hết hạn trong phiên.
+// FoundationFingerprint 返回当前基础设定工件的内容指纹。Architect 必须把
+// novel_context 读到的这个值原样交回审查工具，确保结论针对的是实际落盘版本，
+// 而不是会话中尚未保存或已经过期的内容。
 func (s *Store) FoundationFingerprint() (string, error) {
 	files := []string{"meta/book.json", "premise.md", "outline.json", "characters.json", "world_rules.json"}
 	layered, err := s.Outline.LoadLayeredOutline()
@@ -247,7 +248,7 @@ func (s *Store) FoundationFingerprint() (string, error) {
 	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
-// Init tạo cấu trúc thư mục con cần thiết.
+// Init 创建所需的子目录结构。
 func (s *Store) Init() error {
 	if err := s.Checkpoints.InitError(); err != nil {
 		return fmt.Errorf("load checkpoints: %w", err)
@@ -257,9 +258,9 @@ func (s *Store) Init() error {
 	})
 }
 
-// ── Phương thức điều phối chéo miền ──
+// ── 跨域协调方法 ──
 
-// ExpandArc hiệu chỉnh bộ khung arc và mở rộng thành các chương chi tiết (Liên kết Outline + Progress).
+// ExpandArc 将骨架弧校准并展开为详细章节（Outline + Progress 联动）。
 func (s *Store) ExpandArc(volumeIdx, arcIdx int, expansion domain.ArcExpansion) error {
 	s.crossMu.Lock()
 	defer s.crossMu.Unlock()
@@ -286,7 +287,7 @@ func (s *Store) ExpandArc(volumeIdx, arcIdx int, expansion domain.ArcExpansion) 
 	return s.Progress.saveUnlocked(p)
 }
 
-// AppendVolume nối thêm tập mới vào cuối đại cương phân tầng (Liên kết Outline + Progress).
+// AppendVolume 追加新卷到分层大纲末尾（Outline + Progress 联动）。
 func (s *Store) AppendVolume(vol domain.VolumeOutline) error {
 	s.crossMu.Lock()
 	defer s.crossMu.Unlock()
@@ -313,9 +314,9 @@ func (s *Store) AppendVolume(vol domain.VolumeOutline) error {
 	return s.Progress.saveUnlocked(p)
 }
 
-// ReviseOutline thay thế đoạn đuôi kế hoạch chưa xảy ra từ fromChapter trở đi.
-// Đại cương phẳng thay thế đoạn đuôi của toàn bộ sách; Đại cương phân tầng chỉ thay thế đoạn đuôi của arc chứa chương mục tiêu. Định nghĩa này cho phép tải trọng tương tự
-// khi phát lại vẫn thu được cùng kết quả, đồng thời tránh liệt kê các thao tác như JSON Patch và insert/delete.
+// ReviseOutline 从 fromChapter 起替换尚未发生的计划尾段。
+// 扁平大纲替换全书尾段；分层大纲只替换目标章所在弧的尾段。这个定义让同一载荷
+// 重放仍得到同一结果，同时避免 JSON Patch 和 insert/delete 等操作枚举。
 func (s *Store) ReviseOutline(fromChapter int, replacement []domain.OutlineEntry) (int, error) {
 	if fromChapter <= 0 {
 		return 0, fmt.Errorf("from_chapter must be > 0: %w", errs.ErrToolArgs)
@@ -334,17 +335,17 @@ func (s *Store) ReviseOutline(fromChapter int, replacement []domain.OutlineEntry
 		return 0, fmt.Errorf("load progress: %w: %w", errs.ErrStoreRead, err)
 	}
 	if p == nil {
-		return 0, fmt.Errorf("progress chưa khởi tạo: %w", errs.ErrToolPrecondition)
+		return 0, fmt.Errorf("progress 未初始化: %w", errs.ErrToolPrecondition)
 	}
 	if p.Phase == domain.PhaseComplete {
-		return 0, fmt.Errorf("toàn sách đã hoàn thành, không cho phép sửa đại cương: %w", errs.ErrToolPrecondition)
+		return 0, fmt.Errorf("全书已完结，不允许修改大纲: %w", errs.ErrToolPrecondition)
 	}
 	protected := p.InProgressChapter
 	if latest := p.LatestCompleted(); latest > protected {
 		protected = latest
 	}
 	if fromChapter <= protected {
-		return 0, fmt.Errorf("chương %d đã hoàn thành hoặc đang viết; sửa đại cương phải bắt đầu sau chương %d: %w",
+		return 0, fmt.Errorf("第 %d 章已完成或正在写作；大纲修订必须从第 %d 章之后开始: %w",
 			fromChapter, protected, errs.ErrToolPrecondition)
 	}
 
@@ -371,9 +372,9 @@ func (s *Store) ReviseOutline(fromChapter int, replacement []domain.OutlineEntry
 	return p.TotalChapters, nil
 }
 
-// ClearHandledSteer xóa PendingSteer và thiết lập lại trạng thái FlowSteering cũ.
-// Hai tệp không thể cấu thành giao dịch hệ thống tệp, vì vậy trước tiên ghi Progress có thể lặp lại, cuối cùng mới xóa ý định phục hồi;
-// Mọi bước thất bại đều ít nhất giữ lại PendingSteer, Resume lần sau có thể phát lại an toàn.
+// ClearHandledSteer 清除 PendingSteer 并重置旧版 FlowSteering 状态。
+// 两个文件无法组成文件系统事务，因此先写可重复的 Progress，最后才删除恢复意图；
+// 任一步失败都至少保留 PendingSteer，下一次 Resume 可以安全重放。
 func (s *Store) ClearHandledSteer() error {
 	s.crossMu.Lock()
 	defer s.crossMu.Unlock()

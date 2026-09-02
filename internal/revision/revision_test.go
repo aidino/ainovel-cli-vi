@@ -2,10 +2,11 @@ package revision
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
+	"slices"
 	"testing"
 	"time"
 
@@ -62,24 +63,7 @@ func TestMigrateLegacyBaselineKeepsExternalChangeDirty(t *testing.T) {
 		TimelineEvents: []domain.TimelineEvent{{Time: "清晨", Event: "林墨离村", Characters: []string{"林墨"}}},
 		HookType:       "mystery", DominantStrand: "quest",
 	}
-	if err := st.Drafts.SaveDraft(1, "系统提交的正文"); err != nil {
-		t.Fatal(err)
-	}
-	if err := st.Drafts.SaveFinalChapter(1, "用户后来修改的正文"); err != nil {
-		t.Fatal(err)
-	}
-	if err := st.Summaries.SaveSummary(domain.ChapterSummary{
-		Chapter: 1, Title: facts.Title, Summary: facts.Summary, Characters: facts.Characters, KeyEvents: facts.KeyEvents,
-	}); err != nil {
-		t.Fatal(err)
-	}
-	if err := st.Progress.StartChapter(1); err != nil {
-		t.Fatal(err)
-	}
-	if err := st.Progress.MarkChapterComplete(1, 8, facts.HookType, facts.DominantStrand); err != nil {
-		t.Fatal(err)
-	}
-	writeLegacyCommitSession(t, st.Dir(), 1, facts)
+	saveLegacyChapter(t, st, 1, "系统提交的正文", "用户后来修改的正文", facts)
 
 	if err := MigrateLegacyBaseline(st); err != nil {
 		t.Fatal(err)
@@ -100,33 +84,13 @@ func TestMigrateLegacyBaselineKeepsExternalChangeDirty(t *testing.T) {
 	}
 }
 
-func TestMigrateLegacyBaselineFromImportArtifact(t *testing.T) {
+func TestMigrateLegacyBaselineWithoutDraftUsesFinal(t *testing.T) {
 	st := newRevisionTestStore(t, 1)
 	facts := domain.ChapterFacts{
 		Title: "第一章", Summary: "旧书导入", Characters: []string{"林墨"}, KeyEvents: []string{"进入旧城"},
 		HookType: "mystery", DominantStrand: "quest",
 	}
-	if err := st.Drafts.SaveDraft(1, "导入正文"); err != nil {
-		t.Fatal(err)
-	}
-	if err := st.Drafts.SaveFinalChapter(1, "导入正文"); err != nil {
-		t.Fatal(err)
-	}
-	if err := st.Summaries.SaveSummary(domain.ChapterSummary{
-		Chapter: 1, Title: facts.Title, Summary: facts.Summary, Characters: facts.Characters, KeyEvents: facts.KeyEvents,
-	}); err != nil {
-		t.Fatal(err)
-	}
-	if err := st.Progress.StartChapter(1); err != nil {
-		t.Fatal(err)
-	}
-	if err := st.Progress.MarkChapterComplete(1, 4, facts.HookType, facts.DominantStrand); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := st.Checkpoints.AppendArtifact(domain.ChapterScope(1), "commit", "chapters/01.md"); err != nil {
-		t.Fatal(err)
-	}
-	writeLegacyImportArtifact(t, st.Dir(), 1, facts)
+	saveLegacyChapter(t, st, 1, "", "导入正文", facts)
 
 	if err := MigrateLegacyBaseline(st); err != nil {
 		t.Fatal(err)
@@ -134,6 +98,337 @@ func TestMigrateLegacyBaselineFromImportArtifact(t *testing.T) {
 	record, err := st.ChapterRecords.Load(1)
 	if err != nil || record == nil || record.Facts.Summary != facts.Summary || record.Content != "导入正文" {
 		t.Fatalf("导入书迁移结果错误: record=%+v err=%v", record, err)
+	}
+	if record.Origin != domain.ChapterOriginLegacy {
+		t.Fatalf("origin = %q, want legacy", record.Origin)
+	}
+}
+
+func TestMigrateLegacyBaselineFillsOnlyMissingRecords(t *testing.T) {
+	st := newRevisionTestStore(t, 2)
+	facts1 := domain.ChapterFacts{
+		Title: "第一章", Summary: "已经接纳", KeyEvents: []string{"出发"},
+		HookType: "mystery", DominantStrand: "quest",
+	}
+	acceptTestChapter(t, st, 1, "第一章正文", facts1)
+	existing, err := st.ChapterRecords.Load(1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	existing.Revision = 2
+	if err := st.ChapterRecords.Save(*existing); err != nil {
+		t.Fatal(err)
+	}
+
+	facts2 := domain.ChapterFacts{
+		Title: "第二章", Summary: "抵达旧城", KeyEvents: []string{"入城"},
+		HookType: "mystery", DominantStrand: "quest",
+	}
+	saveLegacyChapter(t, st, 2, "第二章历史草稿", "第二章历史草稿", facts2)
+
+	if err := MigrateLegacyBaseline(st); err != nil {
+		t.Fatal(err)
+	}
+	after, err := st.ChapterRecords.Load(1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(after, existing) {
+		t.Fatalf("existing record changed: before=%+v after=%+v", existing, after)
+	}
+	migrated, err := st.ChapterRecords.Load(2)
+	if err != nil || migrated == nil || migrated.Content != "第二章历史草稿" {
+		t.Fatalf("missing record was not migrated: record=%+v err=%v", migrated, err)
+	}
+}
+
+func TestMigrateLegacyBaselineReconstructsWorldProjection(t *testing.T) {
+	st := newRevisionTestStore(t, 2)
+	facts1 := domain.ChapterFacts{
+		Title: "第一章", Summary: "掌柜交出密信", Characters: []string{"掌柜"}, KeyEvents: []string{"得到密信"},
+		TimelineEvents:      []domain.TimelineEvent{{Time: "清晨", Event: "掌柜交出密信", Characters: []string{"掌柜"}}},
+		ForeshadowUpdates:   []domain.ForeshadowUpdate{{ID: "密信", Action: "plant", Description: "未拆的密信"}},
+		RelationshipChanges: []domain.RelationshipEntry{{CharacterA: "掌柜", CharacterB: "林墨", Relation: "试探"}},
+		StateChanges:        []domain.StateChange{{Entity: "林墨", Field: "location", NewValue: "客栈"}},
+		CastIntros:          []domain.CastIntro{{Name: "掌柜", BriefRole: "客栈掌柜"}},
+		HookType:            "mystery", DominantStrand: "quest",
+	}
+	facts2 := domain.ChapterFacts{
+		Title: "第二章", Summary: "密信线索推进", Characters: []string{"掌柜"}, KeyEvents: []string{"核对火漆"},
+		ForeshadowUpdates:   []domain.ForeshadowUpdate{{ID: "密信", Action: "advance"}},
+		RelationshipChanges: []domain.RelationshipEntry{{CharacterA: "林墨", CharacterB: "掌柜", Relation: "合作"}},
+		HookType:            "choice", DominantStrand: "quest",
+	}
+	saveLegacyChapter(t, st, 1, "第一章正文", "第一章正文", facts1)
+	saveLegacyChapter(t, st, 2, "第二章正文", "第二章正文", facts2)
+
+	if err := MigrateLegacyBaseline(st); err != nil {
+		t.Fatal(err)
+	}
+	records, err := st.ChapterRecords.LoadCompleted([]int{1, 2})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := NewProjector(st).Apply(records); err != nil {
+		t.Fatal(err)
+	}
+	ledger, err := st.World.LoadForeshadowLedger()
+	if err != nil || len(ledger) != 1 || ledger[0].Status != "advanced" {
+		t.Fatalf("foreshadow = %+v, err = %v", ledger, err)
+	}
+	cast, err := st.Cast.Load()
+	if err != nil || len(cast) != 1 || cast[0].BriefRole != "客栈掌柜" {
+		t.Fatalf("cast = %+v, err = %v", cast, err)
+	}
+}
+
+func TestMigrateLegacyBaselineAllowsStaleCastAfterRewrite(t *testing.T) {
+	st := newRevisionTestStore(t, 1)
+	oldFacts := domain.ChapterFacts{
+		Title: "第一章", Summary: "旧配角出场", Characters: []string{"旧配角"}, KeyEvents: []string{"相遇"},
+		CastIntros: []domain.CastIntro{{Name: "旧配角", BriefRole: "旧友"}},
+	}
+	saveLegacyChapter(t, st, 1, "旧正文", "旧正文", oldFacts)
+	cast, err := st.Cast.Load()
+	if err != nil || len(cast) != 1 || cast[0].Name != "旧配角" {
+		t.Fatalf("stale cast precondition failed: cast=%+v err=%v", cast, err)
+	}
+
+	newFacts := domain.ChapterFacts{
+		Title: "第一章", Summary: "新配角出场", Characters: []string{"新配角"}, KeyEvents: []string{"改写相遇"},
+	}
+	if err := st.Drafts.SaveDraft(1, "新正文"); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.Drafts.SaveFinalChapter(1, "新正文"); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.Summaries.SaveSummary(domain.ChapterSummary{
+		Chapter: 1, Title: newFacts.Title, Summary: newFacts.Summary,
+		Characters: newFacts.Characters, KeyEvents: newFacts.KeyEvents,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.Progress.MarkChapterComplete(1, len([]rune("新正文")), "", ""); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := MigrateLegacyBaseline(st); err != nil {
+		t.Fatal(err)
+	}
+	records, err := st.ChapterRecords.LoadCompleted([]int{1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := NewProjector(st).Apply(records); err != nil {
+		t.Fatal(err)
+	}
+	cast, err = st.Cast.Load()
+	if err != nil || len(cast) != 1 || cast[0].Name != "新配角" {
+		t.Fatalf("cast = %+v, err = %v", cast, err)
+	}
+}
+
+func TestMigrateLegacyBaselineAllowsCRLFDraft(t *testing.T) {
+	st := newRevisionTestStore(t, 1)
+	content := "第一行\r\n第二行"
+	facts := domain.ChapterFacts{Title: "第一章", Summary: "两行正文", KeyEvents: []string{"事件"}}
+	saveLegacyChapter(t, st, 1, content, content, facts)
+	progress, err := st.Progress.Load()
+	if err != nil || progress.TotalWordCount != len([]rune(content)) {
+		t.Fatalf("legacy word count precondition failed: progress=%+v err=%v", progress, err)
+	}
+
+	if err := MigrateLegacyBaseline(st); err != nil {
+		t.Fatal(err)
+	}
+	record, err := st.ChapterRecords.Load(1)
+	if err != nil || record == nil || record.Content != "第一行\n第二行" {
+		t.Fatalf("record = %+v, err = %v", record, err)
+	}
+}
+
+func TestMigrateLegacyBaselineAcceptsChapterWithoutTitle(t *testing.T) {
+	st := newRevisionTestStore(t, 1)
+	// v0.7.4 之前的提交 schema 没有 title
+	facts := domain.ChapterFacts{Summary: "旧版摘要", Characters: []string{"林墨"}, KeyEvents: []string{"入城"}}
+	saveLegacyChapter(t, st, 1, "正文", "正文", facts)
+
+	if err := MigrateLegacyBaseline(st); err != nil {
+		t.Fatal(err)
+	}
+	records, err := st.ChapterRecords.LoadCompleted([]int{1})
+	if err != nil || records[0].Facts.Title != "" {
+		t.Fatalf("records = %+v, err = %v", records, err)
+	}
+	if err := NewProjector(st).Apply(records); err != nil {
+		t.Fatalf("legacy record must replay without new-contract validation: %v", err)
+	}
+}
+
+func TestMigrateLegacyBaselineIgnoresOrphanedCommitState(t *testing.T) {
+	st := newRevisionTestStore(t, 2)
+	facts := domain.ChapterFacts{
+		Title: "第一章", Summary: "埋下密信", Characters: []string{"林墨"}, KeyEvents: []string{"得到密信"},
+		ForeshadowUpdates: []domain.ForeshadowUpdate{{ID: "密信", Action: "plant", Description: "未拆的密信"}},
+	}
+	saveLegacyChapter(t, st, 1, "正文", "正文", facts)
+	// 第 2 章提交写完世界状态后崩溃，从未标记完成
+	if err := st.World.AppendTimelineEvents([]domain.TimelineEvent{{Chapter: 2, Time: "夜", Event: "拆信"}}); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.World.UpdateForeshadow(2, []domain.ForeshadowUpdate{{ID: "密信", Action: "resolve"}}); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.World.UpdateRelationships([]domain.RelationshipEntry{{CharacterA: "林墨", CharacterB: "掌柜", Relation: "敌对", Chapter: 2}}); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := MigrateLegacyBaseline(st); err != nil {
+		t.Fatal(err)
+	}
+	record, err := st.ChapterRecords.Load(1)
+	if err != nil || record == nil || len(record.Facts.TimelineEvents) != 0 || len(record.Facts.RelationshipChanges) != 0 {
+		t.Fatalf("orphaned chapter 2 state leaked into chapter 1: record=%+v err=%v", record, err)
+	}
+	actions := make([]string, 0, 2)
+	for _, update := range record.Facts.ForeshadowUpdates {
+		actions = append(actions, update.Action)
+	}
+	if !slices.Equal(actions, []string{"plant", "advance"}) {
+		t.Fatalf("foreshadow actions = %v, want plant then advance", actions)
+	}
+}
+
+func TestMigrateLegacyBaselineToleratesEarlyLedger(t *testing.T) {
+	st := newRevisionTestStore(t, 1)
+	facts := domain.ChapterFacts{Title: "第一章", Summary: "摘要", KeyEvents: []string{"事件"}}
+	saveLegacyChapter(t, st, 1, "正文", "正文", facts)
+	// v0.0.x 的 plant 不校验 id 和 description，重复埋设会追加同 ID 条目
+	if err := st.World.SaveForeshadowLedger([]domain.ForeshadowEntry{
+		{ID: "", Description: "无名", PlantedAt: 1, Status: "planted"},
+		{ID: "密信", PlantedAt: 1, Status: "planted"},
+		{ID: "密信", PlantedAt: 1, Status: "advanced"},
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := MigrateLegacyBaseline(st); err != nil {
+		t.Fatal(err)
+	}
+	records, err := st.ChapterRecords.LoadCompleted([]int{1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := NewProjector(st).Apply(records); err != nil {
+		t.Fatal(err)
+	}
+	ledger, err := st.World.LoadForeshadowLedger()
+	if err != nil || len(ledger) != 1 || ledger[0].ID != "密信" || ledger[0].Status != "advanced" {
+		t.Fatalf("ledger = %+v, err = %v", ledger, err)
+	}
+}
+
+func TestMigrateLegacyBaselineRestoresFinalFromDraft(t *testing.T) {
+	st := newRevisionTestStore(t, 1)
+	facts := domain.ChapterFacts{Title: "第一章", Summary: "摘要", KeyEvents: []string{"事件"}}
+	saveLegacyChapter(t, st, 1, "草稿正文", "", facts)
+
+	if err := MigrateLegacyBaseline(st); err != nil {
+		t.Fatal(err)
+	}
+	final, err := st.Drafts.LoadChapterText(1)
+	if err != nil || final != "草稿正文" {
+		t.Fatalf("final = %q, err = %v", final, err)
+	}
+	if changes, err := Scan(st); err != nil || len(changes) != 0 {
+		t.Fatalf("restored chapter must be clean: changes=%v err=%v", changes, err)
+	}
+}
+
+func TestMigrateLegacyBaselineAcceptsMissingChapterText(t *testing.T) {
+	st := newRevisionTestStore(t, 1)
+	facts := domain.ChapterFacts{Title: "第一章", Summary: "摘要", KeyEvents: []string{"事件"}}
+	saveLegacyChapter(t, st, 1, "", "", facts)
+	if err := os.Remove(filepath.Join(st.Dir(), "chapters", "01.md")); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := MigrateLegacyBaseline(st); err != nil {
+		t.Fatalf("missing chapter must not block upgrade: %v", err)
+	}
+	record, err := st.ChapterRecords.Load(1)
+	if err != nil || record == nil || record.Content != "" {
+		t.Fatalf("record = %+v, err = %v", record, err)
+	}
+	if changes, err := Scan(st); err != nil || len(changes) != 0 {
+		t.Fatalf("empty baseline with no file must scan clean: changes=%v err=%v", changes, err)
+	}
+}
+
+func TestMigrateLegacyBaselineAcceptsMissingSummary(t *testing.T) {
+	st := newRevisionTestStore(t, 1)
+	if err := st.Drafts.SaveFinalChapter(1, "正文"); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.Progress.StartChapter(1); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.Progress.MarkChapterComplete(1, 2, "", ""); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := MigrateLegacyBaseline(st); err != nil {
+		t.Fatalf("missing summary is just missing context: %v", err)
+	}
+	record, err := st.ChapterRecords.Load(1)
+	if err != nil || record == nil || record.Content != "正文" || record.Facts.Summary != "" {
+		t.Fatalf("record = %+v, err = %v", record, err)
+	}
+}
+
+func TestMigrateLegacyBaselineDropsContradictoryForeshadow(t *testing.T) {
+	st := newRevisionTestStore(t, 2)
+	facts1 := domain.ChapterFacts{Title: "第一章", Summary: "旧章", KeyEvents: []string{"事件"}}
+	facts2 := domain.ChapterFacts{Title: "第二章", Summary: "新章", KeyEvents: []string{"事件"}}
+	saveLegacyChapter(t, st, 1, "正文一", "正文一", facts1)
+	saveLegacyChapter(t, st, 2, "正文二", "正文二", facts2)
+	record2 := testRecord(2, "正文二", facts2, domain.StyleDelta{}, time.Now())
+	record2.Origin = domain.ChapterOriginGenerated
+	if err := st.ChapterRecords.Save(record2); err != nil {
+		t.Fatal(err)
+	}
+	// 账本说伏笔埋在第 2 章，但第 2 章的接纳记录里没有这次埋设
+	if err := st.World.SaveForeshadowLedger([]domain.ForeshadowEntry{{ID: "孤儿", Description: "无主伏笔", PlantedAt: 2, Status: "planted"}}); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := MigrateLegacyBaseline(st); err != nil {
+		t.Fatal(err)
+	}
+	record, err := st.ChapterRecords.Load(1)
+	if err != nil || record == nil || len(record.Facts.ForeshadowUpdates) != 0 {
+		t.Fatalf("record 1 = %+v, err = %v", record, err)
+	}
+}
+
+func TestMigrateLegacyBaselineWarnsInsteadOfFailingOnDrift(t *testing.T) {
+	st := newRevisionTestStore(t, 2)
+	facts1 := domain.ChapterFacts{Title: "第一章", Summary: "旧章", KeyEvents: []string{"事件"}}
+	facts2 := domain.ChapterFacts{Title: "第二章", Summary: "磁盘上的摘要", KeyEvents: []string{"事件"}}
+	saveLegacyChapter(t, st, 1, "正文一", "正文一", facts1)
+	saveLegacyChapter(t, st, 2, "正文二", "正文二", facts2)
+	drifted := facts2
+	drifted.Summary = "记录里的摘要"
+	if err := st.ChapterRecords.Save(testRecord(2, "正文二", drifted, domain.StyleDelta{}, time.Now())); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := MigrateLegacyBaseline(st); err != nil {
+		t.Fatalf("projection drift must not block upgrade: %v", err)
+	}
+	if record, err := st.ChapterRecords.Load(1); err != nil || record == nil {
+		t.Fatalf("record 1 = %+v, err = %v", record, err)
 	}
 }
 
@@ -477,58 +772,71 @@ func testRecord(chapter int, content string, facts domain.ChapterFacts, style do
 	}
 }
 
-func writeLegacyCommitSession(t *testing.T, dir string, chapter int, facts domain.ChapterFacts) {
+func saveLegacyChapter(t *testing.T, st *store.Store, chapter int, draft, final string, facts domain.ChapterFacts) {
 	t.Helper()
-	args, err := json.Marshal(legacyCommitArgs{Chapter: chapter, ChapterFacts: facts})
-	if err != nil {
-		t.Fatal(err)
-	}
-	now := time.Now()
-	messages := []agentcore.Message{
-		{
-			Role: agentcore.RoleAssistant, Timestamp: now.Add(-time.Second),
-			Content: []agentcore.ContentBlock{agentcore.ToolCallBlock(agentcore.ToolCall{
-				ID: "commit-1", Name: "commit_chapter", Args: args,
-			})},
-		},
-		{
-			Role: agentcore.RoleTool, Timestamp: now,
-			Content:  []agentcore.ContentBlock{agentcore.TextBlock(`{"committed":true}`)},
-			Metadata: map[string]any{"tool_call_id": "commit-1", "tool_name": "commit_chapter", "is_error": false},
-		},
-	}
-	var data []byte
-	for _, message := range messages {
-		line, err := json.Marshal(message)
-		if err != nil {
+	if draft != "" {
+		if err := st.Drafts.SaveDraft(chapter, draft); err != nil {
 			t.Fatal(err)
 		}
-		data = append(data, line...)
-		data = append(data, '\n')
 	}
-	path := filepath.Join(dir, "meta", "sessions", "agents", fmt.Sprintf("writer-ch%02d.jsonl", chapter))
-	if err := os.WriteFile(path, data, 0o644); err != nil {
+	if err := st.Drafts.SaveFinalChapter(chapter, final); err != nil {
 		t.Fatal(err)
 	}
-}
-
-func writeLegacyImportArtifact(t *testing.T, dir string, chapter int, facts domain.ChapterFacts) {
-	t.Helper()
-	artifact := struct {
-		Payload struct {
-			Facts legacyCommitArgs `json:"facts"`
-		} `json:"payload"`
-	}{}
-	artifact.Payload.Facts = legacyCommitArgs{Chapter: chapter, ChapterFacts: facts}
-	data, err := json.Marshal(artifact)
+	if err := st.Summaries.SaveSummary(domain.ChapterSummary{
+		Chapter: chapter, Title: facts.Title, Summary: facts.Summary,
+		Characters: facts.Characters, KeyEvents: facts.KeyEvents,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	timeline := make([]domain.TimelineEvent, len(facts.TimelineEvents))
+	for i, event := range facts.TimelineEvents {
+		event.Chapter = chapter
+		timeline[i] = event
+	}
+	if err := st.World.AppendTimelineEvents(timeline); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.World.UpdateForeshadow(chapter, facts.ForeshadowUpdates); err != nil {
+		t.Fatal(err)
+	}
+	relationships := make([]domain.RelationshipEntry, len(facts.RelationshipChanges))
+	for i, relation := range facts.RelationshipChanges {
+		relation.Chapter = chapter
+		relationships[i] = relation
+	}
+	if err := st.World.UpdateRelationships(relationships); err != nil {
+		t.Fatal(err)
+	}
+	changes := make([]domain.StateChange, len(facts.StateChanges))
+	for i, change := range facts.StateChanges {
+		change.Chapter = chapter
+		changes[i] = change
+	}
+	if err := st.World.AppendStateChanges(changes); err != nil {
+		t.Fatal(err)
+	}
+	characters, err := st.Characters.Load()
 	if err != nil {
 		t.Fatal(err)
 	}
-	path := filepath.Join(dir, "meta", "import", "analyses", fmt.Sprintf("%06d.json", chapter))
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+	core := make(map[string]bool)
+	for _, character := range characters {
+		core[character.Name] = true
+		for _, alias := range character.Aliases {
+			core[alias] = true
+		}
+	}
+	if err := st.Cast.MergeAppearances(chapter, facts.Characters, facts.CastIntros, core); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(path, data, 0o644); err != nil {
+	if err := st.Progress.StartChapter(chapter); err != nil {
+		t.Fatal(err)
+	}
+	content := draft
+	if content == "" {
+		content = final
+	}
+	if err := st.Progress.MarkChapterComplete(chapter, len([]rune(content)), facts.HookType, facts.DominantStrand); err != nil {
 		t.Fatal(err)
 	}
 }

@@ -29,6 +29,7 @@ func Run(cfg bootstrap.Config, bundle assets.Bundle, build buildversion.Info) er
 	defer rt.Close()
 
 	m := NewModel(rt, build.Version)
+	m.disableUpdateCheck = cfg.DisableUpdateCheck
 	if logErr := rt.FileLogError(); logErr != nil {
 		logWarning := fmt.Errorf("Log tệp không khả dụng, tiếp tục sử dụng log terminal: %w", logErr)
 		m.err = logWarning
